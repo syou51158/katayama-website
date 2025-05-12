@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>片山建設工業 | 伝統と革新で創る、上質な建築</title>
+  <meta name="description" content="片山建設工業は確かな技術と信頼で、住宅・商業施設・公共工事など幅広い建築サービスを提供する総合建設会社です。">
+  
+  <!-- OGP設定 -->
+  <meta property="og:title" content="片山建設工業 | 伝統と革新で創る、上質な建築">
+  <meta property="og:description" content="片山建設工業は確かな技術と信頼で、住宅・商業施設・公共工事など幅広い建築サービスを提供する総合建設会社です。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.katayama-construction.co.jp/">
+  <meta property="og:image" content="https://www.katayama-construction.co.jp/assets/img/ogp.jpg">
+  
+  <!-- ファビコン -->
+  <link rel="icon" href="assets/img/favicon.ico">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#233A5C',
+            primary_light: '#3A5B8C',
+            secondary: '#A68B5B',
+            accent: '#F8F9FB',
+            text_dark: '#2C3241',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  
+  <!-- AOS - Animate On Scroll -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  
+  <!-- カスタムCSS -->
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body class="bg-white text-text_dark">
+  <!-- ヘッダー -->
+  <header class="bg-white shadow fixed top-0 left-0 right-0 z-10">
+    <div class="container mx-auto flex justify-between items-center py-4">
+      <a href="index.html" class="flex items-center">
+        <img src="assets/img/logo.svg" alt="片山建設工業" class="h-12">
+      </a>
+      
+      <!-- PC用ナビゲーション -->
+      <nav class="hidden md:flex space-x-8">
+        <a href="index.html" class="nav-link active">ホーム</a>
+        <a href="services.html" class="nav-link">事業・サービス</a>
+        <a href="works.html" class="nav-link">施工実績</a>
+        <a href="about.html" class="nav-link">代表紹介</a>
+        <a href="company.html" class="nav-link">会社概要</a>
+        <a href="news.html" class="nav-link">お知らせ</a>
+        <a href="contact.html" class="btn-primary py-2">お問い合わせ</a>
+      </nav>
+      
+      <!-- ハンバーガーメニュー -->
+      <button id="menu-button" class="md:hidden text-gray-700 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+  
+  <!-- モバイルナビゲーション -->
+  <div id="mobile-nav" class="mobile-nav hidden">
+    <div class="container mx-auto py-4">
+      <div class="flex justify-between items-center mb-8">
+        <a href="index.html">
+          <img src="assets/img/logo.svg" alt="片山建設工業" class="h-12">
+        </a>
+        <button id="close-menu" class="text-gray-700 focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <nav class="flex flex-col space-y-4">
+        <a href="index.html" class="nav-link active">ホーム</a>
+        <a href="services.html" class="nav-link">事業・サービス</a>
+        <a href="works.html" class="nav-link">施工実績</a>
+        <a href="about.html" class="nav-link">代表紹介</a>
+        <a href="company.html" class="nav-link">会社概要</a>
+        <a href="news.html" class="nav-link">お知らせ</a>
+        <a href="contact.html" class="btn-primary text-center">お問い合わせ</a>
+      </nav>
+    </div>
+  </div>
+  
+  <!-- メインコンテンツ -->
+  <main class="pt-20">
+    <!-- ヒーローセクション -->
+    <section class="relative h-[600px] md:h-[700px] lg:h-[80vh] overflow-hidden">
+      <div class="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
+      <div class="absolute inset-0 z-0">
+        <img src="assets/img/hero.jpg" alt="片山建設工業の施工現場" class="w-full h-full object-cover">
+      </div>
+      <div class="container relative h-full flex flex-col justify-center z-20">
+        <div class="max-w-3xl" data-aos="fade-right" data-aos-duration="1000">
+          <span class="text-[#A68B5B] uppercase tracking-wider text-sm md:text-base font-medium mb-4 block">SINCE 2008</span>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white leading-tight">
+            伝統と革新で創る、<br>上質な建築の世界
+          </h1>
+          <p class="text-xl md:text-2xl mb-10 text-white opacity-90">確かな技術と信頼で、皆様の理想を形にします</p>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <a href="contact.html" class="btn-primary">お問い合わせはこちら</a>
+            <a href="works.html" class="btn-outline border-white text-white hover:bg-white hover:text-primary">施工実績を見る</a>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 装飾的な要素 -->
+      <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black to-transparent opacity-50 z-10"></div>
+    </section>
+    
+    <!-- 実績数カウンター -->
+    <section class="py-12 bg-primary text-white">
+      <div class="container">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div data-aos="fade-up" data-aos-delay="0">
+            <div class="text-4xl md:text-5xl font-bold mb-2">15<span class="text-secondary">+</span></div>
+            <p class="uppercase tracking-wide text-sm">事業実績年数</p>
+          </div>
+          <div data-aos="fade-up" data-aos-delay="100">
+            <div class="text-4xl md:text-5xl font-bold mb-2">320<span class="text-secondary">+</span></div>
+            <p class="uppercase tracking-wide text-sm">施工実績件数</p>
+          </div>
+          <div data-aos="fade-up" data-aos-delay="200">
+            <div class="text-4xl md:text-5xl font-bold mb-2">25<span class="text-secondary">+</span></div>
+            <p class="uppercase tracking-wide text-sm">専門スタッフ</p>
+          </div>
+          <div data-aos="fade-up" data-aos-delay="300">
+            <div class="text-4xl md:text-5xl font-bold mb-2">98<span class="text-secondary">%</span></div>
+            <p class="uppercase tracking-wide text-sm">顧客満足度</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- サービス紹介 -->
+    <section class="section bg-accent">
+      <div class="container">
+        <div data-aos="fade-up">
+          <h2 class="section-title">事業・サービス</h2>
+          <p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">
+            確かな技術と洗練されたデザインで、お客様一人ひとりのニーズに合わせた高品質な建築サービスを提供しています。
+          </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <!-- 住宅 -->
+          <div class="card group" data-aos="fade-up" data-aos-delay="0">
+            <div class="relative overflow-hidden">
+              <img src="assets/img/service_house.jpg" alt="住宅建築" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
+              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">Residential</div>
+            </div>
+            <div class="p-8">
+              <div class="w-16 h-1 bg-secondary mb-6"></div>
+              <h3 class="text-2xl font-bold mb-4">住宅建築</h3>
+              <p class="text-gray-600 mb-6">新築住宅からリフォームまで、お客様のライフスタイルと感性に寄り添った、上質な住まいづくりをサポートします。</p>
+              <a href="services.html" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
+                詳しく見る
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            </div>
+          </div>
+          
+          <!-- 商業施設 -->
+          <div class="card group" data-aos="fade-up" data-aos-delay="100">
+            <div class="relative overflow-hidden">
+              <img src="assets/img/service_commercial.jpg" alt="商業施設" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
+              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">Commercial</div>
+            </div>
+            <div class="p-8">
+              <div class="w-16 h-1 bg-secondary mb-6"></div>
+              <h3 class="text-2xl font-bold mb-4">商業施設</h3>
+              <p class="text-gray-600 mb-6">店舗やオフィスビルなど、ビジネスの成功と顧客体験を高める、洗練された空間設計と施工を提供します。</p>
+              <a href="services.html" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
+                詳しく見る
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            </div>
+          </div>
+          
+          <!-- 公共工事 -->
+          <div class="card group" data-aos="fade-up" data-aos-delay="200">
+            <div class="relative overflow-hidden">
+              <img src="assets/img/service_public.jpg" alt="公共工事" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
+              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">Public</div>
+            </div>
+            <div class="p-8">
+              <div class="w-16 h-1 bg-secondary mb-6"></div>
+              <h3 class="text-2xl font-bold mb-4">公共工事</h3>
+              <p class="text-gray-600 mb-6">学校や公園など、地域社会の未来を見据えた、安全性と機能性を兼ね備えた公共施設の建設に貢献しています。</p>
+              <a href="services.html" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
+                詳しく見る
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="text-center mt-16" data-aos="fade-up">
+          <a href="services.html" class="btn-primary">すべてのサービスを見る</a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 施工実績 -->
+    <section class="section bg-white">
+      <div class="container">
+        <div data-aos="fade-up">
+          <h2 class="section-title">施工実績</h2>
+          <p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">
+            私たちが手がけた厳選された施工事例をご紹介します。一つひとつのプロジェクトに込めた想いと技術をご覧ください。
+          </p>
+        </div>
+        
+        <div class="relative" data-aos="fade-up">
+          <div class="works-slider flex overflow-x-auto pb-6 scrollbar-hide -mx-4">
+            <!-- 施工実績1 -->
+            <div class="w-80 md:w-96 flex-shrink-0 px-4">
+              <div class="card h-full group">
+                <div class="relative overflow-hidden">
+                  <img src="assets/img/works_01.jpg" alt="施工実績1" class="w-full h-64 object-cover lightbox-image transition-transform duration-700 group-hover:scale-110">
+                  <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('assets/img/works_01.jpg')">詳細を見る</button>
+                  </div>
+                </div>
+                <div class="p-6">
+                  <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">Residential</span>
+                  <h3 class="text-xl font-bold mb-2">自然素材の家</h3>
+                  <p class="text-gray-600">木造2階建て、自然素材を活かした温かみのある住宅</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 施工実績2 -->
+            <div class="w-80 md:w-96 flex-shrink-0 px-4">
+              <div class="card h-full group">
+                <div class="relative overflow-hidden">
+                  <img src="assets/img/works_02.jpg" alt="施工実績2" class="w-full h-64 object-cover lightbox-image transition-transform duration-700 group-hover:scale-110">
+                  <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('assets/img/works_02.jpg')">詳細を見る</button>
+                  </div>
+                </div>
+                <div class="p-6">
+                  <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">Commercial</span>
+                  <h3 class="text-xl font-bold mb-2">古民家カフェ</h3>
+                  <p class="text-gray-600">古民家を改装したカフェの内装・外装工事</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 施工実績3 -->
+            <div class="w-80 md:w-96 flex-shrink-0 px-4">
+              <div class="card h-full group">
+                <div class="relative overflow-hidden">
+                  <img src="assets/img/works_03.jpg" alt="施工実績3" class="w-full h-64 object-cover lightbox-image transition-transform duration-700 group-hover:scale-110">
+                  <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('assets/img/works_03.jpg')">詳細を見る</button>
+                  </div>
+                </div>
+                <div class="p-6">
+                  <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">Public</span>
+                  <h3 class="text-xl font-bold mb-2">市民ホール改修</h3>
+                  <p class="text-gray-600">市民ホールの耐震補強及び内装リニューアル</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 施工実績4 -->
+            <div class="w-80 md:w-96 flex-shrink-0 px-4">
+              <div class="card h-full group">
+                <div class="relative overflow-hidden">
+                  <img src="assets/img/works_04.jpg" alt="施工実績4" class="w-full h-64 object-cover lightbox-image transition-transform duration-700 group-hover:scale-110">
+                  <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('assets/img/works_04.jpg')">詳細を見る</button>
+                  </div>
+                </div>
+                <div class="p-6">
+                  <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">Commercial</span>
+                  <h3 class="text-xl font-bold mb-2">省エネオフィスビル</h3>
+                  <p class="text-gray-600">鉄骨3階建て、省エネ設計のオフィスビル</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 施工実績5 -->
+            <div class="w-80 md:w-96 flex-shrink-0 px-4">
+              <div class="card h-full group">
+                <div class="relative overflow-hidden">
+                  <img src="assets/img/works_05.jpg" alt="施工実績5" class="w-full h-64 object-cover lightbox-image transition-transform duration-700 group-hover:scale-110">
+                  <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('assets/img/works_05.jpg')">詳細を見る</button>
+                  </div>
+                </div>
+                <div class="p-6">
+                  <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">Renovation</span>
+                  <h3 class="text-xl font-bold mb-2">マンション大規模修繕</h3>
+                  <p class="text-gray-600">築15年のマンション外壁・共用部分の全面改修</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- スライダーコントロール -->
+          <button id="slide-prev" class="absolute top-1/2 -left-5 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-lg focus:outline-none z-10 hover:bg-gray-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          
+          <button id="slide-next" class="absolute top-1/2 -right-5 transform -translate-y-1/2 bg-white p-3 rounded-full shadow-lg focus:outline-none z-10 hover:bg-gray-100 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="text-center mt-16" data-aos="fade-up">
+          <a href="works.html" class="btn-outline">全ての施工事例を見る</a>
+        </div>
+      </div>
+    </section>
+    
+    <!-- お客様の声 -->
+    <section class="section bg-accent py-24">
+      <div class="container">
+        <div data-aos="fade-up">
+          <h2 class="section-title">お客様の声</h2>
+          <p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">
+            私たちのサービスをご利用いただいたお客様からいただいた声の一部をご紹介します。
+          </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div class="testimonial-card" data-aos="fade-up" data-aos-delay="0">
+            <p class="mb-6 text-gray-700">「理想の住まいを実現するためにどんな提案をしていただけるか楽しみにしていましたが、期待以上の素晴らしい住宅に仕上げていただきました。細かい要望にも親身に対応いただき、感謝しています。」</p>
+            <div class="flex items-center">
+              <span class="block font-bold">S.K様</span>
+              <span class="mx-2 text-gray-400">|</span>
+              <span class="block text-sm text-gray-500">新築住宅</span>
+            </div>
+          </div>
+          
+          <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+            <p class="mb-6 text-gray-700">「店舗リノベーションを依頼しましたが、予算内で最大限の効果を出す提案をしていただき、オープン後は多くのお客様から好評をいただいています。プロならではの視点に感謝です。」</p>
+            <div class="flex items-center">
+              <span class="block font-bold">T.M様</span>
+              <span class="mx-2 text-gray-400">|</span>
+              <span class="block text-sm text-gray-500">店舗リノベーション</span>
+            </div>
+          </div>
+          
+          <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+            <p class="mb-6 text-gray-700">「工期も予算も守りながら、素晴らしい仕上がりのオフィスを作っていただきました。社員からも働きやすくなったと好評です。次のプロジェクトもぜひお願いしたいと思います。」</p>
+            <div class="flex items-center">
+              <span class="block font-bold">Y.N様</span>
+              <span class="mx-2 text-gray-400">|</span>
+              <span class="block text-sm text-gray-500">オフィス移転</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- お知らせ -->
+    <section class="section bg-white">
+      <div class="container">
+        <div data-aos="fade-up">
+          <h2 class="section-title">お知らせ</h2>
+          <p class="text-center max-w-3xl mx-auto mb-16 text-gray-600">
+            最新のイベントや施工事例、お得な情報などをお届けします。
+          </p>
+        </div>
+        
+        <div class="max-w-4xl mx-auto" data-aos="fade-up">
+          <div class="bg-white rounded-sm shadow-md overflow-hidden border-b-4 border-secondary">
+            <ul class="divide-y divide-gray-100">
+              <li>
+                <a href="news.html" class="block p-6 hover:bg-accent transition-colors">
+                  <div class="flex flex-col md:flex-row md:items-center">
+                    <div class="flex items-center mb-2 md:mb-0">
+                      <span class="text-sm text-gray-500 mr-3">2023.10.15</span>
+                      <span class="px-3 py-1 bg-blue-50 text-primary text-xs font-medium rounded-sm">お知らせ</span>
+                    </div>
+                    <h3 class="md:ml-6 font-medium">新社屋完成のお知らせ</h3>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="news.html" class="block p-6 hover:bg-accent transition-colors">
+                  <div class="flex flex-col md:flex-row md:items-center">
+                    <div class="flex items-center mb-2 md:mb-0">
+                      <span class="text-sm text-gray-500 mr-3">2023.09.20</span>
+                      <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-sm">イベント</span>
+                    </div>
+                    <h3 class="md:ml-6 font-medium">秋の住宅見学会開催について</h3>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a href="news.html" class="block p-6 hover:bg-accent transition-colors">
+                  <div class="flex flex-col md:flex-row md:items-center">
+                    <div class="flex items-center mb-2 md:mb-0">
+                      <span class="text-sm text-gray-500 mr-3">2023.08.05</span>
+                      <span class="px-3 py-1 bg-blue-50 text-primary text-xs font-medium rounded-sm">お知らせ</span>
+                    </div>
+                    <h3 class="md:ml-6 font-medium">夏季休業のお知らせ</h3>
+                  </div>
+                </a>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="text-center mt-10">
+            <a href="news.html" class="btn-outline">お知らせ一覧へ</a>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 企業理念 -->
+    <section class="py-24 bg-primary text-white relative overflow-hidden">
+      <div class="absolute inset-0 z-0 opacity-20">
+        <img src="assets/img/philosophy_bg.jpg" alt="企業理念背景" class="w-full h-full object-cover">
+      </div>
+      <div class="container relative z-10">
+        <div class="max-w-3xl mx-auto text-center" data-aos="fade-up">
+          <span class="text-secondary uppercase tracking-wider text-sm mb-4 block">Our Philosophy</span>
+          <h2 class="text-3xl md:text-4xl font-bold mb-8">伝統と革新で創る、上質な建築の世界</h2>
+          <div class="w-20 h-1 bg-secondary mx-auto mb-8"></div>
+          <p class="text-lg mb-10">
+            私たちは、確かな技術と洗練されたデザインで、お客様一人ひとりの想いを形にします。<br>
+            長く愛される建物づくりを通じて、地域社会の発展と豊かな暮らしに貢献することを目指しています。
+          </p>
+          <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="company.html" class="btn-secondary">会社概要を見る</a>
+            <a href="contact.html" class="btn-outline border-white text-white hover:bg-white hover:text-primary">お問い合わせはこちら</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- パートナー企業 -->
+    <section class="py-16 bg-accent">
+      <div class="container">
+        <div class="text-center mb-10" data-aos="fade-up">
+          <span class="text-primary uppercase tracking-wider text-sm font-medium">Our Partners</span>
+          <h3 class="text-2xl font-bold mt-2">パートナー企業</h3>
+        </div>
+        
+        <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16" data-aos="fade-up">
+          <img src="assets/img/partner1.svg" alt="パートナー企業1" class="h-10 md:h-12 opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+          <img src="assets/img/partner2.svg" alt="パートナー企業2" class="h-10 md:h-12 opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+          <img src="assets/img/partner3.svg" alt="パートナー企業3" class="h-10 md:h-12 opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+          <img src="assets/img/partner4.svg" alt="パートナー企業4" class="h-10 md:h-12 opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+          <img src="assets/img/partner5.svg" alt="パートナー企業5" class="h-10 md:h-12 opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <!-- フッター -->
+  <footer class="bg-gray-900 text-white py-16">
+    <div class="container">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div>
+          <img src="assets/img/logo.svg" alt="片山建設工業" class="h-12 mb-6 brightness-200">
+          <p class="text-gray-400 mb-6">伝統と革新で創る、<br>上質な建築の世界。</p>
+          <div class="flex space-x-4">
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/>
+              </svg>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm6.066 9.645c.183 4.04-2.83 8.544-8.164 8.544-1.622 0-3.131-.476-4.402-1.291 1.524.18 3.045-.244 4.252-1.189-1.256-.023-2.317-.854-2.684-1.995.451.086.895.061 1.298-.049-1.381-.278-2.335-1.522-2.304-2.853.388.215.83.344 1.301.359-1.279-.855-1.641-2.544-.889-3.835 1.416 1.738 3.533 2.881 5.92 3.001-.419-1.796.944-3.527 2.799-3.527.825 0 1.572.349 2.096.907.654-.128 1.27-.368 1.824-.697-.215.671-.67 1.233-1.263 1.589.581-.07 1.135-.224 1.649-.453-.384.578-.87 1.084-1.433 1.489z"/>
+              </svg>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold mb-6 relative inline-block">
+            リンク
+            <span class="absolute bottom-0 left-0 w-full h-0.5 bg-secondary"></span>
+          </h3>
+          <ul class="space-y-3">
+            <li><a href="index.html" class="text-gray-400 hover:text-white transition-colors">ホーム</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white transition-colors">事業・サービス</a></li>
+            <li><a href="works.html" class="text-gray-400 hover:text-white transition-colors">施工実績</a></li>
+            <li><a href="about.html" class="text-gray-400 hover:text-white transition-colors">代表紹介</a></li>
+            <li><a href="company.html" class="text-gray-400 hover:text-white transition-colors">会社概要</a></li>
+            <li><a href="news.html" class="text-gray-400 hover:text-white transition-colors">お知らせ</a></li>
+            <li><a href="contact.html" class="text-gray-400 hover:text-white transition-colors">お問い合わせ</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold mb-6 relative inline-block">
+            サービス
+            <span class="absolute bottom-0 left-0 w-full h-0.5 bg-secondary"></span>
+          </h3>
+          <ul class="space-y-3">
+            <li><a href="services.html" class="text-gray-400 hover:text-white transition-colors">住宅建築</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white transition-colors">商業施設</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white transition-colors">公共工事</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white transition-colors">リフォーム</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white transition-colors">メンテナンス</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold mb-6 relative inline-block">
+            会社情報
+            <span class="absolute bottom-0 left-0 w-full h-0.5 bg-secondary"></span>
+          </h3>
+          <address class="not-italic text-gray-400 space-y-3">
+            <p>〒123-4567</p>
+            <p>東京都○○区△△町1-2-3</p>
+            <p>TEL: <a href="tel:0312345678" class="hover:text-white transition-colors">03-1234-5678</a></p>
+            <p>FAX: 03-1234-5679</p>
+            <p>営業時間: 平日 8:30〜17:30</p>
+          </address>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-12 pt-10 text-center text-sm text-gray-500">
+        <p>© 2023 片山建設工業 All Rights Reserved.</p>
+        <div class="mt-4 space-x-6">
+          <a href="privacy.html" class="hover:text-white transition-colors">プライバシーポリシー</a>
+          <a href="terms.html" class="hover:text-white transition-colors">サイト利用規約</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- ライトボックス -->
+  <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center">
+    <button id="lightbox-close" class="absolute top-6 right-6 text-white focus:outline-none hover:text-gray-300 transition-colors">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    <img id="lightbox-img" src="" alt="" class="max-w-[90%] max-h-[90vh]">
+  </div>
+  
+  <!-- カスタムJS -->
+  <script src="assets/js/main.js"></script>
+  <script>
+    // AOSの初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100
+      });
+    });
+    
+    // ライトボックス用関数
+    function openLightbox(imgSrc) {
+      const lightbox = document.getElementById('lightbox');
+      const lightboxImg = document.getElementById('lightbox-img');
+      
+      lightboxImg.setAttribute('src', imgSrc);
+      lightbox.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    }
+  </script>
+</body>
+</html> 

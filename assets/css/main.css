@@ -1,0 +1,177 @@
+/* メインスタイル */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-color: #233A5C;
+  --primary-light: #3A5B8C;
+  --secondary-color: #A68B5B;
+  --bg-accent: #F8F9FB;
+  --text-dark: #2C3241;
+}
+
+@layer base {
+  html {
+    font-family: 'Noto Sans JP', sans-serif;
+    color: var(--text-dark);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Noto Serif JP', 'Playfair Display', serif;
+    font-weight: 600;
+  }
+  
+  body {
+    @apply leading-relaxed;
+  }
+}
+
+@layer components {
+  .container {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+  
+  .btn {
+    @apply inline-block px-6 py-3 rounded-sm text-center font-medium transition-all duration-300 uppercase tracking-wider text-sm;
+  }
+  
+  .btn-primary {
+    @apply btn bg-[#233A5C] text-white hover:bg-[#1A2A45] shadow-md hover:shadow-lg;
+  }
+  
+  .btn-outline {
+    @apply btn border border-[#233A5C] text-[#233A5C] hover:bg-[#233A5C] hover:text-white shadow-sm hover:shadow-md;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-[#A68B5B] text-white hover:bg-[#8A7349] shadow-md hover:shadow-lg;
+  }
+  
+  .section {
+    @apply py-16 md:py-20 lg:py-24;
+  }
+  
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold mb-10 md:mb-12 text-center relative;
+  }
+  
+  .section-title::after {
+    content: '';
+    @apply block absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-[#A68B5B] mt-4;
+  }
+  
+  .card {
+    @apply bg-white rounded-sm shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg border-b-4 border-transparent hover:border-[#A68B5B];
+  }
+}
+
+/* ナビゲーション */
+.nav-link {
+  @apply block py-2 px-3 text-gray-700 hover:text-[#233A5C] transition-colors font-medium tracking-wide;
+}
+
+.nav-link.active {
+  @apply text-[#233A5C] font-semibold border-b-2 border-[#A68B5B];
+}
+
+/* モバイルナビゲーション */
+.mobile-nav {
+  @apply fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-in-out;
+}
+
+.mobile-nav.hidden {
+  @apply translate-x-full;
+}
+
+/* お問い合わせフォーム */
+.form-group {
+  @apply mb-6;
+}
+
+.form-label {
+  @apply block mb-2 font-medium text-gray-700;
+}
+
+.form-input {
+  @apply w-full px-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-[#233A5C] focus:border-transparent transition-all duration-200;
+}
+
+.form-input.error {
+  @apply border-red-500 focus:ring-red-500;
+}
+
+.error-message {
+  @apply mt-1 text-sm text-red-500;
+}
+
+/* パンくずリスト */
+.breadcrumb {
+  @apply flex items-center py-3 text-sm;
+}
+
+.breadcrumb-item {
+  @apply text-gray-500;
+}
+
+.breadcrumb-item.active {
+  @apply text-gray-900;
+}
+
+.breadcrumb-separator {
+  @apply mx-2 text-gray-400;
+}
+
+/* 高級感を出すための追加スタイル */
+.highlight-text {
+  @apply text-[#A68B5B] italic;
+}
+
+.luxury-divider {
+  @apply h-px w-full bg-gradient-to-r from-transparent via-[#A68B5B] to-transparent my-12 opacity-60;
+}
+
+.testimonial-card {
+  @apply bg-white p-6 rounded-sm shadow-md border-l-4 border-[#A68B5B] italic;
+}
+
+.fancy-number {
+  @apply inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#233A5C] text-white text-xl font-bold;
+}
+
+.awards-badge {
+  @apply inline-flex items-center bg-[#F0EBE0] text-[#A68B5B] px-3 py-1 rounded-sm text-sm;
+}
+
+.gold-accent {
+  @apply border-[#A68B5B];
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+} 

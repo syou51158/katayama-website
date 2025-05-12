@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お知らせ | 片山建設工業</title>
+  <meta name="description" content="片山建設工業のお知らせ、イベント情報、施工事例など最新情報をご紹介します。">
+  
+  <!-- OGP設定 -->
+  <meta property="og:title" content="お知らせ | 片山建設工業">
+  <meta property="og:description" content="片山建設工業のお知らせ、イベント情報、施工事例など最新情報をご紹介します。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.katayama-construction.co.jp/news.html">
+  <meta property="og:image" content="https://www.katayama-construction.co.jp/assets/img/ogp.jpg">
+  
+  <!-- ファビコン -->
+  <link rel="icon" href="assets/img/favicon.ico">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#233A5C',
+            primary_light: '#3A5B8C',
+            secondary: '#A68B5B',
+            accent: '#F8F9FB',
+            text_dark: '#2C3241',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  
+  <!-- AOS - Animate On Scroll -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  
+  <!-- カスタムCSS -->
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body class="bg-white text-text_dark">
+  <!-- ヘッダー -->
+  <header class="bg-white shadow fixed top-0 left-0 right-0 z-10">
+    <div class="container mx-auto flex justify-between items-center py-4">
+      <a href="index.html" class="flex items-center">
+        <img src="assets/img/logo.svg" alt="片山建設工業" class="h-10">
+      </a>
+      
+      <!-- PC用ナビゲーション -->
+      <nav class="hidden md:flex space-x-6">
+        <a href="index.html" class="nav-link">ホーム</a>
+        <a href="services.html" class="nav-link">事業・サービス</a>
+        <a href="works.html" class="nav-link">施工実績</a>
+        <a href="about.html" class="nav-link">代表紹介</a>
+        <a href="company.html" class="nav-link">会社概要</a>
+        <a href="news.html" class="nav-link active">お知らせ</a>
+        <a href="contact.html" class="btn-primary py-2">お問い合わせ</a>
+      </nav>
+      
+      <!-- ハンバーガーメニュー -->
+      <button id="menu-button" class="md:hidden text-gray-700 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+  
+  <!-- モバイルナビゲーション -->
+  <div id="mobile-nav" class="mobile-nav hidden">
+    <div class="container mx-auto py-4">
+      <div class="flex justify-between items-center mb-8">
+        <a href="index.html">
+          <img src="assets/img/logo.svg" alt="片山建設工業" class="h-10">
+        </a>
+        <button id="close-menu" class="text-gray-700 focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <nav class="flex flex-col space-y-4">
+        <a href="index.html" class="nav-link">ホーム</a>
+        <a href="services.html" class="nav-link">事業・サービス</a>
+        <a href="works.html" class="nav-link">施工実績</a>
+        <a href="about.html" class="nav-link">代表紹介</a>
+        <a href="company.html" class="nav-link">会社概要</a>
+        <a href="news.html" class="nav-link active">お知らせ</a>
+        <a href="contact.html" class="btn-primary text-center">お問い合わせ</a>
+      </nav>
+    </div>
+  </div>
+  
+  <!-- メインコンテンツ -->
+  <main class="pt-20">
+    <!-- パンくずリスト -->
+    <div class="bg-gray-100">
+      <div class="container">
+        <nav class="breadcrumb">
+          <a href="index.html" class="breadcrumb-item">ホーム</a>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item active">お知らせ</span>
+        </nav>
+      </div>
+    </div>
+    
+    <!-- ページヘッダー -->
+    <section class="py-12 bg-primary text-white text-center">
+      <div class="container">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">お知らせ</h1>
+        <p class="max-w-3xl mx-auto">片山建設工業からの最新情報やイベント、施工事例などをお届けします。</p>
+      </div>
+    </section>
+    
+    <!-- ニュース一覧 -->
+    <section class="section bg-white">
+      <div class="container">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <!-- 左カラム: カテゴリとアーカイブ -->
+          <div class="md:col-span-1">
+            <!-- カテゴリ -->
+            <div class="mb-8 bg-accent p-6 rounded-sm shadow-sm" data-aos="fade-up">
+              <h2 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">カテゴリ</h2>
+              <ul class="space-y-2">
+                <li>
+                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
+                    <span>すべて</span>
+                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">14</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
+                    <span>お知らせ</span>
+                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">5</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
+                    <span>イベント</span>
+                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">3</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
+                    <span>施工事例</span>
+                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">4</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
+                    <span>コラム</span>
+                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">2</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            
+            <!-- アーカイブ -->
+            <div class="bg-accent p-6 rounded-sm shadow-sm" data-aos="fade-up" data-aos-delay="100">
+              <h2 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">アーカイブ</h2>
+              <ul class="space-y-2">
+                <li>
+                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
+                    <span>2023年</span>
+                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">8</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
+                    <span>2022年</span>
+                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">5</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
+                    <span>2021年</span>
+                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">1</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- 右カラム: ニュース記事一覧 -->
+          <div class="md:col-span-3">
+            <!-- 記事1 -->
+            <article class="bg-white shadow-md rounded-sm overflow-hidden mb-8" data-aos="fade-up">
+              <div class="grid grid-cols-1 md:grid-cols-3">
+                <div class="md:col-span-1">
+                  <img src="assets/img/news_01.jpg" alt="新社屋完成のお知らせ" class="w-full h-full object-cover">
+                </div>
+                <div class="p-6 md:col-span-2">
+                  <div class="flex items-center mb-4">
+                    <span class="text-sm text-gray-500 mr-3">2023.10.15</span>
+                    <span class="px-3 py-1 bg-blue-50 text-primary text-xs font-medium rounded-sm">お知らせ</span>
+                  </div>
+                  <h2 class="text-xl font-bold mb-3 hover:text-secondary transition-colors">
+                    <a href="#">新社屋完成のお知らせ</a>
+                  </h2>
+                  <p class="text-gray-600 mb-4">このたび、片山建設工業は創業15周年を記念し、新社屋を完成いたしました。最新の設備を備えた新社屋にて、より一層サービスの充実に努めてまいります。</p>
+                  <a href="#" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
+                    詳しく見る
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+            
+            <!-- 記事2 -->
+            <article class="bg-white shadow-md rounded-sm overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="100">
+              <div class="grid grid-cols-1 md:grid-cols-3">
+                <div class="md:col-span-1">
+                  <img src="assets/img/news_02.jpg" alt="秋の住宅見学会開催について" class="w-full h-full object-cover">
+                </div>
+                <div class="p-6 md:col-span-2">
+                  <div class="flex items-center mb-4">
+                    <span class="text-sm text-gray-500 mr-3">2023.09.20</span>
+                    <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-sm">イベント</span>
+                  </div>
+                  <h2 class="text-xl font-bold mb-3 hover:text-secondary transition-colors">
+                    <a href="#">秋の住宅見学会開催について</a>
+                  </h2>
+                  <p class="text-gray-600 mb-4">10月15日(土)・16日(日)の2日間、○○市にて完成住宅見学会を開催いたします。自然素材を活かした快適な住まいをぜひご体感ください。予約制となっておりますので、お早めにお申し込みください。</p>
+                  <a href="#" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
+                    詳しく見る
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+            
+            <!-- 記事3 -->
+            <article class="bg-white shadow-md rounded-sm overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="200">
+              <div class="grid grid-cols-1 md:grid-cols-3">
+                <div class="md:col-span-1">
+                  <img src="assets/img/news_03.jpg" alt="夏季休業のお知らせ" class="w-full h-full object-cover">
+                </div>
+                <div class="p-6 md:col-span-2">
+                  <div class="flex items-center mb-4">
+                    <span class="text-sm text-gray-500 mr-3">2023.08.05</span>
+                    <span class="px-3 py-1 bg-blue-50 text-primary text-xs font-medium rounded-sm">お知らせ</span>
+                  </div>
+                  <h2 class="text-xl font-bold mb-3 hover:text-secondary transition-colors">
+                    <a href="#">夏季休業のお知らせ</a>
+                  </h2>
+                  <p class="text-gray-600 mb-4">誠に勝手ながら、8月11日(金)〜8月16日(水)までを夏季休業とさせていただきます。期間中はご不便をおかけいたしますが、何卒ご了承くださいますようお願い申し上げます。</p>
+                  <a href="#" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
+                    詳しく見る
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+            
+            <!-- 記事4 -->
+            <article class="bg-white shadow-md rounded-sm overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="300">
+              <div class="grid grid-cols-1 md:grid-cols-3">
+                <div class="md:col-span-1">
+                  <img src="assets/img/news_04.jpg" alt="新築事例「光と風の家」完成" class="w-full h-full object-cover">
+                </div>
+                <div class="p-6 md:col-span-2">
+                  <div class="flex items-center mb-4">
+                    <span class="text-sm text-gray-500 mr-3">2023.07.15</span>
+                    <span class="px-3 py-1 bg-yellow-50 text-yellow-700 text-xs font-medium rounded-sm">施工事例</span>
+                  </div>
+                  <h2 class="text-xl font-bold mb-3 hover:text-secondary transition-colors">
+                    <a href="#">新築事例「光と風の家」完成</a>
+                  </h2>
+                  <p class="text-gray-600 mb-4">○○市での新築住宅「光と風の家」が完成しました。吹き抜けを中心とした明るい空間設計と、自然の風を取り入れる工夫が特徴の住宅です。施工事例に詳細を掲載しましたので、ぜひご覧ください。</p>
+                  <a href="#" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
+                    詳しく見る
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+            
+            <!-- 記事5 -->
+            <article class="bg-white shadow-md rounded-sm overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="400">
+              <div class="grid grid-cols-1 md:grid-cols-3">
+                <div class="md:col-span-1">
+                  <img src="assets/img/news_05.jpg" alt="リノベーションセミナー開催報告" class="w-full h-full object-cover">
+                </div>
+                <div class="p-6 md:col-span-2">
+                  <div class="flex items-center mb-4">
+                    <span class="text-sm text-gray-500 mr-3">2023.06.28</span>
+                    <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-sm">イベント</span>
+                  </div>
+                  <h2 class="text-xl font-bold mb-3 hover:text-secondary transition-colors">
+                    <a href="#">リノベーションセミナー開催報告</a>
+                  </h2>
+                  <p class="text-gray-600 mb-4">6月25日に開催いたしましたリノベーションセミナーには多くの方にご参加いただき、誠にありがとうございました。セミナーの様子や質疑応答の内容をまとめました。次回は8月を予定しています。</p>
+                  <a href="#" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
+                    詳しく見る
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </article>
+            
+            <!-- ページネーション -->
+            <div class="flex justify-center mt-12" data-aos="fade-up">
+              <nav class="inline-flex rounded-md shadow-sm">
+                <a href="#" class="py-2 px-4 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-l-md">前へ</a>
+                <a href="#" class="py-2 px-4 border-t border-b border-gray-300 bg-primary text-white">1</a>
+                <a href="#" class="py-2 px-4 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-50">2</a>
+                <a href="#" class="py-2 px-4 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-50">3</a>
+                <a href="#" class="py-2 px-4 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-r-md">次へ</a>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- お問い合わせセクション -->
+    <section class="py-16 bg-primary text-white">
+      <div class="container">
+        <div class="max-w-3xl mx-auto text-center" data-aos="fade-up">
+          <h2 class="text-3xl font-bold mb-6">お問い合わせ</h2>
+          <p class="text-lg mb-8">
+            建物に関することなら、どんなことでもお気軽にご相談ください。<br>
+            専門スタッフが丁寧にお応えします。
+          </p>
+          <a href="contact.html" class="btn-secondary">お問い合わせはこちら</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- フッター -->
+  <footer class="bg-gray-800 text-white py-12">
+    <div class="container">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <img src="assets/img/logo.svg" alt="片山建設工業" class="h-10 mb-4 brightness-200">
+          <p class="text-sm text-gray-400">地域と共に歩み、<br>皆様の暮らしを支える建設会社です。</p>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold mb-4">リンク</h3>
+          <ul class="space-y-2">
+            <li><a href="index.html" class="text-gray-400 hover:text-white">ホーム</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white">事業・サービス</a></li>
+            <li><a href="works.html" class="text-gray-400 hover:text-white">施工実績</a></li>
+            <li><a href="about.html" class="text-gray-400 hover:text-white">代表紹介</a></li>
+            <li><a href="company.html" class="text-gray-400 hover:text-white">会社概要</a></li>
+            <li><a href="news.html" class="text-gray-400 hover:text-white">お知らせ</a></li>
+            <li><a href="contact.html" class="text-gray-400 hover:text-white">お問い合わせ</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold mb-4">サービス</h3>
+          <ul class="space-y-2">
+            <li><a href="services.html" class="text-gray-400 hover:text-white">住宅建築</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white">商業施設</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white">公共工事</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white">リフォーム</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white">メンテナンス</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold mb-4">会社情報</h3>
+          <address class="not-italic text-sm text-gray-400">
+            <p class="mb-2">〒123-4567</p>
+            <p class="mb-2">東京都○○区△△町1-2-3</p>
+            <p class="mb-2">TEL: 03-1234-5678</p>
+            <p>FAX: 03-1234-5679</p>
+          </address>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
+        <p>© 2023 片山建設工業 All Rights Reserved.</p>
+        <p class="mt-2">
+          <a href="privacy.html" class="hover:text-white">プライバシーポリシー</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- カスタムJS -->
+  <script src="assets/js/main.js"></script>
+  <script>
+    // AOSの初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100
+      });
+    });
+  </script>
+</body>
+</html> 

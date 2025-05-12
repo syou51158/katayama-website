@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>会社概要 | 片山建設工業</title>
+  <meta name="description" content="片山建設工業の会社概要、企業理念、沿革などをご紹介します。確かな技術と信頼で、お客様の理想を形にします。">
+  
+  <!-- OGP設定 -->
+  <meta property="og:title" content="会社概要 | 片山建設工業">
+  <meta property="og:description" content="片山建設工業の会社概要、企業理念、沿革などをご紹介します。確かな技術と信頼で、お客様の理想を形にします。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.katayama-construction.co.jp/company.html">
+  <meta property="og:image" content="https://www.katayama-construction.co.jp/assets/img/ogp.jpg">
+  
+  <!-- ファビコン -->
+  <link rel="icon" href="assets/img/favicon.ico">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#233A5C',
+            primary_light: '#3A5B8C',
+            secondary: '#A68B5B',
+            accent: '#F8F9FB',
+            text_dark: '#2C3241',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  
+  <!-- AOS - Animate On Scroll -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  
+  <!-- カスタムCSS -->
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body class="bg-white text-text_dark">
+  <!-- ヘッダー -->
+  <header class="bg-white shadow fixed top-0 left-0 right-0 z-10">
+    <div class="container mx-auto flex justify-between items-center py-4">
+      <a href="index.html" class="flex items-center">
+        <img src="assets/img/logo.svg" alt="片山建設工業" class="h-10">
+      </a>
+      
+      <!-- PC用ナビゲーション -->
+      <nav class="hidden md:flex space-x-6">
+        <a href="index.html" class="nav-link">ホーム</a>
+        <a href="services.html" class="nav-link">事業・サービス</a>
+        <a href="works.html" class="nav-link">施工実績</a>
+        <a href="about.html" class="nav-link">代表紹介</a>
+        <a href="company.html" class="nav-link active">会社概要</a>
+        <a href="news.html" class="nav-link">お知らせ</a>
+        <a href="contact.html" class="btn-primary py-2">お問い合わせ</a>
+      </nav>
+      
+      <!-- ハンバーガーメニュー -->
+      <button id="menu-button" class="md:hidden text-gray-700 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+  </header>
+  
+  <!-- モバイルナビゲーション -->
+  <div id="mobile-nav" class="mobile-nav hidden">
+    <div class="container mx-auto py-4">
+      <div class="flex justify-between items-center mb-8">
+        <a href="index.html">
+          <img src="assets/img/logo.svg" alt="片山建設工業" class="h-10">
+        </a>
+        <button id="close-menu" class="text-gray-700 focus:outline-none">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <nav class="flex flex-col space-y-4">
+        <a href="index.html" class="nav-link">ホーム</a>
+        <a href="services.html" class="nav-link">事業・サービス</a>
+        <a href="works.html" class="nav-link">施工実績</a>
+        <a href="about.html" class="nav-link">代表紹介</a>
+        <a href="company.html" class="nav-link active">会社概要</a>
+        <a href="news.html" class="nav-link">お知らせ</a>
+        <a href="contact.html" class="btn-primary text-center">お問い合わせ</a>
+      </nav>
+    </div>
+  </div>
+  
+  <!-- メインコンテンツ -->
+  <main class="pt-20">
+    <!-- パンくずリスト -->
+    <div class="bg-gray-100">
+      <div class="container">
+        <nav class="breadcrumb">
+          <a href="index.html" class="breadcrumb-item">ホーム</a>
+          <span class="breadcrumb-separator">/</span>
+          <span class="breadcrumb-item active">会社概要</span>
+        </nav>
+      </div>
+    </div>
+    
+    <!-- ページヘッダー -->
+    <section class="py-12 bg-primary text-white text-center">
+      <div class="container">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">会社概要</h1>
+        <p class="max-w-3xl mx-auto">片山建設工業は確かな技術と信頼で、お客様の理想を形にします。</p>
+      </div>
+    </section>
+    
+    <!-- 企業理念 -->
+    <section class="section bg-white">
+      <div class="container">
+        <div class="max-w-4xl mx-auto text-center" data-aos="fade-up">
+          <h2 class="section-title">企業理念</h2>
+          <div class="mt-16 space-y-10">
+            <div class="relative">
+              <div class="text-2xl md:text-3xl font-bold mb-6 text-primary">
+                「伝統と革新で創る、上質な建築の世界」
+              </div>
+              <p class="text-lg leading-relaxed">
+                私たちは、確かな技術と洗練されたデザインで、お客様一人ひとりの想いを形にします。<br>
+                長く愛される建物づくりを通じて、地域社会の発展と豊かな暮らしに貢献することを目指しています。
+              </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+              <div class="bg-accent p-8 rounded-sm" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-secondary text-4xl font-bold mb-4">01</div>
+                <h3 class="text-xl font-bold mb-3">確かな技術</h3>
+                <p>創業以来培ってきた確かな技術力を大切にし、安全で快適な建物を提供します。常に最新の技術を学び、品質の向上に努めます。</p>
+              </div>
+              
+              <div class="bg-accent p-8 rounded-sm" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-secondary text-4xl font-bold mb-4">02</div>
+                <h3 class="text-xl font-bold mb-3">誠実な対応</h3>
+                <p>お客様との信頼関係を何よりも大切にし、誠実な対応を心がけます。ニーズに真摯に向き合い、最適な提案を行います。</p>
+              </div>
+              
+              <div class="bg-accent p-8 rounded-sm" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-secondary text-4xl font-bold mb-4">03</div>
+                <h3 class="text-xl font-bold mb-3">地域貢献</h3>
+                <p>地域社会の一員として、環境に配慮した建築活動を行い、地域の発展に貢献します。次世代に誇れる街づくりを目指します。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 会社概要テーブル -->
+    <section class="section bg-accent">
+      <div class="container">
+        <div data-aos="fade-up">
+          <h2 class="section-title">会社情報</h2>
+          
+          <div class="max-w-4xl mx-auto mt-12 bg-white shadow-md rounded-sm overflow-hidden">
+            <table class="w-full">
+              <tbody class="divide-y divide-gray-200">
+                <tr>
+                  <th class="py-4 px-6 bg-gray-50 text-left w-1/3">会社名</th>
+                  <td class="py-4 px-6">片山建設工業株式会社</td>
+                </tr>
+                <tr>
+                  <th class="py-4 px-6 bg-gray-50 text-left">設立</th>
+                  <td class="py-4 px-6">2008年4月</td>
+                </tr>
+                <tr>
+                  <th class="py-4 px-6 bg-gray-50 text-left">代表者</th>
+                  <td class="py-4 px-6">代表取締役 片山 太郎</td>
+                </tr>
+                <tr>
+                  <th class="py-4 px-6 bg-gray-50 text-left">資本金</th>
+                  <td class="py-4 px-6">3,000万円</td>
+                </tr>
+                <tr>
+                  <th class="py-4 px-6 bg-gray-50 text-left">事業内容</th>
+                  <td class="py-4 px-6">
+                    <ul class="list-disc list-inside">
+                      <li>住宅建築（新築・注文住宅・リフォーム）</li>
+                      <li>商業施設建設（店舗・オフィス・施設など）</li>
+                      <li>公共工事（教育施設・公園・道路など）</li>
+                      <li>建物維持管理・アフターメンテナンス</li>
+                      <li>不動産・土地活用相談</li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="py-4 px-6 bg-gray-50 text-left">所在地</th>
+                  <td class="py-4 px-6">
+                    〒123-4567<br>
+                    東京都○○区△△町1-2-3<br>
+                    TEL: 03-1234-5678<br>
+                    FAX: 03-1234-5679
+                  </td>
+                </tr>
+                <tr>
+                  <th class="py-4 px-6 bg-gray-50 text-left">従業員数</th>
+                  <td class="py-4 px-6">25名（2023年4月現在）</td>
+                </tr>
+                <tr>
+                  <th class="py-4 px-6 bg-gray-50 text-left">有資格者</th>
+                  <td class="py-4 px-6">
+                    <ul class="list-disc list-inside">
+                      <li>一級建築士: 4名</li>
+                      <li>二級建築士: 6名</li>
+                      <li>一級建築施工管理技士: 5名</li>
+                      <li>二級建築施工管理技士: 8名</li>
+                      <li>宅地建物取引士: 2名</li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="py-4 px-6 bg-gray-50 text-left">許可・登録</th>
+                  <td class="py-4 px-6">
+                    <ul class="list-disc list-inside">
+                      <li>建設業許可: 東京都知事許可（特-○○）第○○○○号</li>
+                      <li>一般建設業許可: 東京都知事許可（般-○○）第○○○○号</li>
+                      <li>宅地建物取引業: 東京都知事（1）第○○○○○号</li>
+                    </ul>
+                  </td>
+                </tr>
+                <tr>
+                  <th class="py-4 px-6 bg-gray-50 text-left">取引銀行</th>
+                  <td class="py-4 px-6">○○銀行、△△信用金庫</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 沿革 -->
+    <section class="section bg-white">
+      <div class="container">
+        <div data-aos="fade-up">
+          <h2 class="section-title">沿革</h2>
+          
+          <div class="max-w-4xl mx-auto mt-12">
+            <div class="space-y-8 relative">
+              <!-- 縦線 -->
+              <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-200 z-0 ml-6"></div>
+              
+              <!-- 2008年 -->
+              <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="100">
+                <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold">08</div>
+                <div class="ml-6">
+                  <div class="text-xl font-bold text-primary">2008年4月</div>
+                  <div class="mt-2">
+                    <p>片山建設工業株式会社設立（資本金1,000万円）</p>
+                    <p>東京都○○区に本社を設立</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 2010年 -->
+              <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="200">
+                <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold">10</div>
+                <div class="ml-6">
+                  <div class="text-xl font-bold text-primary">2010年6月</div>
+                  <div class="mt-2">
+                    <p>資本金を2,000万円に増資</p>
+                    <p>一般建設業許可取得</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 2012年 -->
+              <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="300">
+                <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold">12</div>
+                <div class="ml-6">
+                  <div class="text-xl font-bold text-primary">2012年5月</div>
+                  <div class="mt-2">
+                    <p>宅地建物取引業免許取得</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 2015年 -->
+              <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="400">
+                <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold">15</div>
+                <div class="ml-6">
+                  <div class="text-xl font-bold text-primary">2015年10月</div>
+                  <div class="mt-2">
+                    <p>特定建設業許可取得</p>
+                    <p>資本金を3,000万円に増資</p>
+                    <p>○○建設協会加入</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 2017年 -->
+              <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="500">
+                <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold">17</div>
+                <div class="ml-6">
+                  <div class="text-xl font-bold text-primary">2017年3月</div>
+                  <div class="mt-2">
+                    <p>創業以来の施工実績が100件を突破</p>
+                    <p>△△地域優良建設企業として表彰</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 2020年 -->
+              <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="600">
+                <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold">20</div>
+                <div class="ml-6">
+                  <div class="text-xl font-bold text-primary">2020年9月</div>
+                  <div class="mt-2">
+                    <p>環境配慮型建築への取り組みが評価され、○○賞受賞</p>
+                    <p>ISO9001（品質マネジメントシステム）認証取得</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 2022年 -->
+              <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="700">
+                <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold">22</div>
+                <div class="ml-6">
+                  <div class="text-xl font-bold text-primary">2022年4月</div>
+                  <div class="mt-2">
+                    <p>創業以来の施工実績が300件を突破</p>
+                    <p>地域貢献活動の一環として△△財団を設立</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- 2023年 -->
+              <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="800">
+                <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold">23</div>
+                <div class="ml-6">
+                  <div class="text-xl font-bold text-primary">2023年10月</div>
+                  <div class="mt-2">
+                    <p>新社屋完成・移転</p>
+                    <p>創業15周年記念式典開催</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 地図 -->
+    <section class="section bg-accent">
+      <div class="container">
+        <div data-aos="fade-up">
+          <h2 class="section-title">アクセス</h2>
+          
+          <div class="max-w-5xl mx-auto mt-12 bg-white shadow-md rounded-sm overflow-hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2">
+              <div class="p-8">
+                <h3 class="text-xl font-bold mb-6 text-primary">片山建設工業株式会社</h3>
+                <address class="not-italic space-y-4">
+                  <p>
+                    <span class="block font-medium">住所</span>
+                    〒123-4567<br>
+                    東京都○○区△△町1-2-3
+                  </p>
+                  <p>
+                    <span class="block font-medium">電話番号</span>
+                    <a href="tel:0312345678" class="text-primary hover:text-secondary transition-colors">03-1234-5678</a>
+                  </p>
+                  <p>
+                    <span class="block font-medium">FAX</span>
+                    03-1234-5679
+                  </p>
+                  <p>
+                    <span class="block font-medium">営業時間</span>
+                    平日 8:30〜17:30<br>
+                    (土・日・祝日定休)
+                  </p>
+                  <p>
+                    <span class="block font-medium">アクセス</span>
+                    ○○線△△駅から徒歩5分<br>
+                    駐車場あり
+                  </p>
+                </address>
+              </div>
+              
+              <div class="h-80 md:h-auto">
+                <!-- 地図をここに埋め込む。実際のサイトではGoogle Mapsなどの埋め込みコードを入れる -->
+                <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                  <div class="text-center p-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <p class="text-gray-600">※ 実際のサイトではGoogle Mapsなどが表示されます</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- お問い合わせCTA -->
+    <section class="py-16 bg-primary text-white">
+      <div class="container">
+        <div class="max-w-3xl mx-auto text-center" data-aos="fade-up">
+          <h2 class="text-3xl font-bold mb-6">お問い合わせ</h2>
+          <p class="text-lg mb-8">
+            建物に関することなら、どんなことでもお気軽にご相談ください。<br>
+            専門スタッフが丁寧にお応えします。
+          </p>
+          <a href="contact.html" class="btn-secondary">お問い合わせはこちら</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <!-- フッター -->
+  <footer class="bg-gray-800 text-white py-12">
+    <div class="container">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div>
+          <img src="assets/img/logo.svg" alt="片山建設工業" class="h-10 mb-4 brightness-200">
+          <p class="text-sm text-gray-400">地域と共に歩み、<br>皆様の暮らしを支える建設会社です。</p>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold mb-4">リンク</h3>
+          <ul class="space-y-2">
+            <li><a href="index.html" class="text-gray-400 hover:text-white">ホーム</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white">事業・サービス</a></li>
+            <li><a href="works.html" class="text-gray-400 hover:text-white">施工実績</a></li>
+            <li><a href="about.html" class="text-gray-400 hover:text-white">代表紹介</a></li>
+            <li><a href="company.html" class="text-gray-400 hover:text-white">会社概要</a></li>
+            <li><a href="news.html" class="text-gray-400 hover:text-white">お知らせ</a></li>
+            <li><a href="contact.html" class="text-gray-400 hover:text-white">お問い合わせ</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold mb-4">サービス</h3>
+          <ul class="space-y-2">
+            <li><a href="services.html" class="text-gray-400 hover:text-white">住宅建築</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white">商業施設</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white">公共工事</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white">リフォーム</a></li>
+            <li><a href="services.html" class="text-gray-400 hover:text-white">メンテナンス</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-lg font-bold mb-4">会社情報</h3>
+          <address class="not-italic text-sm text-gray-400">
+            <p class="mb-2">〒123-4567</p>
+            <p class="mb-2">東京都○○区△△町1-2-3</p>
+            <p class="mb-2">TEL: 03-1234-5678</p>
+            <p>FAX: 03-1234-5679</p>
+          </address>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
+        <p>© 2023 片山建設工業 All Rights Reserved.</p>
+        <p class="mt-2">
+          <a href="privacy.html" class="hover:text-white">プライバシーポリシー</a>
+        </p>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- カスタムJS -->
+  <script src="assets/js/main.js"></script>
+  <script>
+    // AOSの初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      AOS.init({
+        duration: 800,
+        once: true,
+        offset: 100
+      });
+    });
+  </script>
+</body>
+</html> 
