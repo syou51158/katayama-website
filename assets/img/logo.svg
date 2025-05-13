@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="60" viewBox="0 0 200 60">
+  <style>
+    .company-name { font-family: 'Noto Serif JP', serif; font-weight: 600; }
+    .tagline { font-family: 'Noto Sans JP', sans-serif; font-weight: 300; }
+  </style>
+  <g fill="#233A5C">
+    <rect x="10" y="15" width="40" height="30" rx="2" />
+    <path d="M60 15 L80 15 L70 45 Z" />
+    <text x="90" y="30" class="company-name" font-size="18">片山建設工業</text>
+    <text x="90" y="45" class="tagline" font-size="10">伝統と革新で創る、上質な建築</text>
+  </g>
+</svg>

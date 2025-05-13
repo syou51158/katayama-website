@@ -46,7 +46,7 @@
 </head>
 <body class="bg-white text-text_dark">
   <!-- ヘッダー -->
-  <header class="bg-white shadow fixed top-0 left-0 right-0 z-10">
+  <header>
     <div class="container mx-auto flex justify-between items-center py-4">
       <a href="index.html" class="flex items-center">
         <img src="assets/img/logo.svg" alt="片山建設工業" class="h-12">
@@ -99,49 +99,56 @@
   </div>
   
   <!-- メインコンテンツ -->
-  <main class="pt-20">
+  <main class="luxury-bg">
     <!-- ヒーローセクション -->
-    <section class="relative h-[600px] md:h-[700px] lg:h-[80vh] overflow-hidden">
-      <div class="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
+    <section class="relative h-[600px] md:h-[700px] lg:h-[85vh] overflow-hidden">
+      <div class="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
       <div class="absolute inset-0 z-0">
-        <img src="assets/img/hero.jpg" alt="片山建設工業の施工現場" class="w-full h-full object-cover">
+        <img src="assets/img/hero.jpg" alt="片山建設工業の施工現場" class="w-full h-full object-cover transform scale-105 transition-transform duration-10000 hover:scale-100">
       </div>
       <div class="container relative h-full flex flex-col justify-center z-20">
         <div class="max-w-3xl" data-aos="fade-right" data-aos-duration="1000">
-          <span class="text-[#A68B5B] uppercase tracking-wider text-sm md:text-base font-medium mb-4 block">SINCE 2008</span>
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-white leading-tight">
-            伝統と革新で創る、<br>上質な建築の世界
+          <div class="inline-block px-4 py-1 border border-[#A68B5B] bg-black bg-opacity-30 mb-6">
+            <span class="text-[#A68B5B] uppercase tracking-wider text-sm md:text-base font-medium block">SINCE 2008</span>
+          </div>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 text-white leading-tight">
+            伝統と革新で創る、<br><span class="text-[#A68B5B]">上質な建築</span>の世界
           </h1>
-          <p class="text-xl md:text-2xl mb-10 text-white opacity-90">確かな技術と信頼で、皆様の理想を形にします</p>
+          <p class="text-xl md:text-2xl mb-12 text-white opacity-90 border-l-4 border-[#A68B5B] pl-4">確かな技術と信頼で、皆様の理想を形にします</p>
           <div class="flex flex-col sm:flex-row gap-4">
-            <a href="contact.html" class="btn-primary">お問い合わせはこちら</a>
-            <a href="works.html" class="btn-outline border-white text-white hover:bg-white hover:text-primary">施工実績を見る</a>
+            <a href="contact.html" class="btn-primary px-8 py-4">お問い合わせはこちら</a>
+            <a href="works.html" class="btn-outline border-white text-white hover:bg-white hover:text-primary px-8 py-4">施工実績を見る</a>
           </div>
         </div>
       </div>
       
       <!-- 装飾的な要素 -->
-      <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black to-transparent opacity-50 z-10"></div>
+      <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent opacity-60 z-10"></div>
+      <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black to-transparent opacity-30 z-10"></div>
     </section>
     
     <!-- 実績数カウンター -->
-    <section class="py-12 bg-primary text-white">
+    <section class="py-16 bg-primary text-white">
       <div class="container">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div data-aos="fade-up" data-aos-delay="0">
-            <div class="text-4xl md:text-5xl font-bold mb-2">15<span class="text-secondary">+</span></div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div data-aos="fade-up" data-aos-delay="0" class="p-6 border-b-2 border-secondary elegant-shadow">
+            <div class="text-4xl md:text-5xl font-bold mb-3">15<span class="text-secondary">+</span></div>
+            <div class="w-12 h-0.5 bg-secondary mx-auto mb-3"></div>
             <p class="uppercase tracking-wide text-sm">事業実績年数</p>
           </div>
-          <div data-aos="fade-up" data-aos-delay="100">
-            <div class="text-4xl md:text-5xl font-bold mb-2">320<span class="text-secondary">+</span></div>
+          <div data-aos="fade-up" data-aos-delay="100" class="p-6 border-b-2 border-secondary elegant-shadow">
+            <div class="text-4xl md:text-5xl font-bold mb-3">320<span class="text-secondary">+</span></div>
+            <div class="w-12 h-0.5 bg-secondary mx-auto mb-3"></div>
             <p class="uppercase tracking-wide text-sm">施工実績件数</p>
           </div>
-          <div data-aos="fade-up" data-aos-delay="200">
-            <div class="text-4xl md:text-5xl font-bold mb-2">25<span class="text-secondary">+</span></div>
+          <div data-aos="fade-up" data-aos-delay="200" class="p-6 border-b-2 border-secondary elegant-shadow">
+            <div class="text-4xl md:text-5xl font-bold mb-3">25<span class="text-secondary">+</span></div>
+            <div class="w-12 h-0.5 bg-secondary mx-auto mb-3"></div>
             <p class="uppercase tracking-wide text-sm">専門スタッフ</p>
           </div>
-          <div data-aos="fade-up" data-aos-delay="300">
-            <div class="text-4xl md:text-5xl font-bold mb-2">98<span class="text-secondary">%</span></div>
+          <div data-aos="fade-up" data-aos-delay="300" class="p-6 border-b-2 border-secondary elegant-shadow">
+            <div class="text-4xl md:text-5xl font-bold mb-3">98<span class="text-secondary">%</span></div>
+            <div class="w-12 h-0.5 bg-secondary mx-auto mb-3"></div>
             <p class="uppercase tracking-wide text-sm">顧客満足度</p>
           </div>
         </div>
@@ -160,16 +167,18 @@
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
           <!-- 住宅 -->
-          <div class="card group" data-aos="fade-up" data-aos-delay="0">
+          <div class="card group elegant-shadow" data-aos="fade-up" data-aos-delay="0">
             <div class="relative overflow-hidden">
-              <img src="assets/img/service_house.jpg" alt="住宅建築" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
-              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">Residential</div>
+              <img src="assets/img/service_house.jpg" alt="住宅建築" class="w-full h-72 object-cover transition-transform duration-700 group-hover:scale-110">
+              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider font-medium">Residential</div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-40 group-hover:opacity-30 transition-opacity duration-300"></div>
             </div>
-            <div class="p-8">
-              <div class="w-16 h-1 bg-secondary mb-6"></div>
-              <h3 class="text-2xl font-bold mb-4">住宅建築</h3>
-              <p class="text-gray-600 mb-6">新築住宅からリフォームまで、お客様のライフスタイルと感性に寄り添った、上質な住まいづくりをサポートします。</p>
-              <a href="services.html" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
+            <div class="p-8 relative">
+              <div class="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
+              <div class="w-16 h-0.5 bg-secondary mb-6"></div>
+              <h3 class="text-2xl font-bold mb-4 flex items-center">住宅建築<span class="ml-2 text-xs text-secondary">●</span></h3>
+              <p class="text-gray-600 mb-6 leading-relaxed">新築住宅からリフォームまで、お客様のライフスタイルと感性に寄り添った、上質な住まいづくりをサポートします。</p>
+              <a href="services.html" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors group-hover:translate-x-1 transition-transform duration-300">
                 詳しく見る
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -179,16 +188,18 @@
           </div>
           
           <!-- 商業施設 -->
-          <div class="card group" data-aos="fade-up" data-aos-delay="100">
+          <div class="card group elegant-shadow" data-aos="fade-up" data-aos-delay="100">
             <div class="relative overflow-hidden">
-              <img src="assets/img/service_commercial.jpg" alt="商業施設" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
-              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">Commercial</div>
+              <img src="assets/img/service_commercial.jpg" alt="商業施設" class="w-full h-72 object-cover transition-transform duration-700 group-hover:scale-110">
+              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider font-medium">Commercial</div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-40 group-hover:opacity-30 transition-opacity duration-300"></div>
             </div>
-            <div class="p-8">
-              <div class="w-16 h-1 bg-secondary mb-6"></div>
-              <h3 class="text-2xl font-bold mb-4">商業施設</h3>
-              <p class="text-gray-600 mb-6">店舗やオフィスビルなど、ビジネスの成功と顧客体験を高める、洗練された空間設計と施工を提供します。</p>
-              <a href="services.html" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
+            <div class="p-8 relative">
+              <div class="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
+              <div class="w-16 h-0.5 bg-secondary mb-6"></div>
+              <h3 class="text-2xl font-bold mb-4 flex items-center">商業施設<span class="ml-2 text-xs text-secondary">●</span></h3>
+              <p class="text-gray-600 mb-6 leading-relaxed">店舗やオフィスビルなど、ビジネスの成功と顧客体験を高める、洗練された空間設計と施工を提供します。</p>
+              <a href="services.html" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors group-hover:translate-x-1 transition-transform duration-300">
                 詳しく見る
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -198,16 +209,18 @@
           </div>
           
           <!-- 公共工事 -->
-          <div class="card group" data-aos="fade-up" data-aos-delay="200">
+          <div class="card group elegant-shadow" data-aos="fade-up" data-aos-delay="200">
             <div class="relative overflow-hidden">
-              <img src="assets/img/service_public.jpg" alt="公共工事" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
-              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">Public</div>
+              <img src="assets/img/service_public.jpg" alt="公共工事" class="w-full h-72 object-cover transition-transform duration-700 group-hover:scale-110">
+              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider font-medium">Public</div>
+              <div class="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-40 group-hover:opacity-30 transition-opacity duration-300"></div>
             </div>
-            <div class="p-8">
-              <div class="w-16 h-1 bg-secondary mb-6"></div>
-              <h3 class="text-2xl font-bold mb-4">公共工事</h3>
-              <p class="text-gray-600 mb-6">学校や公園など、地域社会の未来を見据えた、安全性と機能性を兼ね備えた公共施設の建設に貢献しています。</p>
-              <a href="services.html" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
+            <div class="p-8 relative">
+              <div class="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-secondary to-transparent"></div>
+              <div class="w-16 h-0.5 bg-secondary mb-6"></div>
+              <h3 class="text-2xl font-bold mb-4 flex items-center">公共工事<span class="ml-2 text-xs text-secondary">●</span></h3>
+              <p class="text-gray-600 mb-6 leading-relaxed">学校や公園など、地域社会の未来を見据えた、安全性と機能性を兼ね備えた公共施設の建設に貢献しています。</p>
+              <a href="services.html" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors group-hover:translate-x-1 transition-transform duration-300">
                 詳しく見る
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -593,4 +606,4 @@
     }
   </script>
 </body>
-</html> 
+</html>

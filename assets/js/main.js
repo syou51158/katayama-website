@@ -9,9 +9,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     
     if (scrollTop > 100) {
-      header.classList.add('bg-white', 'shadow');
+      header.style.background = 'rgba(255, 255, 255, 0.8)';
+      header.classList.add('shadow');
       header.classList.remove('bg-transparent');
     } else {
+      header.style.background = 'rgba(255, 255, 255, 1)';
       header.classList.remove('shadow');
     }
     
@@ -343,4 +345,4 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
-}); 
+});
