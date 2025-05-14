@@ -40,6 +40,9 @@
   <!-- AOS - Animate On Scroll -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+  <!-- Parallax Effect -->
+  <script src="assets/js/parallax.js"></script>
   
   <!-- カスタムCSS -->
   <link rel="stylesheet" href="assets/css/main.css">
@@ -110,9 +113,9 @@
     </div>
     <!-- ヒーローセクション -->
     <section class="relative h-[600px] md:h-[700px] lg:h-[85vh] overflow-hidden">
-      <div class="absolute inset-0 bg-black bg-opacity-50 z-10"></div>
       <div class="absolute inset-0 z-0">
-        <img src="assets/img/hero.jpg" alt="片山建設工業の施工現場" class="w-full h-full object-cover transform scale-105 transition-transform duration-10000 hover:scale-100">
+        <div class="hero-parallax-bg" style="will-change: transform; transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);"></div>
+        <div class="absolute inset-0 bg-black/20 z-10"></div>
       </div>
       <div class="container relative h-full flex flex-col justify-center z-20">
         <div class="max-w-3xl" data-aos="fade-right" data-aos-duration="1000">
@@ -131,8 +134,8 @@
       </div>
       
       <!-- 装飾的な要素 -->
-      <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent opacity-60 z-10"></div>
-      <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black to-transparent opacity-30 z-10"></div>
+      <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent opacity-40 z-10"></div>
+      <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black to-transparent opacity-20 z-10"></div>
     </section>
     
     <!-- 実績数カウンター -->

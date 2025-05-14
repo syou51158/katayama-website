@@ -222,3 +222,32 @@ header {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* ヒーローセクション パララックススタイル */
+.hero-parallax-bg {
+  background-image: url('../img/hero.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  transition: transform 0.5s ease-out;
+}
+
+.hero-parallax-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.2) 100%);
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .hero-parallax-bg::after {
+    opacity: 0.3;
+  }
+  .hero-parallax-bg {
+    background-attachment: scroll;
+  }
+}
