@@ -112,12 +112,15 @@
     </div>
     
     <!-- ページヘッダー -->
-    <section class="py-12 bg-primary text-white text-center">
+    <div class="parallax-container">
+      <div class="parallax-bg" style="background-image: url('assets/img/hero.jpg')"></div>
+      <section class="py-12 text-white text-center relative">
       <div class="container">
         <h1 class="text-4xl md:text-5xl font-bold mb-4">代表紹介</h1>
         <p class="max-w-3xl mx-auto">片山建設工業の代表・片山秀樹のプロフィールをご紹介します。</p>
       </div>
     </section>
+    </div>
     
     <!-- 代表紹介 -->
     <section class="section bg-white">
@@ -238,6 +241,7 @@
         </div>
       </div>
     </section>
+    </div>
     
     <!-- メッセージ -->
     <section class="py-16 bg-primary text-white">
@@ -253,6 +257,7 @@
         </div>
       </div>
     </section>
+    </div>
   </main>
   
   <!-- フッター -->
@@ -319,6 +324,15 @@
         duration: 800,
         once: true,
         offset: 100
+      });
+
+      // パララックス効果
+      const parallaxBg = document.querySelector('.parallax-bg');
+      window.addEventListener('scroll', () => {
+        if(window.matchMedia('(min-width: 768px)').matches) {
+          const scrollY = window.pageYOffset;
+          parallaxBg.style.transform = `translateY(${scrollY * 0.5}px)`;
+        }
       });
     });
   </script>
