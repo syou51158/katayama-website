@@ -418,7 +418,8 @@
         
         <div class="max-w-4xl mx-auto" data-aos="fade-up">
           <div class="bg-white rounded-sm shadow-md overflow-hidden border-b-4 border-secondary">
-            <ul class="divide-y divide-gray-100">
+            <ul class="divide-y divide-gray-100 news-list">
+              <!-- CMSデータがここに動的に読み込まれます -->
               <li>
                 <a href="news.html" class="block p-6 hover:bg-accent transition-colors">
                   <div class="flex flex-col md:flex-row md:items-center">
@@ -597,6 +598,7 @@
   
   <!-- カスタムJS -->
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/cms-integration.js"></script>
   <script>
     // AOSの初期化
     document.addEventListener('DOMContentLoaded', function() {
