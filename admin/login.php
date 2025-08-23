@@ -1,23 +1,35 @@
 <?php
-require_once '../cms/includes/auth.php';
+require_once 'includes/auth.php';
 
-$auth = new Auth();
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
+    $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
     
-    if ($auth->login($username, $password)) {
+    if (loginWithSupabase($email, $password)) {
         header('Location: dashboard.php');
         exit;
     } else {
-        $error = 'ユーザー名またはパスワードが正しくありません。';
+        // 初回は管理者ユーザーを自動作成（ローカル開発でのみ有効）
+        $created = false;
+        $enableAuto = (getenv('SUPABASE_ENABLE_AUTO_USER') === '1') 
+            || (($_ENV['SUPABASE_ENABLE_AUTO_USER'] ?? '') === '1') 
+            || (($_SERVER['SUPABASE_ENABLE_AUTO_USER'] ?? '') === '1');
+        if ($enableAuto && $email && $password) {
+            $targetEmail = $email;
+            $created = SupabaseAuth::adminCreateUser($targetEmail, $password, ['full_name' => 'Administrator'], true);
+            if ($created && loginWithSupabase($targetEmail, $password)) {
+                header('Location: dashboard.php');
+                exit;
+            }
+        }
+        $error = 'メールアドレスまたはパスワードが正しくありません。';
     }
 }
 
 // すでにログインしている場合はダッシュボードにリダイレクト
-if ($auth->isLoggedIn()) {
+if (SupabaseAuth::isLoggedIn()) {
     header('Location: dashboard.php');
     exit;
 }
@@ -71,10 +83,10 @@ if ($auth->isLoggedIn()) {
         
         <form method="POST" action="" class="space-y-6">
             <div>
-                <label for="username" class="block text-sm font-medium text-gray-700 mb-2">ユーザー名</label>
-                <input type="text" id="username" name="username" required
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">メールアドレス</label>
+                <input type="email" id="email" name="email" required
                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200"
-                       placeholder="ユーザー名を入力">
+                       placeholder="メールアドレスを入力">
             </div>
             
             <div>
@@ -105,12 +117,12 @@ if ($auth->isLoggedIn()) {
     <script>
         // フォームのバリデーション
         document.querySelector('form').addEventListener('submit', function(e) {
-            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
-            if (!username.trim() || !password.trim()) {
+            if (!email.trim() || !password.trim()) {
                 e.preventDefault();
-                alert('ユーザー名とパスワードを入力してください。');
+                alert('メールアドレスとパスワードを入力してください。');
             }
         });
         

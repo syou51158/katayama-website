@@ -1,22 +1,39 @@
 <?php
-require_once '../cms/includes/auth.php';
-require_once '../cms/includes/database.php';
+require_once 'includes/auth.php';
+require_once '../lib/SupabaseClient.php';
 
-$auth = new Auth();
-$auth->requireAuth();
+// 認証チェック
+checkAuth();
 
-$db = new JsonDatabase();
-
-// 統計データを取得
-$news = $db->read('news');
-$works = $db->read('works');
-
-$publishedNews = array_filter($news, fn($item) => $item['status'] === 'published');
-$publishedWorks = array_filter($works, fn($item) => $item['status'] === 'published');
-
-// 最近の更新
-$recentNews = array_slice(array_reverse($news), 0, 5);
-$recentWorks = array_slice(array_reverse($works), 0, 5);
+try {
+    // Supabaseから統計データを取得
+    $allNews = SupabaseClient::select('news');
+    $allWorks = SupabaseClient::select('works');
+    $allServices = SupabaseClient::select('services');
+    $allTestimonials = SupabaseClient::select('testimonials');
+    
+    // 統計を計算
+    $publishedNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'published');
+    $publishedWorks = array_filter($allWorks ?: [], fn($item) => $item['status'] === 'published');
+    $draftNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'draft');
+    
+    // 今月の更新を計算
+    $thisMonth = date('Y-m');
+    $monthlyUpdates = array_filter(array_merge($allNews ?: [], $allWorks ?: []), function($item) use ($thisMonth) {
+        return isset($item['updated_at']) && strpos($item['updated_at'], $thisMonth) === 0;
+    });
+    
+    // 最近の更新（最新5件）
+    $recentNews = array_slice(array_reverse($allNews ?: []), 0, 3);
+    $recentWorks = array_slice(array_reverse($allWorks ?: []), 0, 2);
+    
+} catch (Exception $e) {
+    // エラーハンドリング
+    $error = $e->getMessage();
+    $publishedNews = $publishedWorks = $draftNews = $monthlyUpdates = [];
+    $recentNews = $recentWorks = [];
+}
+$currentUser = getCurrentUser();
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -58,7 +75,7 @@ $recentWorks = array_slice(array_reverse($works), 0, 5);
                 
                 <div class="flex items-center space-x-4">
                     <span class="text-sm text-gray-600">
-                        ようこそ、<?php echo htmlspecialchars($_SESSION['admin_username']); ?>さん
+                        ようこそ、<?php echo htmlspecialchars($currentUser['username'] ?? '管理者'); ?>さん
                     </span>
                     <a href="../index.html" target="_blank" 
                        class="text-sm text-gray-600 hover:text-primary transition duration-200">
@@ -74,6 +91,14 @@ $recentWorks = array_slice(array_reverse($works), 0, 5);
     </header>
     
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <?php if (isset($error)): ?>
+        <!-- エラー表示 -->
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <strong>データベース接続エラー:</strong> <?php echo htmlspecialchars($error); ?>
+            <br><small>Supabaseからのデータ取得に失敗しました。設定を確認してください。</small>
+        </div>
+        <?php endif; ?>
+        
         <!-- 統計カード -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-white rounded-lg shadow p-6">
@@ -114,7 +139,7 @@ $recentWorks = array_slice(array_reverse($works), 0, 5);
                     <div class="ml-4">
                         <h3 class="text-sm font-medium text-gray-500">下書きの記事</h3>
                         <p class="text-2xl font-semibold text-gray-900">
-                            <?php echo count(array_filter($news, fn($item) => $item['status'] === 'draft')); ?>
+                            <?php echo count($draftNews); ?>
                         </p>
                     </div>
                 </div>
@@ -130,13 +155,7 @@ $recentWorks = array_slice(array_reverse($works), 0, 5);
                     <div class="ml-4">
                         <h3 class="text-sm font-medium text-gray-500">今月の更新</h3>
                         <p class="text-2xl font-semibold text-gray-900">
-                            <?php 
-                            $thisMonth = date('Y-m');
-                            $monthlyUpdates = array_filter(array_merge($news, $works), function($item) use ($thisMonth) {
-                                return strpos($item['updated_at'], $thisMonth) === 0;
-                            });
-                            echo count($monthlyUpdates);
-                            ?>
+                            <?php echo count($monthlyUpdates); ?>
                         </p>
                     </div>
                 </div>
@@ -151,7 +170,7 @@ $recentWorks = array_slice(array_reverse($works), 0, 5);
                 </div>
                 <div class="p-6">
                     <div class="grid grid-cols-1 gap-4">
-                        <a href="pages/news.php" 
+                        <a href="pages/supabase-news.php" 
                            class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-200">
                             <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -159,12 +178,14 @@ $recentWorks = array_slice(array_reverse($works), 0, 5);
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <h3 class="font-medium text-gray-900">お知らせ管理</h3>
+                                <h3 class="font-medium text-gray-900">お知らせ管理（Supabase）</h3>
                                 <p class="text-sm text-gray-500">お知らせの作成・編集・削除</p>
                             </div>
                         </a>
                         
-                        <a href="pages/works.php" 
+                        
+                        
+                        <a href="pages/supabase-works.php" 
                            class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-200">
                             <div class="p-2 bg-green-100 text-green-600 rounded-lg">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,7 +193,7 @@ $recentWorks = array_slice(array_reverse($works), 0, 5);
                                 </svg>
                             </div>
                             <div class="ml-4">
-                                <h3 class="font-medium text-gray-900">施工実績管理</h3>
+                                <h3 class="font-medium text-gray-900">施工実績管理（Supabase）</h3>
                                 <p class="text-sm text-gray-500">施工実績の作成・編集・削除</p>
                             </div>
                         </a>
