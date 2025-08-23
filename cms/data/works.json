@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "title": "自然素材の家",
+    "description": "木造2階建て、自然素材を活かした温かみのある住宅",
+    "category": "Residential",
+    "image": "assets/img/works_01.jpg",
+    "location": "滋賀県大津市",
+    "completion_date": "2023-08-15",
+    "construction_period": "6ヶ月",
+    "floor_area": "120㎡",
+    "status": "published",
+    "created_at": "2023-08-20T09:00:00Z",
+    "updated_at": "2023-08-20T09:00:00Z"
+  },
+  {
+    "id": 2,
+    "title": "古民家カフェ",
+    "description": "古民家を改装したカフェの内装・外装工事",
+    "category": "Commercial",
+    "image": "assets/img/works_02.jpg",
+    "location": "滋賀県草津市",
+    "completion_date": "2023-07-10",
+    "construction_period": "4ヶ月",
+    "floor_area": "85㎡",
+    "status": "published",
+    "created_at": "2023-07-15T10:30:00Z",
+    "updated_at": "2023-07-15T10:30:00Z"
+  },
+  {
+    "id": 3,
+    "title": "市民ホール改修",
+    "description": "市民ホールの耐震補強及び内装リニューアル",
+    "category": "Public",
+    "image": "assets/img/works_03.jpg",
+    "location": "滋賀県大津市",
+    "completion_date": "2023-06-30",
+    "construction_period": "8ヶ月",
+    "floor_area": "800㎡",
+    "status": "published",
+    "created_at": "2023-07-01T14:00:00Z",
+    "updated_at": "2023-07-01T14:00:00Z"
+  },
+  {
+    "id": 4,
+    "title": "省エネオフィスビル",
+    "description": "鉄骨3階建て、省エネ設計のオフィスビル",
+    "category": "Commercial",
+    "image": "assets/img/works_04.jpg",
+    "location": "滋賀県守山市",
+    "completion_date": "2023-05-25",
+    "construction_period": "10ヶ月",
+    "floor_area": "450㎡",
+    "status": "published",
+    "created_at": "2023-06-01T11:15:00Z",
+    "updated_at": "2023-06-01T11:15:00Z"
+  },
+  {
+    "id": 5,
+    "title": "マンション大規模修繕",
+    "description": "築15年のマンション外壁・共用部分の全面改修",
+    "category": "Renovation",
+    "image": "assets/img/works_05.jpg",
+    "location": "滋賀県栗東市",
+    "completion_date": "2023-04-20",
+    "construction_period": "3ヶ月",
+    "floor_area": "1200㎡",
+    "status": "published",
+    "created_at": "2023-05-01T16:45:00Z",
+    "updated_at": "2023-05-01T16:45:00Z"
+  }
+]

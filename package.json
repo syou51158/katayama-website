@@ -1,0 +1,22 @@
+{
+  "name": "katayama-website",
+  "version": "1.0.0",
+  "description": "片山建設のウェブサイト",
+  "private": true,
+  "scripts": {
+    "dev": "echo \"開発サーバーはPHPで実行してください\"",
+    "mcp:test": "npx @supabase/mcp-server-supabase@latest --access-token sbp_e8153851e863ad8fd543a2d2b7550ac77d387a67 --read-only"
+  },
+  "keywords": [
+    "website",
+    "construction",
+    "php"
+  ],
+  "author": "Katayama Construction",
+  "license": "ISC",
+  "devDependencies": {},
+  "dependencies": {}
+}
+
+
+

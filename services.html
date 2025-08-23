@@ -43,6 +43,9 @@
   
   <!-- カスタムCSS -->
   <link rel="stylesheet" href="assets/css/main.css">
+  
+  <!-- Supabase統合 -->
+  <script src="assets/js/supabase-integration.js"></script>
 </head>
 <body class="bg-white text-text_dark">
   <!-- ヘッダー -->
@@ -119,29 +122,14 @@
       </div>
     </section>
     
-    <!-- 解体工事一式 -->
-    <section class="section">
-      <div class="container">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-aos="fade-up">
-          <div class="order-2 md:order-1">
-            <h2 class="text-3xl font-bold mb-6">解体工事一式</h2>
-            <p class="mb-4">木造、鉄骨造、RC造など、あらゆる構造物の解体工事に対応いたします。安全かつ迅速な作業を心がけ、周辺環境にも配慮した施工を行います。</p>
-            <p class="mb-4">アスベスト除去や内装解体など、特殊な解体作業もお任せください。解体後の廃棄物処理まで一貫して対応可能です。</p>
-            <ul class="list-disc list-inside mb-6 text-gray-700">
-              <li>木造家屋解体</li>
-              <li>ビル・マンション解体</li>
-              <li>店舗・工場解体</li>
-              <li>内装解体</li>
-              <li>アスベスト除去</li>
-            </ul>
-            <a href="contact.html" class="btn-primary">お問い合わせはこちら</a>
-          </div>
-          <div class="order-1 md:order-2">
-            <img src="assets/img/service_kaitai.jpg" alt="解体工事のイメージ" class="rounded-lg shadow-lg w-full">
-          </div>
-        </div>
+    <!-- 動的サービス一覧 -->
+    <div id="services-container">
+      <!-- Supabaseからの動的データがここに読み込まれます -->
+      <div class="text-center py-16">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <p class="mt-4 text-gray-500">サービス情報を読み込み中...</p>
       </div>
-    </section>
+    </div>
     
     <!-- 土工、土木工事一式 -->
     <section class="section bg-accent">

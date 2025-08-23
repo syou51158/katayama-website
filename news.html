@@ -43,6 +43,9 @@
   
   <!-- カスタムCSS -->
   <link rel="stylesheet" href="assets/css/main.css">
+  
+  <!-- Supabase統合 -->
+  <script src="assets/js/supabase-integration.js"></script>
 </head>
 <body class="bg-white text-text_dark">
   <!-- ヘッダー -->
@@ -128,36 +131,13 @@
             <!-- カテゴリ -->
             <div class="mb-8 bg-accent p-6 rounded-sm shadow-sm" data-aos="fade-up">
               <h2 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">カテゴリ</h2>
-              <ul class="space-y-2">
+              <ul class="space-y-2" id="category-list">
+                <!-- Supabaseからの動的データがここに読み込まれます -->
                 <li>
-                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
-                    <span>すべて</span>
-                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">14</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
-                    <span>お知らせ</span>
-                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">5</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
-                    <span>イベント</span>
-                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">3</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
-                    <span>施工事例</span>
-                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">4</span>
-                  </a>
-                </li>
-                <li>
-                  <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors">
-                    <span>コラム</span>
-                    <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">2</span>
-                  </a>
+                  <div class="text-center py-4">
+                    <div class="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                    <p class="mt-2 text-gray-500 text-sm">カテゴリを読み込み中...</p>
+                  </div>
                 </li>
               </ul>
             </div>
@@ -189,141 +169,11 @@
           </div>
           
           <!-- 右カラム: ニュース記事一覧 -->
-          <div class="md:col-span-3">
-            <!-- 記事1 -->
-            <article class="bg-white shadow-md rounded-sm overflow-hidden mb-8" data-aos="fade-up">
-              <div class="grid grid-cols-1 md:grid-cols-3">
-                <div class="md:col-span-1">
-                  <img src="assets/img/news_01.jpg" alt="新社屋完成のお知らせ" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 md:col-span-2">
-                  <div class="flex items-center mb-4">
-                    <span class="text-sm text-gray-500 mr-3">2023.10.15</span>
-                    <span class="px-3 py-1 bg-blue-50 text-primary text-xs font-medium rounded-sm">お知らせ</span>
-                  </div>
-                  <h2 class="text-xl font-bold mb-3 hover:text-secondary transition-colors">
-                    <a href="#">新社屋完成のお知らせ</a>
-                  </h2>
-                  <p class="text-gray-600 mb-4">このたび、片山建設工業は創業15周年を記念し、新社屋を完成いたしました。最新の設備を備えた新社屋にて、より一層サービスの充実に努めてまいります。</p>
-                  <a href="#" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
-                    詳しく見る
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </article>
-            
-            <!-- 記事2 -->
-            <article class="bg-white shadow-md rounded-sm overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="100">
-              <div class="grid grid-cols-1 md:grid-cols-3">
-                <div class="md:col-span-1">
-                  <img src="assets/img/news_02.jpg" alt="秋の住宅見学会開催について" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 md:col-span-2">
-                  <div class="flex items-center mb-4">
-                    <span class="text-sm text-gray-500 mr-3">2023.09.20</span>
-                    <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-sm">イベント</span>
-                  </div>
-                  <h2 class="text-xl font-bold mb-3 hover:text-secondary transition-colors">
-                    <a href="#">秋の住宅見学会開催について</a>
-                  </h2>
-                  <p class="text-gray-600 mb-4">10月15日(土)・16日(日)の2日間、○○市にて完成住宅見学会を開催いたします。自然素材を活かした快適な住まいをぜひご体感ください。予約制となっておりますので、お早めにお申し込みください。</p>
-                  <a href="#" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
-                    詳しく見る
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </article>
-            
-            <!-- 記事3 -->
-            <article class="bg-white shadow-md rounded-sm overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="200">
-              <div class="grid grid-cols-1 md:grid-cols-3">
-                <div class="md:col-span-1">
-                  <img src="assets/img/news_03.jpg" alt="夏季休業のお知らせ" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 md:col-span-2">
-                  <div class="flex items-center mb-4">
-                    <span class="text-sm text-gray-500 mr-3">2023.08.05</span>
-                    <span class="px-3 py-1 bg-blue-50 text-primary text-xs font-medium rounded-sm">お知らせ</span>
-                  </div>
-                  <h2 class="text-xl font-bold mb-3 hover:text-secondary transition-colors">
-                    <a href="#">夏季休業のお知らせ</a>
-                  </h2>
-                  <p class="text-gray-600 mb-4">誠に勝手ながら、8月11日(金)〜8月16日(水)までを夏季休業とさせていただきます。期間中はご不便をおかけいたしますが、何卒ご了承くださいますようお願い申し上げます。</p>
-                  <a href="#" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
-                    詳しく見る
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </article>
-            
-            <!-- 記事4 -->
-            <article class="bg-white shadow-md rounded-sm overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="300">
-              <div class="grid grid-cols-1 md:grid-cols-3">
-                <div class="md:col-span-1">
-                  <img src="assets/img/news_04.jpg" alt="新築事例「光と風の家」完成" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 md:col-span-2">
-                  <div class="flex items-center mb-4">
-                    <span class="text-sm text-gray-500 mr-3">2023.07.15</span>
-                    <span class="px-3 py-1 bg-yellow-50 text-yellow-700 text-xs font-medium rounded-sm">施工事例</span>
-                  </div>
-                  <h2 class="text-xl font-bold mb-3 hover:text-secondary transition-colors">
-                    <a href="#">新築事例「光と風の家」完成</a>
-                  </h2>
-                  <p class="text-gray-600 mb-4">○○市での新築住宅「光と風の家」が完成しました。吹き抜けを中心とした明るい空間設計と、自然の風を取り入れる工夫が特徴の住宅です。施工事例に詳細を掲載しましたので、ぜひご覧ください。</p>
-                  <a href="#" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
-                    詳しく見る
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </article>
-            
-            <!-- 記事5 -->
-            <article class="bg-white shadow-md rounded-sm overflow-hidden mb-8" data-aos="fade-up" data-aos-delay="400">
-              <div class="grid grid-cols-1 md:grid-cols-3">
-                <div class="md:col-span-1">
-                  <img src="assets/img/news_05.jpg" alt="リノベーションセミナー開催報告" class="w-full h-full object-cover">
-                </div>
-                <div class="p-6 md:col-span-2">
-                  <div class="flex items-center mb-4">
-                    <span class="text-sm text-gray-500 mr-3">2023.06.28</span>
-                    <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-sm">イベント</span>
-                  </div>
-                  <h2 class="text-xl font-bold mb-3 hover:text-secondary transition-colors">
-                    <a href="#">リノベーションセミナー開催報告</a>
-                  </h2>
-                  <p class="text-gray-600 mb-4">6月25日に開催いたしましたリノベーションセミナーには多くの方にご参加いただき、誠にありがとうございました。セミナーの様子や質疑応答の内容をまとめました。次回は8月を予定しています。</p>
-                  <a href="#" class="inline-flex items-center text-primary font-medium hover:text-secondary transition-colors">
-                    詳しく見る
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-            </article>
-            
-            <!-- ページネーション -->
-            <div class="flex justify-center mt-12" data-aos="fade-up">
-              <nav class="inline-flex rounded-md shadow-sm">
-                <a href="#" class="py-2 px-4 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-l-md">前へ</a>
-                <a href="#" class="py-2 px-4 border-t border-b border-gray-300 bg-primary text-white">1</a>
-                <a href="#" class="py-2 px-4 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-50">2</a>
-                <a href="#" class="py-2 px-4 border-t border-b border-gray-300 bg-white text-gray-700 hover:bg-gray-50">3</a>
-                <a href="#" class="py-2 px-4 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 rounded-r-md">次へ</a>
-              </nav>
+          <div class="md:col-span-3" id="news-container">
+            <!-- Supabaseからの動的データがここに読み込まれます -->
+            <div class="text-center py-16">
+              <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <p class="mt-4 text-gray-500">ニュースを読み込み中...</p>
             </div>
           </div>
         </div>
@@ -410,7 +260,82 @@
         once: true,
         offset: 100
       });
+      
+      // ニュースページの動的データ読み込み（supabase-integration.jsを使用）
+      if (typeof initializeNewsPage === 'function') {
+        initializeNewsPage();
+      } else {
+        console.error('initializeNewsPage function not found. Make sure supabase-integration.js is loaded.');
+      }
+      
+      // カテゴリ表示も初期化
+      loadCategoriesAndFilters();
     });
+    
+    // カテゴリとフィルター機能の初期化
+    async function loadCategoriesAndFilters() {
+      try {
+        const allNews = await supabaseIntegration.getNews(100); // 全ニュースを取得してカテゴリ分析
+        
+        // カテゴリ別に分類
+        const categories = {};
+        allNews.forEach(item => {
+          categories[item.category] = (categories[item.category] || 0) + 1;
+        });
+        
+        // カテゴリリストを表示
+        displayCategories(categories, allNews.length);
+        
+      } catch (error) {
+        console.error('Error loading categories:', error);
+      }
+    }
+    
+    function displayCategories(categories, totalCount) {
+      const categoryList = document.getElementById('category-list');
+      let html = `
+        <li>
+          <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors" 
+             onclick="filterNews('all'); return false;">
+            <span>すべて</span>
+            <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">${totalCount}</span>
+          </a>
+        </li>
+      `;
+      
+      Object.entries(categories).forEach(([category, count]) => {
+        html += `
+          <li>
+            <a href="#" class="flex justify-between items-center hover:text-secondary transition-colors"
+               onclick="filterNews('${category}'); return false;">
+              <span>${category}</span>
+              <span class="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded-full">${count}</span>
+            </a>
+          </li>
+        `;
+      });
+      
+      categoryList.innerHTML = html;
+    }
+    
+    // displayNewsList と getCategoryClass は supabase-integration.js で定義済み
+    
+    function filterNews(category) {
+      console.log('🔍 フィルタリング:', category);
+      const newsItems = document.querySelectorAll('.news-item');
+      let visibleCount = 0;
+      
+      newsItems.forEach(item => {
+        if (category === 'all' || item.getAttribute('data-category') === category) {
+          item.style.display = 'block';
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      
+      console.log(`✅ ${visibleCount}件のニュースを表示`);
+    }
   </script>
 </body>
 </html>

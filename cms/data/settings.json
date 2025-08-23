@@ -1,0 +1,22 @@
+{
+  "site": {
+    "title": "片山建設工業",
+    "description": "伝統と革新で創る、上質な建築の世界",
+    "url": "https://www.katayama-construction.co.jp",
+    "contact_email": "kkensetsu1106@outlook.jp",
+    "contact_phone": "090-5650-1106",
+    "address": "〒520-2279 滋賀県大津市大石東6丁目6-28"
+  },
+  "admin": {
+    "username": "admin",
+    "password": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+    "session_timeout": 3600,
+    "max_login_attempts": 5
+  },
+  "system": {
+    "version": "1.0.0",
+    "last_backup": "2023-10-15T00:00:00Z",
+    "auto_backup": true,
+    "debug_mode": false
+  }
+}

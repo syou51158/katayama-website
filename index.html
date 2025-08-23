@@ -141,26 +141,11 @@
     <!-- 実績数カウンター -->
     <section class="py-16 bg-primary text-white">
       <div class="container">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div data-aos="fade-up" data-aos-delay="0" class="p-6 border-b-2 border-secondary elegant-shadow">
-            <div class="text-4xl md:text-5xl font-bold mb-3">15<span class="text-secondary">+</span></div>
-            <div class="w-12 h-0.5 bg-secondary mx-auto mb-3"></div>
-            <p class="uppercase tracking-wide text-sm">事業実績年数</p>
-          </div>
-          <div data-aos="fade-up" data-aos-delay="100" class="p-6 border-b-2 border-secondary elegant-shadow">
-            <div class="text-4xl md:text-5xl font-bold mb-3">320<span class="text-secondary">+</span></div>
-            <div class="w-12 h-0.5 bg-secondary mx-auto mb-3"></div>
-            <p class="uppercase tracking-wide text-sm">施工実績件数</p>
-          </div>
-          <div data-aos="fade-up" data-aos-delay="200" class="p-6 border-b-2 border-secondary elegant-shadow">
-            <div class="text-4xl md:text-5xl font-bold mb-3">25<span class="text-secondary">+</span></div>
-            <div class="w-12 h-0.5 bg-secondary mx-auto mb-3"></div>
-            <p class="uppercase tracking-wide text-sm">専門スタッフ</p>
-          </div>
-          <div data-aos="fade-up" data-aos-delay="300" class="p-6 border-b-2 border-secondary elegant-shadow">
-            <div class="text-4xl md:text-5xl font-bold mb-3">98<span class="text-secondary">%</span></div>
-            <div class="w-12 h-0.5 bg-secondary mx-auto mb-3"></div>
-            <p class="uppercase tracking-wide text-sm">顧客満足度</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center stats-container">
+          <!-- Supabaseからの動的データがここに読み込まれます -->
+          <div class="col-span-full text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+            <p class="mt-2 text-white text-sm">統計データを読み込み中...</p>
           </div>
         </div>
       </div>
@@ -375,32 +360,11 @@
           </p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <div class="testimonial-card" data-aos="fade-up" data-aos-delay="0">
-            <p class="mb-6 text-gray-700">「理想の住まいを実現するためにどんな提案をしていただけるか楽しみにしていましたが、期待以上の素晴らしい住宅に仕上げていただきました。細かい要望にも親身に対応いただき、感謝しています。」</p>
-            <div class="flex items-center">
-              <span class="block font-bold">S.K様</span>
-              <span class="mx-2 text-gray-400">|</span>
-              <span class="block text-sm text-gray-500">新築住宅</span>
-            </div>
-          </div>
-          
-          <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
-            <p class="mb-6 text-gray-700">「店舗リノベーションを依頼しましたが、予算内で最大限の効果を出す提案をしていただき、オープン後は多くのお客様から好評をいただいています。プロならではの視点に感謝です。」</p>
-            <div class="flex items-center">
-              <span class="block font-bold">T.M様</span>
-              <span class="mx-2 text-gray-400">|</span>
-              <span class="block text-sm text-gray-500">店舗リノベーション</span>
-            </div>
-          </div>
-          
-          <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
-            <p class="mb-6 text-gray-700">「工期も予算も守りながら、素晴らしい仕上がりのオフィスを作っていただきました。社員からも働きやすくなったと好評です。次のプロジェクトもぜひお願いしたいと思います。」</p>
-            <div class="flex items-center">
-              <span class="block font-bold">Y.N様</span>
-              <span class="mx-2 text-gray-400">|</span>
-              <span class="block text-sm text-gray-500">オフィス移転</span>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 testimonials-container">
+          <!-- Supabaseからの動的データがここに読み込まれます -->
+          <div class="col-span-full text-center py-8">
+            <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            <p class="mt-2 text-gray-500 text-sm">お客様の声を読み込み中...</p>
           </div>
         </div>
       </div>
@@ -418,39 +382,15 @@
         
         <div class="max-w-4xl mx-auto" data-aos="fade-up">
           <div class="bg-white rounded-sm shadow-md overflow-hidden border-b-4 border-secondary">
-            <ul class="divide-y divide-gray-100">
+            <ul class="divide-y divide-gray-100 news-list">
+              <!-- Supabaseからの動的データがここに読み込まれます -->
               <li>
-                <a href="news.html" class="block p-6 hover:bg-accent transition-colors">
-                  <div class="flex flex-col md:flex-row md:items-center">
-                    <div class="flex items-center mb-2 md:mb-0">
-                      <span class="text-sm text-gray-500 mr-3">2023.10.15</span>
-                      <span class="px-3 py-1 bg-blue-50 text-primary text-xs font-medium rounded-sm">お知らせ</span>
-                    </div>
-                    <h3 class="md:ml-6 font-medium">新社屋完成のお知らせ</h3>
+                <div class="block p-6">
+                  <div class="text-center py-4">
+                    <div class="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                    <p class="mt-2 text-gray-500 text-sm">ニュースを読み込み中...</p>
                   </div>
-                </a>
-              </li>
-              <li>
-                <a href="news.html" class="block p-6 hover:bg-accent transition-colors">
-                  <div class="flex flex-col md:flex-row md:items-center">
-                    <div class="flex items-center mb-2 md:mb-0">
-                      <span class="text-sm text-gray-500 mr-3">2023.09.20</span>
-                      <span class="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-sm">イベント</span>
-                    </div>
-                    <h3 class="md:ml-6 font-medium">秋の住宅見学会開催について</h3>
-                  </div>
-                </a>
-              </li>
-              <li>
-                <a href="news.html" class="block p-6 hover:bg-accent transition-colors">
-                  <div class="flex flex-col md:flex-row md:items-center">
-                    <div class="flex items-center mb-2 md:mb-0">
-                      <span class="text-sm text-gray-500 mr-3">2023.08.05</span>
-                      <span class="px-3 py-1 bg-blue-50 text-primary text-xs font-medium rounded-sm">お知らせ</span>
-                    </div>
-                    <h3 class="md:ml-6 font-medium">夏季休業のお知らせ</h3>
-                  </div>
-                </a>
+                </div>
               </li>
             </ul>
           </div>
@@ -597,6 +537,7 @@
   
   <!-- カスタムJS -->
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/supabase-integration.js"></script>
   <script>
     // AOSの初期化
     document.addEventListener('DOMContentLoaded', function() {
