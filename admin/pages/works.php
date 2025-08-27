@@ -77,21 +77,8 @@ if ($action === 'edit' && $id) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>施工実績管理 - 片山建設工業 CMS</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#233A5C',
-                        secondary: '#A68B5B',
-                        accent: '#F8F9FB',
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Tailwind (built) -->
+    <link rel="stylesheet" href="../../assets/css/build.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');

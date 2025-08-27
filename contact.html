@@ -16,23 +16,8 @@
   <!-- ファビコン -->
   <link rel="icon" href="assets/img/favicon.ico">
   
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#233A5C',
-            primary_light: '#3A5B8C',
-            secondary: '#A68B5B',
-            accent: '#F8F9FB',
-            text_dark: '#2C3241',
-          }
-        }
-      }
-    }
-  </script>
+  <!-- Tailwind (built) -->
+  <link rel="stylesheet" href="assets/css/build.css">
   
   <!-- Alpine.js -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -41,8 +26,7 @@
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
   
-  <!-- カスタムCSS -->
-  <link rel="stylesheet" href="assets/css/main.css">
+  <!-- 旧 main.css は Tailwind ビルドに統合済み -->
 </head>
 <body class="bg-white text-text_dark">
   <!-- ヘッダー -->
