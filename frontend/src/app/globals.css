@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+/* カスタムデザイン設定 */
+@theme inline {
+  --color-primary: #233A5C;
+  --color-primary_light: #3A5B8C;
+  --color-secondary: #A68B5B;
+  --color-accent: #F8F9FB;
+  --color-text_dark: #2C3241;
+}
+
+@layer components {
+  .nav-link { @apply block py-2 px-3 text-gray-700 hover:text-[--color-primary] transition-colors font-medium tracking-wide; }
+  .btn { @apply inline-block px-6 py-3 rounded-sm text-center font-medium transition-all duration-300 uppercase tracking-wider text-sm; }
+  .btn-primary { @apply inline-block px-6 py-3 rounded-sm text-center font-medium transition-all duration-300 uppercase tracking-wider text-sm bg-[--color-primary] text-white hover:bg-[#1A2A45] shadow-md hover:shadow-lg; }
+  .btn-outline { @apply inline-block px-6 py-3 rounded-sm text-center font-medium transition-all duration-300 uppercase tracking-wider text-sm border border-[--color-primary] text-[--color-primary] hover:bg-[--color-primary] hover:text-white shadow-sm hover:shadow-md; }
+  .btn-secondary { @apply inline-block px-6 py-3 rounded-sm text-center font-medium transition-all duration-300 uppercase tracking-wider text-sm bg-[--color-secondary] text-white hover:bg-[#8A7349] shadow-md hover:shadow-lg; }
+  .section { @apply py-16 md:py-20 lg:py-24; }
+  .section-title { @apply text-3xl md:text-4xl font-bold mb-10 md:mb-12 text-center relative; }
+  .section-title::after { content: ""; @apply block absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-[--color-secondary] mt-4; }
+  .card { @apply bg-white rounded-sm shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg border-b-4 border-transparent hover:border-[--color-secondary]; }
+}
+
+/* ヒーロー背景 */
+.hero-parallax-bg { background-image: url('/img/hero.jpg'); background-size: cover; background-position: center; background-attachment: fixed; position: absolute; inset: 0; z-index: 0; transition: transform 0.5s ease-out; }
+@media (max-width: 768px) { .hero-parallax-bg { background-attachment: scroll; } }
