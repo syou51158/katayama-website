@@ -1,6 +1,4 @@
-config/supabase.secrets.php 
-.cursor/ 
-node_modules/ 
-.vscode/ 
-.DS_Store 
+.tools/
+.vercel/
 Thumbs.db
+.DS_Store
