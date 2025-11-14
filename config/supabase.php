@@ -5,8 +5,8 @@
 
 class SupabaseConfig {
     // Supabase接続情報（環境変数があれば優先）
-    public const PROJECT_URL = 'https://iygiuutslpnvrheqbqgv.supabase.co';
-    public const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5Z2l1dXRzbHBudnJoZXFicWd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDcyNjkzNzksImV4cCI6MjA2Mjg0NTM3OX0.skNBoqKqMl69jLLCyGvfS6CUY7TiCftaUOuLlrdUl10';
+    public const PROJECT_URL = 'https://kmdoqdsftiorzmjczzyk.supabase.co';
+    public const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZG9xZHNmdGlvcnptamN6enlrIiwicm9zZSI6ImFub24iLCJpYXQiOjE3NjI5NTIyODIsImV4cCI6MjA3ODUyODI4Mn0.ZoztxEfNKUX1iMuvV0czfywvyNuxMXY2fhRFeoycBIQ';
     public const SERVICE_ROLE_KEY = 'YOUR_SERVICE_ROLE_KEY_HERE';
     
     /**
@@ -29,21 +29,24 @@ class SupabaseConfig {
 
     public static function getProjectUrl(): string {
         $secrets = self::getSecrets();
-        if ($secrets && !empty($secrets['SUPABASE_PROJECT_URL'])) return $secrets['SUPABASE_PROJECT_URL'];
+        $secret = $secrets['SUPABASE_PROJECT_URL'] ?? '';
+        if ($secret && $secret !== 'CHANGE_ME') return $secret;
         $envUrl = getenv('SUPABASE_PROJECT_URL') ?: ($_SERVER['SUPABASE_PROJECT_URL'] ?? ($_ENV['SUPABASE_PROJECT_URL'] ?? ''));
         return $envUrl ?: self::PROJECT_URL;
     }
 
     public static function getAnonKey(): string {
         $secrets = self::getSecrets();
-        if ($secrets && !empty($secrets['SUPABASE_ANON_KEY'])) return $secrets['SUPABASE_ANON_KEY'];
+        $secret = $secrets['SUPABASE_ANON_KEY'] ?? '';
+        if ($secret && $secret !== 'CHANGE_ME') return $secret;
         $env = getenv('SUPABASE_ANON_KEY') ?: ($_SERVER['SUPABASE_ANON_KEY'] ?? ($_ENV['SUPABASE_ANON_KEY'] ?? ''));
         return $env ?: self::ANON_KEY;
     }
 
     public static function getServiceRoleKey(): string {
         $secrets = self::getSecrets();
-        if ($secrets && !empty($secrets['SUPABASE_SERVICE_ROLE_KEY'])) return $secrets['SUPABASE_SERVICE_ROLE_KEY'];
+        $secret = $secrets['SUPABASE_SERVICE_ROLE_KEY'] ?? '';
+        if ($secret && $secret !== 'CHANGE_ME') return $secret;
         $env = getenv('SUPABASE_SERVICE_ROLE_KEY') ?: ($_SERVER['SUPABASE_SERVICE_ROLE_KEY'] ?? ($_ENV['SUPABASE_SERVICE_ROLE_KEY'] ?? ''));
         return $env ?: self::SERVICE_ROLE_KEY;
     }
