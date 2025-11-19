@@ -48,6 +48,67 @@
   }
 
   /* 高級感のあるデザイン要素 */
+  
+  /* サービスタグのスタイル */
+  .service-tag {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: lowercase;
+    letter-spacing: 0.05em;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* サービスセクションの改善 */
+  .service-section {
+    padding: 3rem 0;
+  }
+  
+  .service-section:nth-child(even) {
+    background-color: var(--bg-accent);
+  }
+  
+  .service-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+  
+  .service-description {
+    font-size: 1.125rem;
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+  
+  .service-features {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .service-features li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #6b7280;
+  }
+  
+  .service-features li::before {
+    content: "・";
+    position: absolute;
+    left: 0;
+    color: var(--secondary-color);
+    font-weight: bold;
+  }
   .luxury-bg {
     @apply bg-gradient-to-r from-gray-50 via-white to-gray-50;
   }

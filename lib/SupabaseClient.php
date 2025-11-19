@@ -147,14 +147,15 @@ class SupabaseClient {
             'Accept: application/json'
         ];
         
+        $disableSsl = getenv('SUPABASE_DISABLE_SSL_VERIFY') === '1';
         curl_setopt_array($ch, [
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_TIMEOUT => 30,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_SSL_VERIFYHOST => 2
+            CURLOPT_SSL_VERIFYPEER => $disableSsl ? false : true,
+            CURLOPT_SSL_VERIFYHOST => $disableSsl ? 0 : 2
         ]);
         
         // POST/PUT/PATCHの場合はデータを送信
@@ -250,12 +251,9 @@ class SupabaseClient {
      * アクティブな会社統計を取得
      */
     public static function getActiveStats(): array {
-        $result = self::select('company_stats', 
-            ['status' => 'active'], 
-            [
-                'order' => 'sort_order.asc,created_at.asc'
-            ]
-        );
+        $result = self::select('company_stats', [], [
+            'order' => 'created_at.asc'
+        ]);
         
         return $result ?: [];
     }
@@ -264,12 +262,9 @@ class SupabaseClient {
      * アクティブなパートナー企業を取得
      */
     public static function getActivePartners(): array {
-        $result = self::select('partners', 
-            ['status' => 'active'], 
-            [
-                'order' => 'sort_order.asc,created_at.asc'
-            ]
-        );
+        $result = self::select('partners', ['status' => 'active'], [
+            'order' => 'created_at.asc'
+        ]);
         
         return $result ?: [];
     }
