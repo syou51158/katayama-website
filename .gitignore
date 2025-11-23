@@ -1,6 +1,5 @@
-.tools/
-.vercel/
-Thumbs.db
-.DS_Store
 config/supabase.secrets.php
-config/*.secrets.php
+.env*
+node_modules/
+vendor/
+.DS_Store

@@ -1,10 +1,12 @@
 <?php
-require_once __DIR__ . '/../config/supabase.php';
+$__cfg = __DIR__ . '/../config/supabase.secrets.php';
+if (file_exists($__cfg)) { require_once $__cfg; } else { require_once __DIR__ . '/../config/supabase.secrets.dist.php'; }
 
 /**
  * Supabaseクライアントクラス
  */
 class SupabaseClient {
+    private static $lastError = null;
     
     /**
      * GETリクエストを実行
@@ -137,49 +139,92 @@ class SupabaseClient {
      * @return array|false
      */
     private static function makeRequest(string $method, string $url, ?array $data = null, bool $useServiceKey = false) {
-        $ch = curl_init();
-        
-        // ヘッダー設定
+        $apiKey = $useServiceKey ? SupabaseConfig::getServiceRoleKey() : SupabaseConfig::getAnonKey();
         $headers = [
-            'apikey: ' . SupabaseConfig::getAnonKey(),
-            'Authorization: Bearer ' . ($useServiceKey ? SupabaseConfig::getServiceRoleKey() : SupabaseConfig::getAnonKey()),
+            'apikey: ' . $apiKey,
+            'Authorization: Bearer ' . $apiKey,
             'Content-Type: application/json',
             'Accept: application/json'
         ];
-        
-        $disableSsl = getenv('SUPABASE_DISABLE_SSL_VERIFY') === '1';
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_CUSTOMREQUEST => $method,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_SSL_VERIFYPEER => $disableSsl ? false : true,
-            CURLOPT_SSL_VERIFYHOST => $disableSsl ? 0 : 2
-        ]);
-        
-        // POST/PUT/PATCHの場合はデータを送信
-        if ($data !== null && in_array($method, ['POST', 'PUT', 'PATCH'])) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        if (in_array($method, ['POST','PUT','PATCH','DELETE'])) {
+            $headers[] = 'Prefer: return=representation';
         }
-        
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
-        
-        if ($error) {
-            error_log("Supabase API Error: " . $error);
+
+        if (function_exists('curl_init')) {
+            $ch = curl_init();
+            $disableSsl = true; // Windows環境のためSSL検証を無効化
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_HTTPHEADER => $headers,
+                CURLOPT_CUSTOMREQUEST => $method,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_SSL_VERIFYPEER => $disableSsl ? false : true,
+                CURLOPT_SSL_VERIFYHOST => $disableSsl ? 0 : 2
+            ]);
+            if ($data !== null && in_array($method, ['POST', 'PUT', 'PATCH'])) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            }
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
+            if ($error) {
+                self::$lastError = 'curl error: ' . $error;
+                error_log('Supabase API Error: ' . $error);
+                return false;
+            }
+            if ($httpCode >= 200 && $httpCode < 300) {
+                $decoded = json_decode($response, true);
+                return $decoded ?: [];
+            } else {
+                self::$lastError = 'HTTP ' . $httpCode . ' - ' . $response;
+                error_log('Supabase API Error: HTTP ' . $httpCode . ' - Response: ' . $response . ' - URL: ' . $url . ' - Method: ' . $method . ' - Headers: ' . json_encode($headers));
+                return false;
+            }
+        }
+
+        $disableSsl = true; // Windows環境のためSSL検証を無効化
+        $context = stream_context_create([
+            'http' => [
+                'method' => $method,
+                'header' => implode("\r\n", $headers),
+                'content' => ($data !== null && in_array($method, ['POST', 'PUT', 'PATCH'])) ? json_encode($data) : '',
+                'ignore_errors' => true,
+                'timeout' => 30,
+            ],
+            'ssl' => [
+                'verify_peer' => $disableSsl ? false : true,
+                'verify_peer_name' => $disableSsl ? false : true,
+            ],
+        ]);
+        $response = @file_get_contents($url, false, $context);
+        $httpCode = 0;
+        if (isset($http_response_header) && is_array($http_response_header)) {
+            foreach ($http_response_header as $h) {
+                if (preg_match('/^HTTP\/\d+\.\d+\s+(\d+)/', $h, $m)) {
+                    $httpCode = (int)$m[1];
+                    break;
+                }
+            }
+        }
+        if ($response === false) {
+            self::$lastError = 'stream error';
+            error_log('Supabase API Error: stream error');
             return false;
         }
-        
         if ($httpCode >= 200 && $httpCode < 300) {
             $decoded = json_decode($response, true);
             return $decoded ?: [];
         } else {
-            error_log("Supabase API Error: HTTP $httpCode - " . $response);
+            self::$lastError = 'HTTP ' . $httpCode . ' - ' . $response;
+            error_log('Supabase API Error: HTTP ' . $httpCode . ' - Response: ' . $response . ' - URL: ' . $url . ' - Method: ' . $method . ' - Headers: ' . json_encode($headers));
             return false;
         }
+    }
+
+    public static function getLastError(): ?string {
+        return self::$lastError;
     }
     
     /**

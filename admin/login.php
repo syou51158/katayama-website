@@ -2,29 +2,27 @@
 require_once 'includes/auth.php';
 
 $error = '';
+$message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
+    $action = $_POST['action'] ?? '';
     
-    if (loginWithSupabase($email, $password)) {
-        header('Location: dashboard.php');
-        exit;
-    } else {
-        // 初回は管理者ユーザーを自動作成（ローカル開発でのみ有効）
-        $created = false;
-        $enableAuto = (getenv('SUPABASE_ENABLE_AUTO_USER') === '1') 
-            || (($_ENV['SUPABASE_ENABLE_AUTO_USER'] ?? '') === '1') 
-            || (($_SERVER['SUPABASE_ENABLE_AUTO_USER'] ?? '') === '1');
-        if ($enableAuto && $email && $password) {
-            $targetEmail = $email;
-            $created = SupabaseAuth::adminCreateUser($targetEmail, $password, ['full_name' => 'Administrator'], true);
-            if ($created && loginWithSupabase($targetEmail, $password)) {
-                header('Location: dashboard.php');
-                exit;
-            }
+    if ($action === 'reset') {
+        $ok = SupabaseAuth::sendPasswordResetEmail($email, 'http://localhost:8010/admin/login.php');
+        if ($ok) {
+            $message = 'パスワードリセット用のメールを送信しました。メールをご確認ください。';
+        } else {
+            $error = 'パスワードリセットの送信に失敗しました。詳細: ' . SupabaseAuth::getLastError();
         }
-        $error = 'メールアドレスまたはパスワードが正しくありません。';
+    } else {
+        if (loginWithSupabase($email, $password)) {
+            header('Location: dashboard.php');
+            exit;
+        } else {
+            $error = 'メールアドレスまたはパスワードが正しくありません。詳細: ' . SupabaseAuth::getLastError();
+        }
     }
 }
 
@@ -80,6 +78,16 @@ if (SupabaseAuth::isLoggedIn()) {
                 </div>
             </div>
         <?php endif; ?>
+        <?php if ($message): ?>
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-6">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-10a1 1 0 10-2 0v4a1 1 0 102 0V8zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                    </svg>
+                    <?php echo htmlspecialchars($message); ?>
+                </div>
+            </div>
+        <?php endif; ?>
         
         <form method="POST" action="" class="space-y-6">
             <div>
@@ -104,6 +112,10 @@ if (SupabaseAuth::isLoggedIn()) {
             <button type="submit" 
                     class="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition duration-200 font-medium">
                 ログイン
+            </button>
+            <button type="submit" name="action" value="reset" 
+                    class="w-full mt-3 bg-secondary text-white py-3 px-4 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 transition duration-200 font-medium">
+                パスワードをリセット
             </button>
         </form>
         

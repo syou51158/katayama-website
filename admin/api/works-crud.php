@@ -6,8 +6,13 @@
 require_once '../../lib/SupabaseClient.php';
 require_once '../includes/auth.php';
 
-// 認証チェック
-checkAuth();
+// 認証チェック（APIはJSONで返却）
+if (!SupabaseAuth::isLoggedIn()) {
+    header('Content-Type: application/json; charset=utf-8');
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => '認証が必要です']);
+    exit;
+}
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');

@@ -6,8 +6,13 @@
 require_once '../../lib/SupabaseClient.php';
 require_once '../includes/auth.php';
 
-// 認証チェック
-checkAuth();
+// 認証チェック（APIはJSONで返却）
+if (!SupabaseAuth::isLoggedIn()) {
+    header('Content-Type: application/json; charset=utf-8');
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => '認証が必要です']);
+    exit;
+}
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
@@ -35,10 +40,15 @@ try {
     }
 } catch (Exception $e) {
     http_response_code(500);
-    echo json_encode([
+    error_log('News CRUD Error: ' . $e->getMessage() . ' - File: ' . $e->getFile() . ' - Line: ' . $e->getLine());
+    
+    // エラーの詳細情報を含める
+    $errorDetails = [
         'success' => false,
         'error' => $e->getMessage()
-    ], JSON_UNESCAPED_UNICODE);
+    ];
+    
+    echo json_encode($errorDetails, JSON_UNESCAPED_UNICODE);
 }
 
 function handleGet() {
@@ -103,13 +113,14 @@ function handlePost() {
         }
     }
     
+    $publishedDate = str_replace('/', '-', $input['published_date']);
     $data = [
         'title' => $input['title'],
         'content' => $input['content'],
         'excerpt' => $input['excerpt'] ?? null,
         'category' => $input['category'],
         'featured_image' => $input['featured_image'] ?? null,
-        'published_date' => $input['published_date'],
+        'published_date' => $publishedDate,
         'status' => $input['status'] ?? 'draft'
     ];
     
@@ -122,15 +133,19 @@ function handlePost() {
             'message' => 'ニュースが正常に作成されました'
         ], JSON_UNESCAPED_UNICODE);
     } else {
-        throw new Exception('ニュースの作成に失敗しました');
+        $detail = SupabaseClient::getLastError();
+        throw new Exception('ニュースの作成に失敗しました' . ($detail ? '（詳細: ' . $detail . '）' : ''));
     }
 }
 
 function handlePut() {
     $input = json_decode(file_get_contents('php://input'), true);
     
+    // デバッグ用ログ
+    error_log('News update received data: ' . json_encode($input));
+    
     if (!$input || empty($input['id'])) {
-        throw new Exception('IDが指定されていません');
+        throw new Exception('IDが指定されていません。受信データ: ' . json_encode($input));
     }
     
     $id = $input['id'];
@@ -150,6 +165,7 @@ function handlePut() {
         throw new Exception('更新するデータがありません');
     }
     
+    error_log('News update attempting - Data: ' . json_encode($data) . ' - ID: ' . $id);
     $result = SupabaseClient::update('news', $data, ['id' => $id]);
     
     if ($result) {
@@ -159,7 +175,9 @@ function handlePut() {
             'message' => 'ニュースが正常に更新されました'
         ], JSON_UNESCAPED_UNICODE);
     } else {
-        throw new Exception('ニュースの更新に失敗しました');
+        error_log('News update failed - Data: ' . json_encode($data) . ' - ID: ' . $id);
+        $detail = SupabaseClient::getLastError();
+        throw new Exception('ニュースの更新に失敗しました' . ($detail ? '（詳細: ' . $detail . '）' : ''));
     }
 }
 
@@ -181,5 +199,4 @@ function handleDelete() {
         throw new Exception('ニュースの削除に失敗しました');
     }
 }
-?>
 

@@ -404,6 +404,14 @@ try {
             const isEdit = !!data.id;
             const method = isEdit ? 'PUT' : 'POST';
             
+            // デバッグ用ログ
+            console.log('送信データ:', data);
+            console.log('メソッド:', method);
+            console.log('ID値:', data.id);
+            console.log('タイトル値:', data.title);
+            console.log('コンテンツ値:', data.content);
+            console.log('日付値:', data.published_date);
+            
             try {
                 const response = await fetch('../api/news-crud.php', {
                     method: method,
@@ -413,7 +421,29 @@ try {
                     body: JSON.stringify(data)
                 });
                 
-                const result = await response.json();
+                console.log('レスポンスステータス:', response.status);
+                console.log('レスポンスヘッダー:', response.headers.get('content-type'));
+                
+                const responseText = await response.text();
+                console.log('レスポンステキスト:', responseText);
+                
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    const start = responseText.indexOf('{');
+                    const end = responseText.lastIndexOf('}');
+                    if (start !== -1 && end !== -1) {
+                        const cleaned = responseText.slice(start, end + 1);
+                        result = JSON.parse(cleaned);
+                    } else {
+                        console.error('JSONパースエラー:', parseError);
+                        console.error('レスポンステキスト:', responseText);
+                        throw new Error('サーバーから無効なレスポンスが返されました: ' + responseText.substring(0, 200));
+                    }
+                }
+                
+                console.log('レスポンス:', result);
                 
                 if (result.success) {
                     alert(isEdit ? 'ニュースを更新しました' : 'ニュースを作成しました');
@@ -423,6 +453,7 @@ try {
                     alert('保存に失敗しました: ' + result.error);
                 }
             } catch (error) {
+                console.error('エラー:', error);
                 alert('エラーが発生しました: ' + error.message);
             }
         });
@@ -480,15 +511,43 @@ try {
         document.getElementById('uploadNewsImageInput').addEventListener('change', async function() {
             const file = this.files && this.files[0];
             if (!file) return;
+            console.log('アップロード開始:', file.name, file.size, file.type);
             try {
                 const fd = new FormData();
                 fd.append('file', file);
-                const res = await fetch('../api/news-upload.php', { method: 'POST', body: fd });
-                const json = await res.json();
+                const res = await fetch('../api/news-upload.php', {
+                    method: 'POST',
+                    body: fd,
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json' }
+                });
+                console.log('アップロードレスポンス:', res.status);
+                console.log('アップロードレスポンスヘッダー:', res.headers.get('content-type'));
+                
+                const responseText = await res.text();
+                console.log('アップロードレスポンステキスト:', responseText);
+                
+                let json;
+                try {
+                    json = JSON.parse(responseText);
+                } catch (parseError) {
+                    const start = responseText.indexOf('{');
+                    const end = responseText.lastIndexOf('}');
+                    if (start !== -1 && end !== -1) {
+                        const cleaned = responseText.slice(start, end + 1);
+                        json = JSON.parse(cleaned);
+                    } else {
+                        console.error('アップロードJSONパースエラー:', parseError);
+                        throw new Error('アップロードレスポンスの解析に失敗しました: ' + responseText.substring(0, 200));
+                    }
+                }
+                
+                console.log('アップロード結果:', json);
                 if (!res.ok || !json.success) throw new Error(json.error || 'アップロードに失敗しました');
                 document.getElementById('featured_image').value = json.url;
                 updateImagePreview(json.url);
             } catch (err) {
+                console.error('アップロードエラー:', err);
                 alert('アップロードに失敗しました: ' + err.message);
             } finally {
                 this.value = '';

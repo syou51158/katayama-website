@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '/../config/supabase.php';
+$__cfg = __DIR__ . '/../config/supabase.secrets.php';
+if (file_exists($__cfg)) { require_once $__cfg; } else { require_once __DIR__ . '/../config/supabase.secrets.dist.php'; }
 
 class SupabaseStorage {
     public static function getStorageBaseUrl(): string {
@@ -33,7 +34,7 @@ class SupabaseStorage {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => 'GET',
             CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYPEER => false, // Windows環境のためSSL検証を無効化
             CURLOPT_TIMEOUT => 30,
         ]);
         curl_exec($ch);
@@ -51,7 +52,7 @@ class SupabaseStorage {
             CURLOPT_POST => true,
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_POSTFIELDS => $payload,
-            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYPEER => false, // Windows環境のためSSL検証を無効化
             CURLOPT_TIMEOUT => 30,
         ]);
         $response = curl_exec($ch2);
@@ -85,7 +86,7 @@ class SupabaseStorage {
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_HTTPHEADER => $headers,
             CURLOPT_POSTFIELDS => $contents,
-            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYPEER => false, // Windows環境のためSSL検証を無効化
             CURLOPT_TIMEOUT => 60,
         ]);
         $response = curl_exec($ch);

@@ -1,52 +1,96 @@
 <?php
-require_once __DIR__ . '/../config/supabase.php';
+$__cfg = __DIR__ . '/../config/supabase.secrets.php';
+if (file_exists($__cfg)) { require_once $__cfg; } else { require_once __DIR__ . '/../config/supabase.secrets.dist.php'; }
 
 class SupabaseAuth {
+    private static $lastError = '';
+    private static function sendJson(string $url, array $headers, array $payload): array {
+        $body = json_encode($payload);
+        if (function_exists('curl_init')) {
+            $ch = curl_init();
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_HTTPHEADER => $headers,
+                CURLOPT_POSTFIELDS => $body,
+                CURLOPT_SSL_VERIFYPEER => false, // Windows環境のためSSL検証を無効化
+                CURLOPT_TIMEOUT => 30,
+            ]);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
+            return [$httpCode, $response, $error];
+        }
+        $context = stream_context_create([
+            'http' => [
+                'method' => 'POST',
+                'header' => implode("\r\n", $headers),
+                'content' => $body,
+                'ignore_errors' => true,
+                'timeout' => 30,
+            ],
+            'ssl' => [
+                'verify_peer' => false, // Windows環境のためSSL検証を無効化
+                'verify_peer_name' => false, // Windows環境のためSSL検証を無効化
+            ],
+        ]);
+        $response = @file_get_contents($url, false, $context);
+        $httpCode = 0;
+        if (isset($http_response_header) && is_array($http_response_header)) {
+            foreach ($http_response_header as $h) {
+                if (preg_match('/^HTTP\/\d+\.\d+\s+(\d+)/', $h, $m)) {
+                    $httpCode = (int)$m[1];
+                    break;
+                }
+            }
+        }
+        $error = $response === false ? 'stream error' : '';
+        return [$httpCode, $response, $error];
+    }
     public static function signInWithPassword(string $email, string $password): bool {
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            if (!headers_sent()) {
+                session_start();
+            }
+        }
 
         $projectUrl = rtrim(SupabaseConfig::getProjectUrl(), '/');
         $anonKey = SupabaseConfig::getAnonKey();
         $url = $projectUrl . '/auth/v1/token?grant_type=password';
 
-        $payload = json_encode([
-            'email' => $email,
-            'password' => $password,
-        ]);
-
         $headers = [
             'Content-Type: application/json',
             'apikey: ' . $anonKey,
         ];
-
-        $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_POSTFIELDS => $payload,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_TIMEOUT => 30,
+        [$httpCode, $response, $error] = self::sendJson($url, $headers, [
+            'email' => $email,
+            'password' => $password,
         ]);
-
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
 
         if ($error) {
             error_log('SupabaseAuth signIn error: ' . $error);
+            self::$lastError = $error;
             return false;
         }
 
         if ($httpCode < 200 || $httpCode >= 300) {
             error_log('SupabaseAuth signIn http ' . $httpCode . ' ' . $response);
+            $j = json_decode($response, true);
+            if (is_array($j)) {
+                $code = $j['error_code'] ?? '';
+                $msg = $j['msg'] ?? '';
+                self::$lastError = trim($code . ' ' . $msg);
+            } else {
+                self::$lastError = 'http_' . $httpCode;
+            }
             return false;
         }
 
         $json = json_decode($response, true);
         if (!is_array($json) || empty($json['access_token']) || empty($json['user'])) {
+            self::$lastError = 'invalid_response';
             return false;
         }
 
@@ -54,16 +98,51 @@ class SupabaseAuth {
         $_SESSION['sb_refresh_token'] = $json['refresh_token'] ?? null;
         $_SESSION['sb_user'] = $json['user'];
         $_SESSION['sb_login_time'] = time();
+        self::$lastError = '';
+        return true;
+    }
+
+    public static function signUp(string $email, string $password, array $userMeta = []): bool {
+        $projectUrl = rtrim(SupabaseConfig::getProjectUrl(), '/');
+        $anonKey = SupabaseConfig::getAnonKey();
+        $url = $projectUrl . '/auth/v1/signup';
+
+        $headers = [
+            'Content-Type: application/json',
+            'apikey: ' . $anonKey,
+        ];
+        [$httpCode, $response, $error] = self::sendJson($url, $headers, [
+            'email' => $email,
+            'password' => $password,
+            'data' => $userMeta,
+        ]);
+
+        if ($error) {
+            error_log('SupabaseAuth signUp error: ' . $error);
+            return false;
+        }
+        if ($httpCode < 200 || $httpCode >= 300) {
+            error_log('SupabaseAuth signUp http ' . $httpCode . ' ' . $response);
+            return false;
+        }
         return true;
     }
 
     public static function getCurrentUser(): ?array {
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            if (!headers_sent()) {
+                session_start();
+            }
+        }
         return $_SESSION['sb_user'] ?? null;
     }
 
     public static function isLoggedIn(): bool {
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            if (!headers_sent()) {
+                session_start();
+            }
+        }
         return !empty($_SESSION['sb_access_token']) && !empty($_SESSION['sb_user']);
     }
 
@@ -76,33 +155,17 @@ class SupabaseAuth {
         }
 
         $url = $projectUrl . '/auth/v1/admin/users';
-        $payload = json_encode([
-            'email' => $email,
-            'password' => $password,
-            'email_confirm' => $emailConfirmed,
-            'user_metadata' => $userMeta,
-        ]);
-
         $headers = [
             'Content-Type: application/json',
             'apikey: ' . $serviceKey,
             'Authorization: Bearer ' . $serviceKey,
         ];
-
-        $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST => true,
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_POSTFIELDS => $payload,
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_TIMEOUT => 30,
+        [$httpCode, $response, $error] = self::sendJson($url, $headers, [
+            'email' => $email,
+            'password' => $password,
+            'email_confirm' => $emailConfirmed,
+            'user_metadata' => $userMeta,
         ]);
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
 
         if ($error) {
             error_log('SupabaseAuth adminCreateUser curl error: ' . $error);
@@ -125,7 +188,11 @@ class SupabaseAuth {
     }
 
     public static function logout(): void {
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            if (!headers_sent()) {
+                session_start();
+            }
+        }
         $_SESSION = [];
         if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
@@ -135,6 +202,42 @@ class SupabaseAuth {
             );
         }
         session_destroy();
+    }
+
+    public static function getLastError(): string {
+        return self::$lastError;
+    }
+
+    public static function sendPasswordResetEmail(string $email, string $redirectTo = ''): bool {
+        $projectUrl = rtrim(SupabaseConfig::getProjectUrl(), '/');
+        $anonKey = SupabaseConfig::getAnonKey();
+        $url = $projectUrl . '/auth/v1/recover';
+        $headers = [
+            'Content-Type: application/json',
+            'apikey: ' . $anonKey,
+        ];
+        $payload = ['email' => $email];
+        if ($redirectTo !== '') {
+            $payload['redirect_to'] = $redirectTo;
+        }
+        [$httpCode, $response, $error] = self::sendJson($url, $headers, $payload);
+        if ($error) {
+            self::$lastError = $error;
+            return false;
+        }
+        if ($httpCode < 200 || $httpCode >= 300) {
+            $j = json_decode($response, true);
+            if (is_array($j)) {
+                $code = $j['error_code'] ?? '';
+                $msg = $j['msg'] ?? '';
+                self::$lastError = trim($code . ' ' . $msg);
+            } else {
+                self::$lastError = 'http_' . $httpCode;
+            }
+            return false;
+        }
+        self::$lastError = '';
+        return true;
     }
 }
 ?>

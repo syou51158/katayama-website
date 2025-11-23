@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/lib/SupabaseClient.php';
-require_once __DIR__ . '/config/supabase.php';
+$__cfg = __DIR__ . '/config/supabase.secrets.php';
+if (file_exists($__cfg)) { require_once $__cfg; } else { require_once __DIR__ . '/config/supabase.secrets.dist.php'; }
 
 header('Content-Type: application/json; charset=utf-8');
 

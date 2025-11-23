@@ -11,11 +11,13 @@ try {
     $allWorks = SupabaseClient::select('works');
     $allServices = SupabaseClient::select('services');
     $allTestimonials = SupabaseClient::select('testimonials');
+    $allRepresentatives = SupabaseClient::select('representatives');
     
     // 統計を計算
     $publishedNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'published');
     $publishedWorks = array_filter($allWorks ?: [], fn($item) => $item['status'] === 'published');
     $draftNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'draft');
+    $activeRepresentatives = array_filter($allRepresentatives ?: [], fn($item) => ($item['status'] ?? 'active') === 'active');
     
     // 今月の更新を計算
     $thisMonth = date('Y-m');
@@ -26,12 +28,18 @@ try {
     // 最近の更新（最新5件）
     $recentNews = array_slice(array_reverse($allNews ?: []), 0, 3);
     $recentWorks = array_slice(array_reverse($allWorks ?: []), 0, 2);
+    $connectOk = ($allNews !== false) && ($allWorks !== false);
+    $serviceRoleKey = SupabaseConfig::getServiceRoleKey();
+    $serviceRoleOk = ($serviceRoleKey && $serviceRoleKey !== 'YOUR_SERVICE_ROLE_KEY_HERE' && $serviceRoleKey !== 'CHANGE_ME');
     
 } catch (Exception $e) {
     // エラーハンドリング
     $error = $e->getMessage();
     $publishedNews = $publishedWorks = $draftNews = $monthlyUpdates = [];
     $recentNews = $recentWorks = [];
+    $activeRepresentatives = [];
+    $connectOk = false;
+    $serviceRoleOk = false;
 }
 $currentUser = getCurrentUser();
 ?>
@@ -160,6 +168,19 @@ $currentUser = getCurrentUser();
                     </div>
                 </div>
             </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-lg bg-indigo-100 text-indigo-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-sm font-medium text-gray-500">代表者（アクティブ）</h3>
+                        <p class="text-2xl font-semibold text-gray-900"><?php echo count($activeRepresentatives); ?></p>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -195,6 +216,18 @@ $currentUser = getCurrentUser();
                             <div class="ml-4">
                                 <h3 class="font-medium text-gray-900">施工実績管理（Supabase）</h3>
                                 <p class="text-sm text-gray-500">施工実績の作成・編集・削除</p>
+                            </div>
+                        </a>
+                        <a href="pages/supabase-representatives.php" 
+                           class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-200">
+                            <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="font-medium text-gray-900">代表管理（Supabase）</h3>
+                                <p class="text-sm text-gray-500">代表者情報の作成・編集・削除</p>
                             </div>
                         </a>
                         
@@ -238,6 +271,54 @@ $currentUser = getCurrentUser();
                                 </span>
                             </div>
                         <?php endforeach; ?>
+                        <?php if (empty($recentNews) && empty($recentWorks)): ?>
+                            <p class="text-sm text-gray-500">最近の更新はありません。</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- クイック操作 / システム状態 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">クイック操作</h2>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <a href="pages/supabase-news.php" class="block text-center p-4 border rounded-lg hover:bg-gray-50">
+                            <span class="block text-sm text-gray-700">新規お知らせを作成</span>
+                        </a>
+                        <a href="pages/supabase-works.php" class="block text-center p-4 border rounded-lg hover:bg-gray-50">
+                            <span class="block text-sm text-gray-700">新規施工実績を作成</span>
+                        </a>
+                        <a href="pages/supabase-representatives.php" class="block text-center p-4 border rounded-lg hover:bg-gray-50">
+                            <span class="block text-sm text-gray-700">代表者を追加</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">システム状態</h2>
+                </div>
+                <div class="p-6 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-700">Supabase接続</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $connectOk ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                            <?php echo $connectOk ? '正常' : '失敗'; ?>
+                        </span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-700">サービスロールキー（画像アップロード等）</span>
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $serviceRoleOk ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'; ?>">
+                            <?php echo $serviceRoleOk ? '設定済み' : '未設定'; ?>
+                        </span>
+                    </div>
+                    <div class="text-xs text-gray-500">
+                        <?php if (!$serviceRoleOk): ?>
+                            画像アップロードや管理者の本番作成にはサービスロールキーが必要です。
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>

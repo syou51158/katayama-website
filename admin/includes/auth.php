@@ -1,7 +1,11 @@
 <?php
 require_once __DIR__ . '/../../lib/SupabaseAuth.php';
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    if (!headers_sent()) {
+        session_start();
+    }
+}
 
 function checkAuth() {
     if (!SupabaseAuth::isLoggedIn()) {
