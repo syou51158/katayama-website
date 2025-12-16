@@ -81,4 +81,3 @@ echo json_encode([
     'project_url' => SupabaseConfig::getProjectUrl()
 ], JSON_UNESCAPED_UNICODE);
 ?>
-

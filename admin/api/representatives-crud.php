@@ -2,12 +2,17 @@
 require_once '../../lib/SupabaseClient.php';
 require_once '../includes/auth.php';
 
-checkAuth();
-
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
+
+// 認証チェック（APIはJSONで返却）
+if (!SupabaseAuth::isLoggedIn()) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => '認証が必要です'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 $method = $_SERVER['REQUEST_METHOD'];
 

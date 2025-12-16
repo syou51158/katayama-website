@@ -7,14 +7,14 @@ $__cfg = __DIR__ . '/../../config/supabase.secrets.php';
 if (file_exists($__cfg)) { require_once $__cfg; } else { require_once __DIR__ . '/../../config/supabase.secrets.dist.php'; }
 require_once '../includes/auth.php';
 
-// 認証チェック
-if (!checkAuth()) {
+header('Content-Type: application/json; charset=utf-8');
+
+// 認証チェック（API向けにJSONを返す）
+if (!SupabaseAuth::isLoggedIn()) {
     http_response_code(401);
-    echo json_encode(['success' => false, 'error' => '認証が必要です']);
+    echo json_encode(['success' => false, 'error' => '認証が必要です'], JSON_UNESCAPED_UNICODE);
     exit;
 }
-
-header('Content-Type: application/json; charset=utf-8');
 
 // エラーハンドリング
 set_error_handler(function ($errno, $errstr) {
@@ -58,12 +58,26 @@ try {
     }
 
     // MIMEタイプ判定
-    $finfo = finfo_open(FILEINFO_MIME_TYPE);
-    if (!$finfo) {
+    $mimeType = null;
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        if ($finfo) {
+            $mimeType = finfo_file($finfo, $tmpPath);
+            finfo_close($finfo);
+        }
+    }
+    if (!$mimeType && function_exists('mime_content_type')) {
+        $mimeType = @mime_content_type($tmpPath);
+    }
+    if (!$mimeType && function_exists('getimagesize')) {
+        $imgInfo = @getimagesize($tmpPath);
+        if (is_array($imgInfo) && isset($imgInfo['mime']) && $imgInfo['mime']) {
+            $mimeType = $imgInfo['mime'];
+        }
+    }
+    if (!$mimeType) {
         throw new Exception('MIMEタイプの判定に失敗しました');
     }
-    $mimeType = finfo_file($finfo, $tmpPath);
-    finfo_close($finfo);
 
     // 画像ファイルのみ許可
     $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
@@ -95,26 +109,46 @@ try {
     // バケット名
     $bucket = 'works';
 
-    // バケット存在確認・作成
-    $bucketOk = SupabaseStorage::ensureBucket($bucket, true);
-    if (!$bucketOk) {
-        throw new Exception('ストレージバケットの作成に失敗しました');
+    $useLocal = SupabaseConfig::isOfflineMode();
+    if (!$useLocal) {
+        $bucketOk = SupabaseStorage::ensureBucket($bucket, true);
+        if (!$bucketOk) {
+            $useLocal = true;
+        } else {
+            $contents = file_get_contents($tmpPath);
+            if ($contents === false) {
+                throw new Exception('ファイルの読み込みに失敗しました');
+            }
+            $uploaded = SupabaseStorage::upload($bucket, $objectPath, $contents, $mimeType, true);
+            if ($uploaded) {
+                $publicUrl = SupabaseStorage::getPublicObjectUrl($bucket, $objectPath);
+            } else {
+                $useLocal = true;
+            }
+        }
     }
 
-    // ファイル内容読み込み
-    $contents = file_get_contents($tmpPath);
-    if ($contents === false) {
-        throw new Exception('ファイルの読み込みに失敗しました');
+    if ($useLocal) {
+        $root = realpath(__DIR__ . '/../../');
+        if ($root === false) {
+            throw new Exception('ドキュメントルートの解決に失敗しました');
+        }
+        $localBase = $root . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . $bucket;
+        $localDir = $localBase . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $subdir);
+        if (!is_dir($localDir)) {
+            if (!mkdir($localDir, 0777, true)) {
+                throw new Exception('ローカル保存用ディレクトリの作成に失敗しました');
+            }
+        }
+        $destPath = $localDir . DIRECTORY_SEPARATOR . $safeName;
+        if (!move_uploaded_file($tmpPath, $destPath)) {
+            $data = file_get_contents($tmpPath);
+            if ($data === false || file_put_contents($destPath, $data) === false) {
+                throw new Exception('ローカル保存に失敗しました');
+            }
+        }
+        $publicUrl = '/assets/uploads/' . $bucket . '/' . $objectPath;
     }
-
-    // アップロード実行
-    $uploaded = SupabaseStorage::upload($bucket, $objectPath, $contents, $mimeType, true);
-    if (!$uploaded) {
-        throw new Exception('ファイルのアップロードに失敗しました');
-    }
-
-    // 公開URL取得
-    $publicUrl = SupabaseStorage::getPublicObjectUrl($bucket, $objectPath);
 
     // 成功レスポンス
     echo json_encode([
@@ -138,5 +172,3 @@ try {
     restore_error_handler();
 }
 ?>
-
-

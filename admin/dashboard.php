@@ -5,32 +5,45 @@ require_once '../lib/SupabaseClient.php';
 // 認証チェック
 checkAuth();
 
-try {
-    // Supabaseから統計データを取得
-    $allNews = SupabaseClient::select('news');
-    $allWorks = SupabaseClient::select('works');
-    $allServices = SupabaseClient::select('services');
-    $allTestimonials = SupabaseClient::select('testimonials');
-    $allRepresentatives = SupabaseClient::select('representatives');
-    
-    // 統計を計算
-    $publishedNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'published');
-    $publishedWorks = array_filter($allWorks ?: [], fn($item) => $item['status'] === 'published');
-    $draftNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'draft');
-    $activeRepresentatives = array_filter($allRepresentatives ?: [], fn($item) => ($item['status'] ?? 'active') === 'active');
-    
-    // 今月の更新を計算
-    $thisMonth = date('Y-m');
-    $monthlyUpdates = array_filter(array_merge($allNews ?: [], $allWorks ?: []), function($item) use ($thisMonth) {
-        return isset($item['updated_at']) && strpos($item['updated_at'], $thisMonth) === 0;
-    });
-    
-    // 最近の更新（最新5件）
-    $recentNews = array_slice(array_reverse($allNews ?: []), 0, 3);
-    $recentWorks = array_slice(array_reverse($allWorks ?: []), 0, 2);
-    $connectOk = ($allNews !== false) && ($allWorks !== false);
-    $serviceRoleKey = SupabaseConfig::getServiceRoleKey();
+    try {
+        // Supabaseから統計データを取得
+        $allNews = SupabaseClient::select('news');
+        $allWorks = SupabaseClient::select('works');
+        $allServices = SupabaseClient::select('services');
+        $allTestimonials = SupabaseClient::select('testimonials');
+        $allRepresentatives = SupabaseClient::select('representatives');
+        
+        // 統計を計算
+        $publishedNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'published');
+        $publishedWorks = array_filter($allWorks ?: [], fn($item) => $item['status'] === 'published');
+        $draftNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'draft');
+        $activeRepresentatives = array_filter($allRepresentatives ?: [], fn($item) => ($item['status'] ?? 'active') === 'active');
+        
+        // 今月の更新を計算
+        $thisMonth = date('Y-m');
+        $monthlyUpdates = array_filter(array_merge($allNews ?: [], $allWorks ?: []), function($item) use ($thisMonth) {
+            return isset($item['updated_at']) && strpos($item['updated_at'], $thisMonth) === 0;
+        });
+        
+        // やることリスト用の集計
+        $newsWithoutImage = array_filter($allNews ?: [], function($item) {
+            return empty($item['featured_image']);
+        });
+        $worksWithoutImage = array_filter($allWorks ?: [], function($item) {
+            return empty($item['featured_image']);
+        });
+        $scheduledDrafts = array_filter($allNews ?: [], function($item) {
+            return ($item['status'] === 'draft') && !empty($item['published_date']);
+        });
+        
+        // 最近の更新（最新5件）
+        $recentNews = array_slice(array_reverse($allNews ?: []), 0, 3);
+        $recentWorks = array_slice(array_reverse($allWorks ?: []), 0, 2);
+        $connectOk = ($allNews !== false) && ($allWorks !== false);
+        $serviceRoleKey = SupabaseConfig::getServiceRoleKey();
     $serviceRoleOk = ($serviceRoleKey && $serviceRoleKey !== 'YOUR_SERVICE_ROLE_KEY_HERE' && $serviceRoleKey !== 'CHANGE_ME');
+    $lastError = SupabaseClient::getLastError();
+    $offlineMode = method_exists('SupabaseConfig', 'isOfflineMode') ? SupabaseConfig::isOfflineMode() : false;
     
 } catch (Exception $e) {
     // エラーハンドリング
@@ -89,6 +102,17 @@ $currentUser = getCurrentUser();
                        class="text-sm text-gray-600 hover:text-primary transition duration-200">
                         サイトを見る
                     </a>
+                    <div class="hidden md:flex items-center space-x-2">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-medium <?php echo $connectOk ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                            DB: <?php echo $connectOk ? 'オンライン' : 'オフライン'; ?>
+                        </span>
+                        <span class="px-2.5 py-1 rounded-full text-xs font-medium <?php echo $serviceRoleOk ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'; ?>">
+                            画像: <?php echo $serviceRoleOk ? 'アップロード可' : '要設定'; ?>
+                        </span>
+                        <span class="px-2.5 py-1 rounded-full text-xs font-medium <?php echo $offlineMode ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'; ?>">
+                            モード: <?php echo $offlineMode ? 'オフライン' : 'オンライン'; ?>
+                        </span>
+                    </div>
                     <a href="logout.php" 
                        class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition duration-200">
                         ログアウト
@@ -184,6 +208,42 @@ $currentUser = getCurrentUser();
         </div>
         
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- やることリスト -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <h2 class="text-lg font-semibold text-gray-900">やることリスト</h2>
+                </div>
+                <div class="p-6 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-700">下書きのお知らせ</div>
+                        <div class="flex items-center space-x-3">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"><?php echo count($draftNews); ?></span>
+                            <a href="pages/supabase-news.php" class="text-sm text-primary hover:underline">開く</a>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-700">画像未設定のお知らせ</div>
+                        <div class="flex items-center space-x-3">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"><?php echo count($newsWithoutImage); ?></span>
+                            <a href="pages/supabase-news.php" class="text-sm text-primary hover:underline">開く</a>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-700">画像未設定の施工実績</div>
+                        <div class="flex items-center space-x-3">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"><?php echo count($worksWithoutImage); ?></span>
+                            <a href="pages/supabase-works.php" class="text-sm text-primary hover:underline">開く</a>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-700">公開予定の下書き</div>
+                        <div class="flex items-center space-x-3">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"><?php echo count($scheduledDrafts); ?></span>
+                            <a href="pages/supabase-news.php" class="text-sm text-primary hover:underline">開く</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- 管理メニュー -->
             <div class="bg-white rounded-lg shadow">
                 <div class="px-6 py-4 border-b border-gray-200">
@@ -285,15 +345,15 @@ $currentUser = getCurrentUser();
                     <h2 class="text-lg font-semibold text-gray-900">クイック操作</h2>
                 </div>
                 <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <a href="pages/supabase-news.php" class="block text-center p-4 border rounded-lg hover:bg-gray-50">
-                            <span class="block text-sm text-gray-700">新規お知らせを作成</span>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <a href="pages/supabase-news.php" class="block text-center p-6 border rounded-xl hover:bg-gray-50 bg-white shadow-sm">
+                            <span class="block text-base font-medium text-gray-800">お知らせを作る</span>
                         </a>
-                        <a href="pages/supabase-works.php" class="block text-center p-4 border rounded-lg hover:bg-gray-50">
-                            <span class="block text-sm text-gray-700">新規施工実績を作成</span>
+                        <a href="pages/supabase-works.php" class="block text-center p-6 border rounded-xl hover:bg-gray-50 bg-white shadow-sm">
+                            <span class="block text-base font-medium text-gray-800">施工実績を作る</span>
                         </a>
-                        <a href="pages/supabase-representatives.php" class="block text-center p-4 border rounded-lg hover:bg-gray-50">
-                            <span class="block text-sm text-gray-700">代表者を追加</span>
+                        <a href="pages/supabase-representatives.php" class="block text-center p-6 border rounded-xl hover:bg-gray-50 bg-white shadow-sm">
+                            <span class="block text-base font-medium text-gray-800">代表者を追加</span>
                         </a>
                     </div>
                 </div>
@@ -315,10 +375,14 @@ $currentUser = getCurrentUser();
                             <?php echo $serviceRoleOk ? '設定済み' : '未設定'; ?>
                         </span>
                     </div>
-                    <div class="text-xs text-gray-500">
+                    <div class="text-xs text-gray-500 space-y-1">
                         <?php if (!$serviceRoleOk): ?>
-                            画像アップロードや管理者の本番作成にはサービスロールキーが必要です。
+                            <div>画像アップロードや管理者の本番作成にはサービスロールキーが必要です。</div>
                         <?php endif; ?>
+                        <?php if (!$connectOk && !empty($lastError)): ?>
+                            <div>接続エラー詳細: <?php echo htmlspecialchars($lastError); ?></div>
+                        <?php endif; ?>
+                        <div>モード: <?php echo $offlineMode ? 'オフライン（ローカル動作）' : 'オンライン（Supabaseを使用）'; ?></div>
                     </div>
                 </div>
             </div>

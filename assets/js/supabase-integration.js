@@ -9,8 +9,8 @@ class SupabaseIntegration {
         this.apiBase = this.detectApiBase();
         this.cache = new Map();
         this.cacheExpiry = 5 * 60 * 1000; // 5分間キャッシュ
-        this.supabaseUrl = 'https://kmdoqdsftiorzmjczzyk.supabase.co';
-        this.supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZG9xZHNmdGlvcnptamN6enlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NTIyODIsImV4cCI6MjA3ODUyODI4Mn0.ZoztxEfNKUX1iMuvV0czfywvyNuxMXY2fhRFeoycBIQ';
+        this.supabaseUrl = window.SUPABASE_URL || 'https://kmdoqdsftiorzmjczzyk.supabase.co';
+        this.supabaseAnonKey = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZG9xZHNmdGlvcnptamN6enlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NTIyODIsImV4cCI6MjA3ODUyODI4Mn0.ZoztxEfNKUX1iMuvV0czfywvyNuxMXY2fhRFeoycBIQ';
     }
     
     /**
@@ -22,7 +22,7 @@ class SupabaseIntegration {
         
         // ローカル環境の場合
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            this.useSupabaseDirect = true;
+            this.useSupabaseDirect = !window.SUPABASE_OFFLINE;
             if (path.includes('/katayama-website/')) {
                 return '/katayama-website/api/';
             }
@@ -46,14 +46,6 @@ class SupabaseIntegration {
         }
 
         try {
-            if (this.useSupabaseDirect) {
-                const direct = await this.fetchSupabaseFallback(endpoint, params);
-                const isSettings = endpoint === 'supabase-site-settings.php' && direct && typeof direct === 'object' && !Array.isArray(direct);
-                if (Array.isArray(direct) || isSettings) {
-                    this.cache.set(cacheKey, { data: direct, timestamp: Date.now() });
-                    return direct;
-                }
-            }
             console.log(`🔍 APIリクエスト: ${this.apiBase}${endpoint}`);
             const url = new URL(this.apiBase + endpoint, window.location.origin);
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
@@ -130,7 +122,7 @@ class SupabaseIntegration {
             return resultData;
         } catch (error) {
             console.error(`🚨 API fetch error (${endpoint}):`, error);
-            const fallback = await this.fetchSupabaseFallback(endpoint, params);
+            const fallback = this.useSupabaseDirect ? await this.fetchSupabaseFallback(endpoint, params) : [];
             const isSettings = endpoint === 'supabase-site-settings.php' && fallback && typeof fallback === 'object' && !Array.isArray(fallback);
             if ((fallback && Array.isArray(fallback)) || isSettings) {
                 this.cache.set(cacheKey, { data: fallback, timestamp: Date.now() });
@@ -427,7 +419,9 @@ class SupabaseIntegration {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                             <div class="relative ${imageOrder}">
                                 ${badge}
-                                <img src="${img}" alt="${title}" class="rounded-lg shadow-lg w-full h-80 object-cover" onerror="this.onerror=null;this.src='${fallbackImg}'">
+                                <div class="service-parallax-wrapper rounded-lg shadow-lg">
+                                    <img src="${img}" alt="${title}" class="service-parallax-img" onerror="this.onerror=null;this.src='${fallbackImg}'">
+                                </div>
                             </div>
                             <div class="${textOrder}">
                                 <h3 class="service-title">${title}</h3>
@@ -445,6 +439,9 @@ class SupabaseIntegration {
             try {
                 AOS.refresh();
             } catch (_) {}
+        }
+        if (typeof setupParallax === 'function') {
+            setupParallax();
         }
     }
 
@@ -1219,11 +1216,30 @@ async function initializeServicesPage() {
             supabaseIntegration.showLoading('#services-container');
             const services = await supabaseIntegration.getServices();
             supabaseIntegration.renderServices(services, '#services-container');
+            if (typeof setupParallax === 'function') { setupParallax(); }
         }
     } catch (error) {
         console.error('Services page initialization error:', error);
         supabaseIntegration.showError(error.message, '#services-container');
     }
+}
+
+function setupParallax() {
+    const els = Array.from(document.querySelectorAll('.service-parallax-img'));
+    if (!els.length) return;
+    const onScroll = () => {
+        const vh = window.innerHeight || 800;
+        for (const el of els) {
+            const r = el.getBoundingClientRect();
+            if (r.bottom < 0 || r.top > vh) continue;
+            const s = 0.15;
+            const max = 30;
+            const o = Math.max(-max, Math.min(max, (r.top - vh / 2) * s));
+            el.style.transform = `translateY(${o}px)`;
+        }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
 }
 
 /**

@@ -80,9 +80,9 @@ try {
                     <h1 class="text-xl font-semibold text-primary"><?php echo htmlspecialchars($pageTitle); ?></h1>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <button onclick="openCreateModal()" class="bg-primary text-white px-4 py-2 rounded-lg text-sm hover:bg-primary-light transition duration-200">
+                    <a href="news-create.php" class="bg-primary text-white px-4 py-2 rounded-lg text-sm hover:bg-primary-light transition duration-200">
                         新規作成
-                    </button>
+                    </a>
                     <a href="../logout.php" 
                        class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition duration-200">
                         ログアウト
@@ -128,9 +128,9 @@ try {
                     </select>
                 </div>
                 
-                <button onclick="openCreateModal()" class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-light">
-                    新規作成
-                </button>
+                <a href="news-create.php" class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-light">
+                    新規作成（ウィザード）
+                </a>
             </div>
 
             <!-- ニュース一覧テーブル -->
@@ -183,7 +183,7 @@ try {
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button onclick="editNews('<?php echo $item['id']; ?>')" 
+                                    <button onclick="location.href='news-edit.php?id=<?php echo $item['id']; ?>'" 
                                             class="text-indigo-600 hover:text-indigo-900 mr-3">編集</button>
                                     <button onclick="deleteNews('<?php echo $item['id']; ?>')" 
                                             class="text-red-600 hover:text-red-900">削除</button>

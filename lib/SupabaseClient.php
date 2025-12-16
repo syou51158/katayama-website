@@ -175,6 +175,7 @@ class SupabaseClient {
                 return false;
             }
             if ($httpCode >= 200 && $httpCode < 300) {
+                self::$lastError = '';
                 $decoded = json_decode($response, true);
                 return $decoded ?: [];
             } else {
@@ -209,11 +210,63 @@ class SupabaseClient {
             }
         }
         if ($response === false) {
-            self::$lastError = 'stream error';
-            error_log('Supabase API Error: stream error');
+            // 追加の詳細を収集
+            $last = error_get_last();
+            $detail = $last && isset($last['message']) ? $last['message'] : '';
+            self::$lastError = 'stream error' . ($detail ? (': ' . $detail) : '');
+            error_log('Supabase API Error: ' . self::$lastError);
+            // curl.exe によるフォールバック（Windowsに同梱されるcurlコマンドを利用）
+            $curlPath = 'curl';
+            $cmdHeaders = [];
+            foreach ($headers as $h) {
+                // "-H \"Header: value\"" 形式に整形
+                $cmdHeaders[] = '-H ' . escapeshellarg($h);
+            }
+            $bodyArg = '';
+            $tmpFile = null;
+            if ($data !== null && in_array($method, ['POST','PUT','PATCH'])) {
+                $tmpFile = tempnam(sys_get_temp_dir(), 'sb_json_');
+                if ($tmpFile !== false) {
+                    $json = json_encode($data);
+                    if ($json !== false && file_put_contents($tmpFile, $json) !== false) {
+                        $bodyArg = '--data-binary ' . escapeshellarg('@' . $tmpFile);
+                    } else {
+                        @unlink($tmpFile);
+                        $tmpFile = null;
+                    }
+                } else {
+                    $tmpFile = null;
+                }
+            }
+            $cmd = $curlPath . ' -sS --connect-timeout 10 --max-time 30 -X ' . escapeshellarg($method) . ' ' . implode(' ', $cmdHeaders) . ' ' . $bodyArg . ' -w "\\n%{http_code}" ' . escapeshellarg($url);
+            $output = [];
+            $exitCode = 0;
+            @exec($cmd, $output, $exitCode);
+            if ($tmpFile) {
+                @unlink($tmpFile);
+            }
+            if ($exitCode === 0 && !empty($output)) {
+                $codeLine = array_pop($output);
+                $httpCodeCli = (int)$codeLine;
+                $body = implode("\n", $output);
+                if ($httpCodeCli >= 200 && $httpCodeCli < 300) {
+                    self::$lastError = '';
+                    $decoded = json_decode($body, true);
+                    if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
+                        self::$lastError = 'json_parse_error: ' . json_last_error_msg();
+                        error_log('Supabase API Error: ' . self::$lastError . ' Body: ' . substr($body, 0, 200));
+                        return false;
+                    }
+                    return $decoded ?: [];
+                }
+                self::$lastError = 'HTTP ' . $httpCodeCli . ' - ' . $body;
+                error_log('Supabase API Error (curl.exe): HTTP ' . $httpCodeCli . ' - Response: ' . $body);
+                return false;
+            }
             return false;
         }
         if ($httpCode >= 200 && $httpCode < 300) {
+            self::$lastError = '';
             $decoded = json_decode($response, true);
             return $decoded ?: [];
         } else {

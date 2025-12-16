@@ -3,13 +3,17 @@ require_once '../../lib/SupabaseStorage.php';
 $__cfg = __DIR__ . '/../../config/supabase.secrets.php';
 if (file_exists($__cfg)) { require_once $__cfg; } else { require_once __DIR__ . '/../../config/supabase.secrets.dist.php'; }
 require_once '../includes/auth.php';
-
-checkAuth();
-
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
+
+// 認証チェック（API向けにJSONを返す）
+if (!SupabaseAuth::isLoggedIn()) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'error' => '認証が必要です'], JSON_UNESCAPED_UNICODE);
+    exit;
+}
 
 try {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

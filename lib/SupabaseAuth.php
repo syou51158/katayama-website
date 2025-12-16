@@ -4,6 +4,33 @@ if (file_exists($__cfg)) { require_once $__cfg; } else { require_once __DIR__ . 
 
 class SupabaseAuth {
     private static $lastError = '';
+
+    private static function curlCliRequest(string $method, string $url, array $headers, string $body = '', ?string $bodyFilePath = null): array {
+        $curlPath = 'curl';
+        $cmdHeaders = [];
+        foreach ($headers as $h) {
+            $cmdHeaders[] = '-H ' . escapeshellarg($h);
+        }
+        $bodyArg = '';
+        if ($bodyFilePath !== null) {
+            $bodyArg = '--data-binary ' . escapeshellarg('@' . $bodyFilePath);
+        } elseif ($body !== '') {
+            $bodyArg = '-d ' . escapeshellarg($body);
+        }
+        $cmd = $curlPath . ' -sS --connect-timeout 10 --max-time 30 -X ' . escapeshellarg($method) . ' ' . implode(' ', $cmdHeaders) . ' ' . $bodyArg . ' -w "\\n%{http_code}" ' . escapeshellarg($url);
+
+        $output = [];
+        $exitCode = 0;
+        @exec($cmd, $output, $exitCode);
+        if ($exitCode !== 0 || empty($output)) {
+            return [0, '', 'curl_cli_failed'];
+        }
+        $codeLine = array_pop($output);
+        $httpCode = (int)trim((string)$codeLine);
+        $response = implode("\n", $output);
+        return [$httpCode, $response, ''];
+    }
+
     private static function sendJson(string $url, array $headers, array $payload): array {
         $body = json_encode($payload);
         if (function_exists('curl_init')) {
@@ -47,6 +74,26 @@ class SupabaseAuth {
             }
         }
         $error = $response === false ? 'stream error' : '';
+        if ($response === false) {
+            $last = error_get_last();
+            $detail = $last && isset($last['message']) ? $last['message'] : '';
+            $tmpFile = tempnam(sys_get_temp_dir(), 'sb_json_');
+            if ($tmpFile !== false) {
+                try {
+                    if (file_put_contents($tmpFile, (string)$body) !== false) {
+                        [$httpCodeCli, $responseCli, $errorCli] = self::curlCliRequest('POST', $url, $headers, '', $tmpFile);
+                        if ($errorCli === '') {
+                            return [$httpCodeCli, $responseCli, ''];
+                        }
+                    }
+                } finally {
+                    @unlink($tmpFile);
+                }
+            }
+            if ($detail !== '') {
+                $error = 'stream error: ' . $detail;
+            }
+        }
         return [$httpCode, $response, $error];
     }
     public static function signInWithPassword(string $email, string $password): bool {
@@ -69,9 +116,24 @@ class SupabaseAuth {
             'password' => $password,
         ]);
 
-        if ($error) {
-            error_log('SupabaseAuth signIn error: ' . $error);
-            self::$lastError = $error;
+        // ネットワークエラー時のオフライン認証フォールバック
+        $networkFailure = $error || $httpCode === 0 || $response === false;
+        if ($networkFailure && SupabaseConfig::isOfflineMode()) {
+            $offlineEmail = SupabaseConfig::getOfflineAdminEmail();
+            $offlineHash = SupabaseConfig::getOfflineAdminPasswordHash();
+            if (strcasecmp($email, $offlineEmail) === 0 && password_verify($password, $offlineHash)) {
+                $_SESSION['sb_access_token'] = 'offline_access_token';
+                $_SESSION['sb_refresh_token'] = null;
+                $_SESSION['sb_user'] = [
+                    'email' => $offlineEmail,
+                    'user_metadata' => [ 'full_name' => '管理者(ローカル)' ],
+                    'aud' => 'authenticated',
+                ];
+                $_SESSION['sb_login_time'] = time();
+                self::$lastError = '';
+                return true;
+            }
+            self::$lastError = 'network_offline';
             return false;
         }
 
@@ -240,6 +302,3 @@ class SupabaseAuth {
         return true;
     }
 }
-?>
-
-

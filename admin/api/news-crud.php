@@ -23,6 +23,9 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 try {
     switch ($method) {
+        case 'OPTIONS':
+            http_response_code(204);
+            exit;
         case 'GET':
             handleGet();
             break;
@@ -104,6 +107,11 @@ function handlePost() {
     if (!$input) {
         throw new Exception('無効なJSONデータです');
     }
+
+    if (($input['action'] ?? null) === 'update') {
+        handleUpdateFromInput($input);
+        return;
+    }
     
     // 必須フィールドの検証
     $required = ['title', 'content', 'category', 'published_date'];
@@ -140,45 +148,51 @@ function handlePost() {
 
 function handlePut() {
     $input = json_decode(file_get_contents('php://input'), true);
-    
-    // デバッグ用ログ
-    error_log('News update received data: ' . json_encode($input));
-    
-    if (!$input || empty($input['id'])) {
-        throw new Exception('IDが指定されていません。受信データ: ' . json_encode($input));
+
+    if (!$input) {
+        throw new Exception('無効なJSONデータです');
     }
-    
+
+    handleUpdateFromInput($input);
+}
+
+function handleUpdateFromInput(array $input) {
+    if (empty($input['id'])) {
+        throw new Exception('IDが指定されていません');
+    }
+
     $id = $input['id'];
-    unset($input['id']);
-    
-    // 更新データの準備
+    unset($input['id'], $input['action']);
+
     $data = [];
     $allowedFields = ['title', 'content', 'excerpt', 'category', 'featured_image', 'published_date', 'status'];
-    
     foreach ($allowedFields as $field) {
-        if (isset($input[$field])) {
+        if (array_key_exists($field, $input)) {
             $data[$field] = $input[$field];
         }
     }
-    
+
+    if (isset($data['published_date']) && is_string($data['published_date'])) {
+        $data['published_date'] = str_replace('/', '-', $data['published_date']);
+    }
+
     if (empty($data)) {
         throw new Exception('更新するデータがありません');
     }
-    
-    error_log('News update attempting - Data: ' . json_encode($data) . ' - ID: ' . $id);
+
     $result = SupabaseClient::update('news', $data, ['id' => $id]);
-    
+
     if ($result) {
         echo json_encode([
             'success' => true,
             'data' => $result,
             'message' => 'ニュースが正常に更新されました'
         ], JSON_UNESCAPED_UNICODE);
-    } else {
-        error_log('News update failed - Data: ' . json_encode($data) . ' - ID: ' . $id);
-        $detail = SupabaseClient::getLastError();
-        throw new Exception('ニュースの更新に失敗しました' . ($detail ? '（詳細: ' . $detail . '）' : ''));
+        return;
     }
+
+    $detail = SupabaseClient::getLastError();
+    throw new Exception('ニュースの更新に失敗しました' . ($detail ? '（詳細: ' . $detail . '）' : ''));
 }
 
 function handleDelete() {

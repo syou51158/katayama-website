@@ -30,5 +30,3 @@ function getCurrentUser() {
     $username = $user['user_metadata']['full_name'] ?? ($user['email'] ?? '管理者');
     return [ 'username' => $username, 'logged_in' => true, 'raw' => $user ];
 }
-?>
-

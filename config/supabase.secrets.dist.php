@@ -19,4 +19,11 @@ class SupabaseConfig {
             'Prefer: return=representation'
         ];
     }
+
+    public static function isOfflineMode(): bool {
+        $v = getenv('SUPABASE_OFFLINE');
+        if ($v === false) return false;
+        $v = strtolower(trim((string)$v));
+        return in_array($v, ['1', 'true', 'yes', 'on'], true);
+    }
 }
