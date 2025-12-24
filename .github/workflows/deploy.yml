@@ -21,6 +21,7 @@ jobs:
         set ssl:verify-certificate no;
         open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' '${{ secrets.FTP_SERVER }}';
         ls -la;
+        ls -la web;
         mirror -R -v --parallel=2 \
         --exclude-glob .git*/ \
         --exclude-glob node_modules/ \
@@ -48,4 +49,4 @@ jobs:
         --exclude-glob admin/api/test-update.php \
         --exclude-glob admin/tools/reseed.php \
         --exclude-glob seed-supabase.php \
-        ./ katayama-website"
+        ./ web/katayama-website"
