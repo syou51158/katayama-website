@@ -500,7 +500,7 @@ try {
             console.log('コンテンツ値:', data.content);
             console.log('日付値:', data.published_date);
             
->>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
+
             try {
                 const response = await fetch('../api/news-crud.php', {
                     method: method,
@@ -546,10 +546,8 @@ try {
                     alert('保存に失敗しました: ' + result.error);
                 }
             } catch (error) {
-<<<<<<< HEAD
-=======
                 console.error('エラー:', error);
->>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
+
                 alert('エラーが発生しました: ' + error.message);
             }
         });
@@ -560,9 +558,8 @@ try {
                 closeModal();
             }
         });
-<<<<<<< HEAD
-=======
         // 画像プレビュー更新（相対/絶対URLを許容）
+
         function resolveAdminImageUrl(url) {
             if (!url) return '';
             // 絶対URL
@@ -651,7 +648,6 @@ try {
                 this.value = '';
             }
         });
->>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     </script>
 </body>
 </html>

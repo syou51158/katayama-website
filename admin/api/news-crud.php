@@ -6,10 +6,6 @@
 require_once '../../lib/SupabaseClient.php';
 require_once '../includes/auth.php';
 
-<<<<<<< HEAD
-// 認証チェック
-checkAuth();
-=======
 // 認証チェック（APIはJSONで返却）
 if (!SupabaseAuth::isLoggedIn()) {
     header('Content-Type: application/json; charset=utf-8');
@@ -17,7 +13,7 @@ if (!SupabaseAuth::isLoggedIn()) {
     echo json_encode(['success' => false, 'error' => '認証が必要です']);
     exit;
 }
->>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
+
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
@@ -28,12 +24,10 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 try {
     switch ($method) {
-<<<<<<< HEAD
-=======
         case 'OPTIONS':
             http_response_code(204);
             exit;
->>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
+
         case 'GET':
             handleGet();
             break;
@@ -51,12 +45,6 @@ try {
     }
 } catch (Exception $e) {
     http_response_code(500);
-<<<<<<< HEAD
-    echo json_encode([
-        'success' => false,
-        'error' => $e->getMessage()
-    ], JSON_UNESCAPED_UNICODE);
-=======
     error_log('News CRUD Error: ' . $e->getMessage() . ' - File: ' . $e->getFile() . ' - Line: ' . $e->getLine());
     
     // エラーの詳細情報を含める
@@ -66,7 +54,7 @@ try {
     ];
     
     echo json_encode($errorDetails, JSON_UNESCAPED_UNICODE);
->>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
+
 }
 
 function handleGet() {

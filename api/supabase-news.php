@@ -64,11 +64,4 @@ try {
         'error' => $e->getMessage()
     ], JSON_UNESCAPED_UNICODE);
 }
-?>
 
-
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
