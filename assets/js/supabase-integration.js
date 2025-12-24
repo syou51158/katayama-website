@@ -220,6 +220,8 @@ class SupabaseIntegration {
     resolveImageUrl(path) {
         if (!path) return '';
         const p = String(path);
+        const partnerSample = p.match(/^\/images\/partners\/sample([1-5])\.png$/);
+        if (partnerSample) return `assets/img/partner${partnerSample[1]}.svg`;
         if (p === '/images/service_exterior.png') return 'assets/img/service_exterior.png';
         if (p === '/images/service_equipment.png') return 'assets/img/service_equipment.png';
         if (p.startsWith('http://') || p.startsWith('https://')) return p;
