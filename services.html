@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>事業内容 | 片山建設工業</title>
   <meta name="description" content="片山建設工業の事業内容をご紹介します。解体工事、土木工事、不動産コンサルタント、リフォーム、管理業、ゴミ処理など、幅広く対応いたします。">
-  
+
   <!-- OGP設定 -->
   <meta property="og:title" content="事業内容 | 片山建設工業">
   <meta property="og:description" content="片山建設工業の事業内容をご紹介します。解体工事、土木工事、不動産コンサルタント、リフォーム、管理業、ゴミ処理など、幅広く対応いたします。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.katayama-construction.co.jp/services.html">
   <meta property="og:image" content="https://www.katayama-construction.co.jp/assets/img/ogp.jpg">
-  
+
   <!-- ファビコン -->
   <link rel="icon" href="assets/img/favicon.ico">
-  
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -33,17 +34,21 @@
       }
     }
   </script>
-  
+
   <!-- Alpine.js -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  
+
   <!-- AOS - Animate On Scroll -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  
+
   <!-- カスタムCSS -->
   <link rel="stylesheet" href="assets/css/main.css">
+
+  <!-- Supabase統合 -->
+  <script src="assets/js/supabase-integration.js"></script>
 </head>
+
 <body class="bg-white text-text_dark">
   <!-- ヘッダー -->
   <header class="bg-white shadow z-50">
@@ -51,7 +56,7 @@
       <a href="index.html" class="flex items-center">
         <img src="assets/img/logo.svg" alt="片山建設工業" class="h-10">
       </a>
-      
+
       <!-- PC用ナビゲーション -->
       <nav class="hidden md:flex space-x-6">
         <a href="index.html" class="nav-link">ホーム</a>
@@ -62,7 +67,7 @@
         <a href="news.html" class="nav-link">お知らせ</a>
         <a href="contact.html" class="nav-link">お問い合わせ</a>
       </nav>
-      
+
       <!-- ハンバーガーメニュー -->
       <button id="menu-button" class="md:hidden text-gray-700 focus:outline-none">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,7 +76,7 @@
       </button>
     </div>
   </header>
-  
+
   <!-- モバイルナビゲーション -->
   <div id="mobile-nav" class="mobile-nav hidden">
     <div class="container mx-auto py-4">
@@ -85,7 +90,7 @@
           </svg>
         </button>
       </div>
-      
+
       <nav class="flex flex-col space-y-4">
         <a href="index.html" class="nav-link">ホーム</a>
         <a href="services.html" class="nav-link active">事業内容</a>
@@ -97,7 +102,7 @@
       </nav>
     </div>
   </div>
-  
+
   <!-- メインコンテンツ -->
   <main class="pt-20">
     <!-- パンくずリスト -->
@@ -110,45 +115,32 @@
         </nav>
       </div>
     </div>
-    
+
     <!-- ページヘッダー -->
     <section class="py-12 bg-primary text-white text-center">
       <div class="container">
         <h1 class="text-4xl md:text-5xl font-bold mb-4">事業内容</h1>
-        <p class="max-w-3xl mx-auto">片山建設工業では、解体工事、土木工事、不動産コンサルタント、リフォーム、管理業、ゴミ処理など、総合建設業として幅広いサービスを提供しています。<br>お客様のニーズに合わせた最適なご提案をいたします。</p>
+        <p class="max-w-3xl mx-auto">
+          片山建設工業では、解体工事、土木工事、不動産コンサルタント、リフォーム、管理業、ゴミ処理など、総合建設業として幅広いサービスを提供しています。<br>お客様のニーズに合わせた最適なご提案をいたします。</p>
       </div>
     </section>
-    
-    <!-- 解体工事一式 -->
-    <section class="section">
-      <div class="container">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-aos="fade-up">
-          <div class="order-2 md:order-1">
-            <h2 class="text-3xl font-bold mb-6">解体工事一式</h2>
-            <p class="mb-4">木造、鉄骨造、RC造など、あらゆる構造物の解体工事に対応いたします。安全かつ迅速な作業を心がけ、周辺環境にも配慮した施工を行います。</p>
-            <p class="mb-4">アスベスト除去や内装解体など、特殊な解体作業もお任せください。解体後の廃棄物処理まで一貫して対応可能です。</p>
-            <ul class="list-disc list-inside mb-6 text-gray-700">
-              <li>木造家屋解体</li>
-              <li>ビル・マンション解体</li>
-              <li>店舗・工場解体</li>
-              <li>内装解体</li>
-              <li>アスベスト除去</li>
-            </ul>
-            <a href="contact.html" class="btn-primary">お問い合わせはこちら</a>
-          </div>
-          <div class="order-1 md:order-2">
-            <img src="assets/img/service_kaitai.jpg" alt="解体工事のイメージ" class="rounded-lg shadow-lg w-full">
-          </div>
-        </div>
+
+    <!-- 動的サービス一覧 -->
+    <div id="services-container">
+      <!-- Supabaseからの動的データがここに読み込まれます -->
+      <div class="text-center py-16">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <p class="mt-4 text-gray-500">サービス情報を読み込み中...</p>
       </div>
-    </section>
-    
+    </div>
+
     <!-- 土工、土木工事一式 -->
     <section class="section bg-accent">
       <div class="container">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-aos="fade-up">
           <div>
-            <img src="assets/img/service_doboku.jpg" alt="土木工事のイメージ" class="rounded-lg shadow-lg w-full">
+            <img src="assets/img/service_doboku.png" alt="土木工事のイメージ"
+              class="rounded-lg shadow-lg w-full aspect-[4/3] object-cover">
           </div>
           <div>
             <h2 class="text-3xl font-bold mb-6">土工・土木工事一式</h2>
@@ -166,7 +158,7 @@
         </div>
       </div>
     </section>
-    
+
     <!-- 不動産コンサルタント、仲介 -->
     <section class="section">
       <div class="container">
@@ -185,18 +177,20 @@
             <a href="contact.html" class="btn-primary">お問い合わせはこちら</a>
           </div>
           <div class="order-1 md:order-2">
-            <img src="assets/img/service_fudosan.jpg" alt="不動産コンサルタントのイメージ" class="rounded-lg shadow-lg w-full">
+            <img src="assets/img/service_fudosan.png" alt="不動産コンサルタントのイメージ"
+              class="rounded-lg shadow-lg w-full aspect-[4/3] object-cover">
           </div>
         </div>
       </div>
     </section>
-    
+
     <!-- リフォーム工事一式 -->
     <section class="section bg-accent">
       <div class="container">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-aos="fade-up">
           <div>
-            <img src="assets/img/service_reform.jpg" alt="リフォーム工事のイメージ" class="rounded-lg shadow-lg w-full">
+            <img src="assets/img/service_reform.png" alt="リフォーム工事のイメージ"
+              class="rounded-lg shadow-lg w-full aspect-[4/3] object-cover">
           </div>
           <div>
             <h2 class="text-3xl font-bold mb-6">リフォーム工事一式</h2>
@@ -233,7 +227,8 @@
             <a href="contact.html" class="btn-primary">お問い合わせはこちら</a>
           </div>
           <div class="order-1 md:order-2">
-            <img src="assets/img/service_kenzokaitai.jpg" alt="建造物解体工事のイメージ" class="rounded-lg shadow-lg w-full">
+            <img src="assets/img/service_kenzokaitai.png" alt="建造物解体工事のイメージ"
+              class="rounded-lg shadow-lg w-full aspect-[4/3] object-cover">
           </div>
         </div>
       </div>
@@ -244,7 +239,8 @@
       <div class="container">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-aos="fade-up">
           <div>
-            <img src="assets/img/service_kanri.jpg" alt="管理業・草刈のイメージ" class="rounded-lg shadow-lg w-full">
+            <img src="assets/img/service_kanri.png" alt="管理業・草刈のイメージ"
+              class="rounded-lg shadow-lg w-full aspect-[4/3] object-cover">
           </div>
           <div>
             <h2 class="text-3xl font-bold mb-6">管理業・草刈など</h2>
@@ -270,7 +266,7 @@
           <div class="order-2 md:order-1">
             <h2 class="text-3xl font-bold mb-6">内装解体・土工・ハツリ</h2>
             <p class="mb-4">店舗の改装やオフィスの移転に伴う内装解体、小規模な土工事、コンクリートのハツリ作業など、専門的な技術を要する作業もお任せください。</p>
-            <p class="mb-4">経験豊富な職人が、安全かつ丁寧に作業を進めます。お客様のご要望に応じて、柔軟に対応いたしますので、お気軽にご相談ください。</p>
+            <p class="mb-4">経験豊富な職人が、安全かつ丁寧に作業を進めます。お客様のご要望を丁寧に伺い、柔軟に対応いたしますので、お気軽にご相談ください。</p>
             <ul class="list-disc list-inside mb-6 text-gray-700">
               <li>店舗・オフィスの原状回復工事</li>
               <li>間仕切り撤去</li>
@@ -281,7 +277,8 @@
             <a href="contact.html" class="btn-primary">お問い合わせはこちら</a>
           </div>
           <div class="order-1 md:order-2">
-            <img src="assets/img/service_naisoukaitai.jpg" alt="内装解体・ハツリのイメージ" class="rounded-lg shadow-lg w-full">
+            <img src="assets/img/service_naisoukaitai.png" alt="内装解体・ハツリのイメージ"
+              class="rounded-lg shadow-lg w-full aspect-[4/3] object-cover">
           </div>
         </div>
       </div>
@@ -292,7 +289,8 @@
       <div class="container">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center" data-aos="fade-up">
           <div>
-            <img src="assets/img/service_gomishori.jpg" alt="ゴミ処理・運搬のイメージ" class="rounded-lg shadow-lg w-full">
+            <img src="assets/img/service_gomishori.png" alt="ゴミ処理・運搬のイメージ"
+              class="rounded-lg shadow-lg w-full aspect-[4/3] object-cover">
           </div>
           <div>
             <h2 class="text-3xl font-bold mb-6">ゴミ処理・運搬</h2>
@@ -310,7 +308,7 @@
         </div>
       </div>
     </section>
-    
+
     <!-- サービスの流れ -->
     <section class="section">
       <div class="container">
@@ -320,12 +318,12 @@
             片山建設工業では、お客様の想いをカタチにするため、以下のようなプロセスで進めてまいります。
           </p>
         </div>
-        
+
         <div class="max-w-4xl mx-auto">
           <div class="space-y-8 relative">
             <!-- 縦線 -->
             <div class="absolute left-9 top-0 bottom-0 w-0.5 bg-gray-200 z-0"></div>
-            
+
             <!-- ステップ1 -->
             <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="100">
               <div class="fancy-number">1</div>
@@ -334,7 +332,7 @@
                 <p class="text-gray-600">お客様のご要望や理想をしっかりとヒアリングします。予算や工期についてもこの段階で詳しくお伺いします。</p>
               </div>
             </div>
-            
+
             <!-- ステップ2 -->
             <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="200">
               <div class="fancy-number">2</div>
@@ -343,7 +341,7 @@
                 <p class="text-gray-600">ヒアリング内容をもとに具体的なプランを提案し、見積書を作成します。複数のプランをご用意することも可能です。</p>
               </div>
             </div>
-            
+
             <!-- ステップ3 -->
             <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="300">
               <div class="fancy-number">3</div>
@@ -352,7 +350,7 @@
                 <p class="text-gray-600">プランにご納得いただけましたら、正式契約を締結します。その後、詳細な設計図面や施工計画を作成します。</p>
               </div>
             </div>
-            
+
             <!-- ステップ4 -->
             <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="400">
               <div class="fancy-number">4</div>
@@ -361,7 +359,7 @@
                 <p class="text-gray-600">経験豊富な技術者が責任を持って施工します。工事中も定期的に進捗状況をご報告し、必要に応じて調整を行います。</p>
               </div>
             </div>
-            
+
             <!-- ステップ5 -->
             <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="500">
               <div class="fancy-number">5</div>
@@ -370,7 +368,7 @@
                 <p class="text-gray-600">工事完了後、お客様と一緒に最終確認を行い、問題がなければ引き渡しとなります。使用方法やメンテナンス方法についてもご説明します。</p>
               </div>
             </div>
-            
+
             <!-- ステップ6 -->
             <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="600">
               <div class="fancy-number">6</div>
@@ -383,7 +381,7 @@
         </div>
       </div>
     </section>
-    
+
     <!-- お問い合わせセクション -->
     <section class="py-16 bg-primary text-white">
       <div class="container">
@@ -395,7 +393,8 @@
           </p>
           <div class="flex flex-col sm:flex-row justify-center gap-4">
             <a href="contact.html" class="btn-secondary">お問い合わせフォーム</a>
-            <a href="tel:09056501106" class="text-4xl md:text-5xl font-bold text-primary hover:text-primary_light transition-colors">
+            <a href="tel:09056501106"
+              class="text-4xl md:text-5xl font-bold text-primary hover:text-primary_light transition-colors">
               090-5650-1106
             </a>
           </div>
@@ -403,7 +402,7 @@
       </div>
     </section>
   </main>
-  
+
   <!-- フッター -->
   <footer class="bg-gray-800 text-white py-12">
     <div class="container">
@@ -412,7 +411,7 @@
           <img src="assets/img/logo.svg" alt="片山建設工業" class="h-10 mb-4 brightness-200">
           <p class="text-sm text-gray-400">地域と共に歩み、<br>皆様の暮らしを支える建設会社です。</p>
         </div>
-        
+
         <div>
           <h3 class="text-lg font-bold mb-4">リンク</h3>
           <ul class="space-y-2">
@@ -425,7 +424,7 @@
             <li><a href="contact.html" class="text-gray-400 hover:text-white">お問い合わせ</a></li>
           </ul>
         </div>
-        
+
         <div>
           <h3 class="text-lg font-bold mb-4">サービス</h3>
           <ul class="space-y-2">
@@ -437,7 +436,7 @@
             <li><a href="services.html" class="text-gray-400 hover:text-white">ゴミ処理・運搬</a></li>
           </ul>
         </div>
-        
+
         <div>
           <h3 class="text-lg font-bold mb-4">会社情報</h3>
           <address class="not-italic text-gray-400 space-y-3">
@@ -449,7 +448,7 @@
           </address>
         </div>
       </div>
-      
+
       <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
         <p>© 2024 片山建設工業 All Rights Reserved.</p>
         <p class="mt-2">
@@ -458,12 +457,12 @@
       </div>
     </div>
   </footer>
-  
+
   <!-- カスタムJS -->
   <script src="assets/js/main.js"></script>
   <script>
     // AOSの初期化
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       AOS.init({
         duration: 800,
         once: true,
@@ -472,4 +471,5 @@
     });
   </script>
 </body>
+
 </html>
