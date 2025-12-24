@@ -5,6 +5,29 @@ require_once '../lib/SupabaseClient.php';
 // 認証チェック
 checkAuth();
 
+<<<<<<< HEAD
+try {
+    // Supabaseから統計データを取得
+    $allNews = SupabaseClient::select('news');
+    $allWorks = SupabaseClient::select('works');
+    $allServices = SupabaseClient::select('services');
+    $allTestimonials = SupabaseClient::select('testimonials');
+    
+    // 統計を計算
+    $publishedNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'published');
+    $publishedWorks = array_filter($allWorks ?: [], fn($item) => $item['status'] === 'published');
+    $draftNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'draft');
+    
+    // 今月の更新を計算
+    $thisMonth = date('Y-m');
+    $monthlyUpdates = array_filter(array_merge($allNews ?: [], $allWorks ?: []), function($item) use ($thisMonth) {
+        return isset($item['updated_at']) && strpos($item['updated_at'], $thisMonth) === 0;
+    });
+    
+    // 最近の更新（最新5件）
+    $recentNews = array_slice(array_reverse($allNews ?: []), 0, 3);
+    $recentWorks = array_slice(array_reverse($allWorks ?: []), 0, 2);
+=======
     try {
         // Supabaseから統計データを取得
         $allNews = SupabaseClient::select('news');
@@ -44,17 +67,22 @@ checkAuth();
     $serviceRoleOk = ($serviceRoleKey && $serviceRoleKey !== 'YOUR_SERVICE_ROLE_KEY_HERE' && $serviceRoleKey !== 'CHANGE_ME');
     $lastError = SupabaseClient::getLastError();
     $offlineMode = method_exists('SupabaseConfig', 'isOfflineMode') ? SupabaseConfig::isOfflineMode() : false;
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     
 } catch (Exception $e) {
     // エラーハンドリング
     $error = $e->getMessage();
     $publishedNews = $publishedWorks = $draftNews = $monthlyUpdates = [];
     $recentNews = $recentWorks = [];
+<<<<<<< HEAD
+}
+=======
     $activeRepresentatives = [];
     $connectOk = false;
     $serviceRoleOk = false;
 }
 $currentUser = getCurrentUser();
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -264,9 +292,26 @@ $currentUser = getCurrentUser();
                             </div>
                         </a>
                         
+<<<<<<< HEAD
+                        <a href="pages/news.php" 
+                           class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-200 opacity-60">
+                            <div class="p-2 bg-gray-100 text-gray-600 rounded-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-4">
+                                <h3 class="font-medium text-gray-500">お知らせ管理（旧JSON）</h3>
+                                <p class="text-sm text-gray-400">従来のJSONベース（参考用）</p>
+                            </div>
+                        </a>
+                        
+                        <a href="pages/works.php" 
+=======
                         
                         
                         <a href="pages/supabase-works.php" 
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                            class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-200">
                             <div class="p-2 bg-green-100 text-green-600 rounded-lg">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

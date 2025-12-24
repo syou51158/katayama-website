@@ -5,7 +5,11 @@ require_once '../../lib/SupabaseClient.php';
 // 認証チェック
 checkAuth();
 
+<<<<<<< HEAD
+$pageTitle = 'ニュース管理（Supabase）';
+=======
 $pageTitle = 'お知らせ管理';
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
 $currentPage = 'supabase-news';
 
 // ページネーション設定
@@ -65,6 +69,27 @@ try {
             }
         }
     </script>
+<<<<<<< HEAD
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex">
+        <!-- サイドバー -->
+        <div class="w-64 bg-primary text-white">
+            <div class="p-6">
+                <h1 class="text-xl font-bold">管理画面</h1>
+            </div>
+            <nav class="mt-6">
+                <a href="news.php" class="block px-6 py-2 hover:bg-primary-light">ニュース管理（JSON）</a>
+                <a href="supabase-news.php" class="block px-6 py-2 bg-primary-light">ニュース管理（Supabase）</a>
+                <a href="works.php" class="block px-6 py-2 hover:bg-primary-light">施工実績管理（JSON）</a>
+                <a href="supabase-works.php" class="block px-6 py-2 hover:bg-primary-light">施工実績管理（Supabase）</a>
+                <a href="../logout.php" class="block px-6 py-2 hover:bg-primary-light">ログアウト</a>
+            </nav>
+        </div>
+
+        <!-- メインコンテンツ -->
+        <div class="flex-1 p-8">
+=======
     </head>
 <body class="bg-gray-50">
     <!-- ヘッダー -->
@@ -93,6 +118,7 @@ try {
     </header>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             <div class="mb-6">
                 <h2 class="text-3xl font-bold text-gray-800"><?php echo htmlspecialchars($pageTitle); ?></h2>
                 <p class="text-gray-600 mt-2">Supabaseデータベースのニュースを管理します</p>
@@ -104,6 +130,19 @@ try {
                 </div>
             <?php endif; ?>
             
+<<<<<<< HEAD
+            <!-- デバッグ情報（開発用） -->
+            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">
+                <strong>デバッグ情報:</strong>
+                <ul>
+                    <li>現在のページ: <?php echo $page; ?></li>
+                    <li>1ページあたりの件数: <?php echo $limit; ?></li>
+                    <li>オフセット: <?php echo $offset; ?></li>
+                    <li>取得されたニュース件数: <?php echo count($news); ?></li>
+                    <li>総件数: <?php echo isset($total) ? $total : '未取得'; ?></li>
+                    <li>フィルター: <?php echo $category ? htmlspecialchars($category) : 'なし'; ?></li>
+                </ul>
+=======
             <!-- サマリー -->
             <div class="bg-gray-50 border border-gray-200 text-gray-700 px-4 py-3 rounded mb-4">
                 <div class="flex flex-wrap items-center gap-4 text-sm">
@@ -113,6 +152,7 @@ try {
                     <div>表示件数/ページ: <span class="font-semibold"><?php echo $limit; ?></span></div>
                     <div>フィルター: <span class="font-semibold"><?php echo $category ? htmlspecialchars($category) : 'なし'; ?></span></div>
                 </div>
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             </div>
 
             <!-- フィルターとアクション -->
@@ -128,9 +168,15 @@ try {
                     </select>
                 </div>
                 
+<<<<<<< HEAD
+                <button onclick="openCreateModal()" class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-light">
+                    新規作成
+                </button>
+=======
                 <a href="news-create.php" class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-light">
                     新規作成（ウィザード）
                 </a>
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             </div>
 
             <!-- ニュース一覧テーブル -->
@@ -183,7 +229,11 @@ try {
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<<<<<<< HEAD
+                                    <button onclick="editNews('<?php echo $item['id']; ?>')" 
+=======
                                     <button onclick="location.href='news-edit.php?id=<?php echo $item['id']; ?>'" 
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                                             class="text-indigo-600 hover:text-indigo-900 mr-3">編集</button>
                                     <button onclick="deleteNews('<?php echo $item['id']; ?>')" 
                                             class="text-red-600 hover:text-red-900">削除</button>
@@ -196,6 +246,28 @@ try {
             </div>
 
             <!-- ページネーション -->
+<<<<<<< HEAD
+            <?php if (!empty($news) && count($news) >= $limit): ?>
+            <div class="mt-6 flex justify-center">
+                <div class="flex gap-2">
+                    <?php if ($page > 1): ?>
+                        <a href="?page=<?php echo $page - 1; ?><?php echo $category ? '&category=' . urlencode($category) : ''; ?>" 
+                           class="px-3 py-2 border border-gray-300 rounded text-gray-500 hover:bg-gray-50">前へ</a>
+                    <?php endif; ?>
+                    
+                    <span class="px-3 py-2 bg-primary text-white rounded">
+                        <?php echo $page; ?>
+                    </span>
+                    
+                    <?php if (count($news) >= $limit): ?>
+                        <a href="?page=<?php echo $page + 1; ?><?php echo $category ? '&category=' . urlencode($category) : ''; ?>" 
+                           class="px-3 py-2 border border-gray-300 rounded text-gray-500 hover:bg-gray-50">次へ</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+        </div>
+=======
             <?php 
                 $totalPages = max(1, (int)ceil(($total ?: 0) / $limit));
                 $prevPage = max(1, $page - 1);
@@ -211,6 +283,7 @@ try {
                     <a href="?page=<?php echo $totalPages; ?><?php echo $qsCategory; ?>" class="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 <?php echo $page >= $totalPages ? 'pointer-events-none opacity-50' : ''; ?>">最後</a>
                 </div>
             </div>
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     </div>
 
     <!-- 作成/編集モーダル -->
@@ -247,6 +320,8 @@ try {
                             <textarea id="content" name="content" rows="6" required 
                                       class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
                         </div>
+<<<<<<< HEAD
+=======
 
                         <!-- サムネイル画像 -->
                         <div class="mb-4">
@@ -269,6 +344,7 @@ try {
                                 </div>
                             </div>
                         </div>
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                         
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div>
@@ -335,7 +411,10 @@ try {
             document.getElementById('newsForm').reset();
             document.getElementById('newsId').value = '';
             document.getElementById('published_date').value = new Date().toISOString().split('T')[0];
+<<<<<<< HEAD
+=======
             updateImagePreview('');
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             document.getElementById('newsModal').classList.remove('hidden');
         }
 
@@ -351,7 +430,11 @@ try {
                 
                 if (result.success) {
                     const news = result.data;
+<<<<<<< HEAD
+                    document.getElementById('modalTitle').textContent = 'ニュース編集';
+=======
                     document.getElementById('modalTitle').textContent = (news.title ? news.title + ' の編集' : 'ニュース編集');
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                     document.getElementById('newsId').value = news.id;
                     document.getElementById('title').value = news.title;
                     document.getElementById('excerpt').value = news.excerpt || '';
@@ -359,8 +442,11 @@ try {
                     document.getElementById('category').value = news.category;
                     document.getElementById('published_date').value = news.published_date;
                     document.getElementById('status').value = news.status;
+<<<<<<< HEAD
+=======
                     document.getElementById('featured_image').value = news.featured_image || '';
                     updateImagePreview(news.featured_image || '');
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                     document.getElementById('newsModal').classList.remove('hidden');
                 } else {
                     alert('データの取得に失敗しました: ' + result.error);
@@ -404,6 +490,8 @@ try {
             const isEdit = !!data.id;
             const method = isEdit ? 'PUT' : 'POST';
             
+<<<<<<< HEAD
+=======
             // デバッグ用ログ
             console.log('送信データ:', data);
             console.log('メソッド:', method);
@@ -412,6 +500,7 @@ try {
             console.log('コンテンツ値:', data.content);
             console.log('日付値:', data.published_date);
             
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             try {
                 const response = await fetch('../api/news-crud.php', {
                     method: method,
@@ -421,6 +510,9 @@ try {
                     body: JSON.stringify(data)
                 });
                 
+<<<<<<< HEAD
+                const result = await response.json();
+=======
                 console.log('レスポンスステータス:', response.status);
                 console.log('レスポンスヘッダー:', response.headers.get('content-type'));
                 
@@ -444,6 +536,7 @@ try {
                 }
                 
                 console.log('レスポンス:', result);
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                 
                 if (result.success) {
                     alert(isEdit ? 'ニュースを更新しました' : 'ニュースを作成しました');
@@ -453,7 +546,10 @@ try {
                     alert('保存に失敗しました: ' + result.error);
                 }
             } catch (error) {
+<<<<<<< HEAD
+=======
                 console.error('エラー:', error);
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                 alert('エラーが発生しました: ' + error.message);
             }
         });
@@ -464,6 +560,8 @@ try {
                 closeModal();
             }
         });
+<<<<<<< HEAD
+=======
         // 画像プレビュー更新（相対/絶対URLを許容）
         function resolveAdminImageUrl(url) {
             if (!url) return '';
@@ -553,6 +651,7 @@ try {
                 this.value = '';
             }
         });
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     </script>
 </body>
 </html>

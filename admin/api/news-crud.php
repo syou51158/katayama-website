@@ -6,6 +6,10 @@
 require_once '../../lib/SupabaseClient.php';
 require_once '../includes/auth.php';
 
+<<<<<<< HEAD
+// 認証チェック
+checkAuth();
+=======
 // 認証チェック（APIはJSONで返却）
 if (!SupabaseAuth::isLoggedIn()) {
     header('Content-Type: application/json; charset=utf-8');
@@ -13,6 +17,7 @@ if (!SupabaseAuth::isLoggedIn()) {
     echo json_encode(['success' => false, 'error' => '認証が必要です']);
     exit;
 }
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
 
 header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
@@ -23,9 +28,12 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 try {
     switch ($method) {
+<<<<<<< HEAD
+=======
         case 'OPTIONS':
             http_response_code(204);
             exit;
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
         case 'GET':
             handleGet();
             break;
@@ -43,6 +51,12 @@ try {
     }
 } catch (Exception $e) {
     http_response_code(500);
+<<<<<<< HEAD
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage()
+    ], JSON_UNESCAPED_UNICODE);
+=======
     error_log('News CRUD Error: ' . $e->getMessage() . ' - File: ' . $e->getFile() . ' - Line: ' . $e->getLine());
     
     // エラーの詳細情報を含める
@@ -52,6 +66,7 @@ try {
     ];
     
     echo json_encode($errorDetails, JSON_UNESCAPED_UNICODE);
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
 }
 
 function handleGet() {
@@ -107,11 +122,14 @@ function handlePost() {
     if (!$input) {
         throw new Exception('無効なJSONデータです');
     }
+<<<<<<< HEAD
+=======
 
     if (($input['action'] ?? null) === 'update') {
         handleUpdateFromInput($input);
         return;
     }
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     
     // 必須フィールドの検証
     $required = ['title', 'content', 'category', 'published_date'];
@@ -121,14 +139,21 @@ function handlePost() {
         }
     }
     
+<<<<<<< HEAD
+=======
     $publishedDate = str_replace('/', '-', $input['published_date']);
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     $data = [
         'title' => $input['title'],
         'content' => $input['content'],
         'excerpt' => $input['excerpt'] ?? null,
         'category' => $input['category'],
         'featured_image' => $input['featured_image'] ?? null,
+<<<<<<< HEAD
+        'published_date' => $input['published_date'],
+=======
         'published_date' => $publishedDate,
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
         'status' => $input['status'] ?? 'draft'
     ];
     
@@ -141,13 +166,43 @@ function handlePost() {
             'message' => 'ニュースが正常に作成されました'
         ], JSON_UNESCAPED_UNICODE);
     } else {
+<<<<<<< HEAD
+        throw new Exception('ニュースの作成に失敗しました');
+=======
         $detail = SupabaseClient::getLastError();
         throw new Exception('ニュースの作成に失敗しました' . ($detail ? '（詳細: ' . $detail . '）' : ''));
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     }
 }
 
 function handlePut() {
     $input = json_decode(file_get_contents('php://input'), true);
+<<<<<<< HEAD
+    
+    if (!$input || empty($input['id'])) {
+        throw new Exception('IDが指定されていません');
+    }
+    
+    $id = $input['id'];
+    unset($input['id']);
+    
+    // 更新データの準備
+    $data = [];
+    $allowedFields = ['title', 'content', 'excerpt', 'category', 'featured_image', 'published_date', 'status'];
+    
+    foreach ($allowedFields as $field) {
+        if (isset($input[$field])) {
+            $data[$field] = $input[$field];
+        }
+    }
+    
+    if (empty($data)) {
+        throw new Exception('更新するデータがありません');
+    }
+    
+    $result = SupabaseClient::update('news', $data, ['id' => $id]);
+    
+=======
 
     if (!$input) {
         throw new Exception('無効なJSONデータです');
@@ -182,17 +237,24 @@ function handleUpdateFromInput(array $input) {
 
     $result = SupabaseClient::update('news', $data, ['id' => $id]);
 
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     if ($result) {
         echo json_encode([
             'success' => true,
             'data' => $result,
             'message' => 'ニュースが正常に更新されました'
         ], JSON_UNESCAPED_UNICODE);
+<<<<<<< HEAD
+    } else {
+        throw new Exception('ニュースの更新に失敗しました');
+    }
+=======
         return;
     }
 
     $detail = SupabaseClient::getLastError();
     throw new Exception('ニュースの更新に失敗しました' . ($detail ? '（詳細: ' . $detail . '）' : ''));
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
 }
 
 function handleDelete() {
@@ -213,4 +275,10 @@ function handleDelete() {
         throw new Exception('ニュースの削除に失敗しました');
     }
 }
+<<<<<<< HEAD
+?>
+
+
+=======
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
 

@@ -228,3 +228,8 @@ CREATE INDEX idx_services_sort_order ON services(sort_order) WHERE status = 'act
 - 環境情報（PHP、Webサーバーのバージョン等）
 
 
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485

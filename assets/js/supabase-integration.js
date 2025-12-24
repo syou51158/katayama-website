@@ -12,8 +12,7 @@ class SupabaseIntegration {
 this.supabaseUrl = window.SUPABASE_URL || 'https://kmdoqdsftiorzmjczzyk.supabase.co';
         this.supabaseAnonKey = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZG9xZHNmdGlvcnptamN6enlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NTIyODIsImV4cCI6MjA3ODUyODI4Mn0.ZoztxEfNKUX1iMuvV0czfywvyNuxMXY2fhRFeoycBIQ';
 }
-    
-    /**
+/**
      * 環境に応じて適切なAPIベースパスを検出
      */
     detectApiBase() {
@@ -24,7 +23,7 @@ this.supabaseUrl = window.SUPABASE_URL || 'https://kmdoqdsftiorzmjczzyk.supabase
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
 this.useSupabaseDirect = !window.SUPABASE_OFFLINE;
 if (path.includes('/katayama-website/')) {
-                return '/katayama-website/api/';
+return '/katayama-website/api/';
             }
             return 'api/'; // 相対パス
         }
@@ -32,7 +31,7 @@ if (path.includes('/katayama-website/')) {
         // プロダクション環境
 this.useSupabaseDirect = false;
 return '/api/';
-    }
+}
 
     /**
      * APIからデータを取得（キャッシュ機能付き）
@@ -54,7 +53,7 @@ return '/api/';
             const response = await fetch(url);
             
 // PHPが実行されていない場合（生のPHPコードが返された場合）はモックAPIを使用
-            const responseText = await response.text();
+const responseText = await response.text();
             console.log(`📄 レスポンス内容プレビュー (${endpoint}):`, responseText.substring(0, 100));
             
             if ((responseText.includes('<?php') || responseText.includes('require_once')) && (typeof window !== 'undefined' && window.mockApiEnabled === true)) {
@@ -95,8 +94,7 @@ return '/api/';
             }
             
 console.log(`📦 APIレスポンス:`, data);
-            
-            // 様々なレスポンス形式に対応
+// 様々なレスポンス形式に対応
             let resultData;
             if (Array.isArray(data)) {
                 // 直接配列が返された場合
@@ -123,7 +121,7 @@ console.log(`📦 APIレスポンス:`, data);
         } catch (error) {
             console.error(`🚨 API fetch error (${endpoint}):`, error);
 const fallback = this.useSupabaseDirect ? await this.fetchSupabaseFallback(endpoint, params) : [];
-            const isSettings = endpoint === 'supabase-site-settings.php' && fallback && typeof fallback === 'object' && !Array.isArray(fallback);
+const isSettings = endpoint === 'supabase-site-settings.php' && fallback && typeof fallback === 'object' && !Array.isArray(fallback);
             if ((fallback && Array.isArray(fallback)) || isSettings) {
                 this.cache.set(cacheKey, { data: fallback, timestamp: Date.now() });
                 return fallback;
@@ -133,7 +131,7 @@ return [];
     }
 
 async fetchSupabaseFallback(endpoint, params = {}) {
-        try {
+try {
             const tableMap = {
                 'supabase-news.php': 'news',
                 'supabase-works.php': 'works',
@@ -236,7 +234,7 @@ async fetchSupabaseFallback(endpoint, params = {}) {
     }
 
 /**
-     * ニュースデータを取得
+* ニュースデータを取得
      */
     async getNews(limit = 10, offset = 0, category = null) {
         const params = { limit, offset };
@@ -280,7 +278,7 @@ async fetchSupabaseFallback(endpoint, params = {}) {
 
     /**
 * 代表者データを取得
-     */
+*/
     async getRepresentatives() {
         return await this.fetchData('supabase-representatives.php');
     }
@@ -315,7 +313,7 @@ async fetchSupabaseFallback(endpoint, params = {}) {
 
     /**
 * ニュース一覧をHTMLにレンダリング
-     */
+*/
     renderNewsList(news, containerSelector) {
         const container = document.querySelector(containerSelector);
         if (!container || !news.length) return;
@@ -355,7 +353,7 @@ async fetchSupabaseFallback(endpoint, params = {}) {
         if (!container || !works.length) return;
 
 const worksHtml = works.map((item, index) => {
-            const completionYear = item.completion_date ? 
+const completionYear = item.completion_date ? 
                 new Date(item.completion_date).getFullYear() + '年竣工' : '';
             const resolved = this.resolveImageUrl(item.featured_image);
             const imgSrc = resolved || this.getWorksFallbackImage(index);
@@ -365,7 +363,7 @@ return `
 <img src="${imgSrc}" alt="${this.escapeHtml(item.title)}" 
                              class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110" onerror="this.onerror=null;this.src='${this.getWorksFallbackImage(index)}'">
 <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">
-                            ${item.category}
+${item.category}
                         </div>
                         <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                             <button class="btn-secondary px-4 py-2 text-sm" 
@@ -389,7 +387,7 @@ return `
     }
 
 renderServices(services, containerSelector) {
-        const container = document.querySelector(containerSelector);
+const container = document.querySelector(containerSelector);
         if (!container) return;
         if (!Array.isArray(services) || services.length === 0) {
             services = this.getDefaultServices();
@@ -527,13 +525,13 @@ renderServices(services, containerSelector) {
     }
 
 /**
-     * お客様の声をHTMLにレンダリング
+* お客様の声をHTMLにレンダリング
      */
     renderTestimonials(testimonials, containerSelector) {
         const container = document.querySelector(containerSelector);
         if (!container || !testimonials.length) return;
 const testimonialsHtml = testimonials.map((item, index) => {
-            const name = this.escapeHtml(item.customer_name || '');
+const name = this.escapeHtml(item.customer_name || '');
             const project = this.escapeHtml(item.project_type || '');
             const content = this.escapeHtml(item.content || '');
             const rating = Math.max(0, Math.min(5, Number(item.rating || 0)));
@@ -559,7 +557,7 @@ const testimonialsHtml = testimonials.map((item, index) => {
             </div>`;
         }).join('');
 container.innerHTML = testimonialsHtml;
-    }
+}
 
     /**
      * 会社統計をHTMLにレンダリング
@@ -584,7 +582,7 @@ container.innerHTML = testimonialsHtml;
 
     /**
 * 代表者をHTMLにレンダリング
-     */
+*/
     renderRepresentatives(representatives, containerSelector) {
         const container = document.querySelector(containerSelector);
         if (!container || !representatives.length) return;
@@ -926,7 +924,7 @@ container.innerHTML = testimonialsHtml;
 
     /**
 * カテゴリに応じたCSSクラスを取得
-     */
+*/
     getCategoryClass(category) {
         const categoryClasses = {
             'お知らせ': 'bg-blue-50 text-primary',
@@ -999,7 +997,7 @@ document.addEventListener('DOMContentLoaded', function() {
         initializeWorksPage();
     }
 // サービスページの初期化
-    if (document.querySelector('#services-container')) {
+if (document.querySelector('#services-container')) {
         initializeServicesPage();
     }
 
@@ -1055,20 +1053,20 @@ async function initializeHomePage() {
         }
 
 // ホーム: 施工実績スライダーに最新を反映
-        const homeWorksSlider = document.querySelector('.works-slider');
+const homeWorksSlider = document.querySelector('.works-slider');
         if (homeWorksSlider) {
             const works = await supabaseIntegration.getWorks(6);
             renderHomeWorksSlider(works);
         }
 
 } catch (error) {
-        console.error('Homepage initialization error:', error);
+console.error('Homepage initialization error:', error);
     }
 }
 
 /**
 * ホームの施工実績スライダーをレンダリング
- */
+*/
 function renderHomeWorksSlider(works) {
     const slider = document.querySelector('.works-slider');
     if (!slider) return;
@@ -1106,7 +1104,7 @@ function renderHomeWorksSlider(works) {
 
 /**
 * ニュースページ用のレンダリング関数
- */
+*/
 function renderNewsPage(news) {
     const container = document.querySelector('#news-container');
     if (!container || !Array.isArray(news)) {
@@ -1133,7 +1131,7 @@ function renderNewsPage(news) {
                              alt="${item.title}" class="w-full h-full object-cover" 
                              onerror="this.onerror=null;this.src='assets/img/ogp.jpg'">
 </div>
-                    <div class="p-6 md:col-span-2">
+<div class="p-6 md:col-span-2">
                         <div class="flex items-center mb-4">
                             <span class="text-sm text-gray-500 mr-3">${formattedDate}</span>
                             <span class="${categoryClass}">${item.category}</span>
@@ -1202,7 +1200,7 @@ if (typeof setupCategoryFilter === 'function') {
                 setupCategoryFilter();
             }
 }
-    } catch (error) {
+} catch (error) {
         console.error('Works page initialization error:', error);
         supabaseIntegration.showError(error.message, '#works-grid');
     }
