@@ -1,4 +1,4 @@
-name: Deploy to Lolipop
+name: Deploy to Lolipop (SSH Key)
 on:
   push:
     branches:
@@ -11,43 +11,42 @@ jobs:
     - name: Get latest code
       uses: actions/checkout@v4
     
-    - name: FTP Deploy
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        # 重要: SSHで確認した正しい階層を指定
-        server-dir: web/katayama-website/
-        dangerous-clean-slate: false
-        protocol: ftp
-        port: 21
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
-          .env*
-          .tools/**
-          .trae/**
-          .vercel/**
-          supabase/**
-          scripts/**
-          cms/**
-          generate-password.php
-          MCP-SETUP.md
-          DEPLOYMENT-GUIDE.md
-          setup-guide.md
-          SUPABASE-SETUP-GUIDE.md
-          package.json
-          Trend Company.svg
-          config/supabase.secrets.php
-          debug-api.php
-          test-api.php
-          test-local.html
-          test-site-settings.html
-          admin/api/debug-supabase.php
-          admin/api/test-connection.php
-          admin/api/test-update.php
-          admin/tools/reseed.php
-          seed-supabase.php
-          server_check.php
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -p 2222 -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy via Rsync
+      run: |
+        rsync -avz --delete \
+          -e "ssh -p 2222 -i ~/.ssh/id_rsa -o StrictHostKeyChecking=yes" \
+          --exclude '.git*' \
+          --exclude 'node_modules' \
+          --exclude '.env*' \
+          --exclude '.tools' \
+          --exclude '.trae' \
+          --exclude '.vercel' \
+          --exclude 'supabase' \
+          --exclude 'scripts' \
+          --exclude 'cms' \
+          --exclude 'generate-password.php' \
+          --exclude 'MCP-SETUP.md' \
+          --exclude 'DEPLOYMENT-GUIDE.md' \
+          --exclude 'setup-guide.md' \
+          --exclude 'SUPABASE-SETUP-GUIDE.md' \
+          --exclude 'package.json' \
+          --exclude 'Trend Company.svg' \
+          --exclude 'config/supabase.secrets.php' \
+          --exclude 'debug-api.php' \
+          --exclude 'test-api.php' \
+          --exclude 'test-local.html' \
+          --exclude 'test-site-settings.html' \
+          --exclude 'admin/api/debug-supabase.php' \
+          --exclude 'admin/api/test-connection.php' \
+          --exclude 'admin/api/test-update.php' \
+          --exclude 'admin/tools/reseed.php' \
+          --exclude 'seed-supabase.php' \
+          --exclude 'server_check.php' \
+          ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:web/katayama-website/
