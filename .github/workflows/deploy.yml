@@ -20,7 +20,8 @@ jobs:
         set ftp:ssl-allow no;
         set ssl:verify-certificate no;
         open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' '${{ secrets.FTP_SERVER }}';
-        mkdir -p -f ${{ secrets.FTP_SERVER_DIR }};
+        ls -la;
+        mkdir -p -f web/katayama-website;
         mirror -R -v --parallel=2 \
         --exclude-glob .git*/ \
         --exclude-glob .github/ \
@@ -49,4 +50,4 @@ jobs:
         --exclude-glob admin/api/test-update.php \
         --exclude-glob admin/tools/reseed.php \
         --exclude-glob seed-supabase.php \
-        ./ ${{ secrets.FTP_SERVER_DIR }}"
+        ./ web/katayama-website"
