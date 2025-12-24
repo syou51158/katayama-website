@@ -566,16 +566,20 @@ container.innerHTML = testimonialsHtml;
         const container = document.querySelector(containerSelector);
         if (!container || !stats.length) return;
 
-        const statsHtml = stats.map((item, index) => `
+        const statsHtml = stats.map((item, index) => {
+            const value = item.stat_value ?? item.value ?? '';
+            const unit = item.stat_unit ?? item.unit ?? '';
+            const name = this.escapeHtml(item.stat_name ?? item.label ?? '');
+            return `
             <div data-aos="fade-up" data-aos-delay="${index * 100}" 
                  class="p-6 border-b-2 border-secondary elegant-shadow">
                 <div class="text-4xl md:text-5xl font-bold mb-3">
-                    ${item.stat_value}<span class="text-secondary">${item.stat_unit || ''}</span>
+                    ${value}<span class="text-secondary">${unit}</span>
                 </div>
                 <div class="w-12 h-0.5 bg-secondary mx-auto mb-3"></div>
-                <p class="uppercase tracking-wide text-sm">${this.escapeHtml(item.stat_name)}</p>
+                <p class="uppercase tracking-wide text-sm">${name}</p>
             </div>
-        `).join('');
+        `}).join('');
 
         container.innerHTML = statsHtml;
     }
@@ -661,6 +665,8 @@ container.innerHTML = testimonialsHtml;
         const companyFax = siteSettings.company_fax;
         const companyEmail = siteSettings.company_email || siteSettings.contact_email;
         const companyAddress = siteSettings.company_address || siteSettings.address;
+        const representativeName = siteSettings.representative_name;
+        const registrationNumber = siteSettings.registration_number;
         const heroTitle = siteSettings.hero_title;
         const heroSubtitle = siteSettings.hero_subtitle;
 
@@ -735,6 +741,16 @@ container.innerHTML = testimonialsHtml;
             taglineElements.forEach(el => {
                 el.textContent = siteSettings.company_tagline;
             });
+        }
+        
+        if (representativeName) {
+            const repEls = document.querySelectorAll('[data-site-setting="representative_name"]');
+            repEls.forEach(el => { el.textContent = representativeName; });
+        }
+        
+        if (registrationNumber) {
+            const regEls = document.querySelectorAll('[data-site-setting="registration_number"]');
+            regEls.forEach(el => { el.textContent = registrationNumber; });
         }
         
         // ヒーローセクションの更新

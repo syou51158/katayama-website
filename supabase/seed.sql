@@ -1,78 +1,48 @@
-insert into public.news (title, content, excerpt, category, featured_image, published_date, status)
-values
-('サンプルニュース 1','本文1','抜粋1','お知らせ',null, current_date - interval '1 day','published'),
-('サンプルニュース 2','本文2','抜粋2','イベント',null, current_date - interval '2 day','published'),
-('サンプルニュース 3','本文3','抜粋3','施工事例',null, current_date - interval '3 day','published'),
-('サンプルニュース 4','本文4','抜粋4','コラム',null, current_date - interval '4 day','published'),
-('サンプルニュース 5','本文5','抜粋5','お知らせ',null, current_date - interval '5 day','published'),
-('サンプルニュース 6','本文6','抜粋6','イベント',null, current_date - interval '6 day','draft'),
-('サンプルニュース 7','本文7','抜粋7','施工事例',null, current_date - interval '7 day','published'),
-('サンプルニュース 8','本文8','抜粋8','コラム',null, current_date - interval '8 day','published'),
-('サンプルニュース 9','本文9','抜粋9','お知らせ',null, current_date - interval '9 day','published'),
-('サンプルニュース 10','本文10','抜粋10','イベント',null, current_date - interval '10 day','published'),
-('サンプルニュース 11','本文11','抜粋11','施工事例',null, current_date - interval '11 day','published'),
-('サンプルニュース 12','本文12','抜粋12','コラム',null, current_date - interval '12 day','published'),
-('サンプルニュース 13','本文13','抜粋13','お知らせ',null, current_date - interval '13 day','published'),
-('サンプルニュース 14','本文14','抜粋14','イベント',null, current_date - interval '14 day','published'),
-('サンプルニュース 15','本文15','抜粋15','施工事例',null, current_date - interval '15 day','draft'),
-('サンプルニュース 16','本文16','抜粋16','コラム',null, current_date - interval '16 day','published'),
-('サンプルニュース 17','本文17','抜粋17','お知らせ',null, current_date - interval '17 day','published'),
-('サンプルニュース 18','本文18','抜粋18','イベント',null, current_date - interval '18 day','published'),
-('サンプルニュース 19','本文19','抜粋19','施工事例',null, current_date - interval '19 day','published'),
-('サンプルニュース 20','本文20','抜粋20','コラム',null, current_date - interval '20 day','published');
+-- Seed Company Info
+INSERT INTO public.company_info (company_name, representative_title, representative_name, address_postal, address_detail, phone, email, registration_number, business_details, licenses)
+VALUES (
+    '株式会社 カタヤマ',
+    '代表取締役',
+    '片山 太郎',
+    '〒123-4567',
+    '東京都渋谷区〇〇町1-2-3',
+    '03-1234-5678',
+    'info@example.com',
+    'T1234567890123',
+    '["土木工事業", "建築工事業", "とび・土工工事業"]',
+    '["東京都知事許可 (般-5) 第12345号"]'
+);
 
-insert into public.works (title, description, category, featured_image, location, completion_date, construction_period, floor_area, status, gallery_images)
-values
-('施工実績サンプル 1','説明1','Residential','assets/img/works_01.jpg','香川県高松市', current_date - interval '1 month','2ヶ月','80㎡','published', array['assets/img/works_01.jpg','assets/img/works_02.jpg']),
-('施工実績サンプル 2','説明2','Commercial','assets/img/works_01.jpg','香川県丸亀市', current_date - interval '2 month','3ヶ月','95㎡','published', array['assets/img/works_01.jpg','assets/img/works_02.jpg']),
-('施工実績サンプル 3','説明3','Public','assets/img/works_01.jpg','香川県三豊市', current_date - interval '3 month','4ヶ月','120㎡','published', array['assets/img/works_01.jpg','assets/img/works_02.jpg']),
-('施工実績サンプル 4','説明4','Renovation','assets/img/works_01.jpg','香川県善通寺市', current_date - interval '4 month','2ヶ月','88㎡','published', array['assets/img/works_01.jpg','assets/img/works_02.jpg']),
-('施工実績サンプル 5','説明5','Residential','assets/img/works_01.jpg','香川県坂出市', current_date - interval '5 month','1ヶ月','76㎡','published', array['assets/img/works_01.jpg','assets/img/works_02.jpg']),
-('施工実績サンプル 6','説明6','Commercial','assets/img/works_01.jpg','香川県観音寺市', current_date - interval '6 month','2ヶ月','101㎡','draft', array['assets/img/works_01.jpg','assets/img/works_02.jpg']),
-('施工実績サンプル 7','説明7','Public','assets/img/works_01.jpg','香川県東かがわ市', current_date - interval '7 month','3ヶ月','140㎡','published', array['assets/img/works_01.jpg','assets/img/works_02.jpg']),
-('施工実績サンプル 8','説明8','Renovation','assets/img/works_01.jpg','香川県直島町', current_date - interval '8 month','2ヶ月','92㎡','published', array['assets/img/works_01.jpg','assets/img/works_02.jpg']),
-('施工実績サンプル 9','説明9','Residential','assets/img/works_01.jpg','香川県小豆島町', current_date - interval '9 month','1ヶ月','78㎡','published', array['assets/img/works_01.jpg','assets/img/works_02.jpg']),
-('施工実績サンプル 10','説明10','Commercial','assets/img/works_01.jpg','香川県宇多津町', current_date - interval '10 month','4ヶ月','160㎡','published', array['assets/img/works_01.jpg','assets/img/works_02.jpg']),
-('施工実績サンプル 11','説明11','Public','assets/img/works_01.jpg','香川県三木町', current_date - interval '11 month','3ヶ月','135㎡','published', array['assets/img/works_01.jpg','assets/img/works_02.jpg']),
-('施工実績サンプル 12','説明12','Renovation','assets/img/works_01.jpg','香川県綾川町', current_date - interval '12 month','2ヶ月','90㎡','published', array['assets/img/works_01.jpg','assets/img/works_02.jpg']);
+-- Seed Site Settings
+INSERT INTO public.site_settings (setting_key, setting_value, description) VALUES
+('company_name', '株式会社 カタヤマ', '会社名'),
+('company_phone', '03-1234-5678', '代表電話番号'),
+('company_email', 'info@example.com', '代表メールアドレス'),
+('company_address', '東京都渋谷区〇〇町1-2-3', '住所'),
+('hero_title', '未来を拓く、確かな技術', 'トップページのヒーロータイトル'),
+('hero_subtitle', '私たちは地域社会の発展に貢献します', 'トップページのヒーローサブタイトル');
 
-insert into public.services (name, description, status, sort_order)
-values
-('新築工事','戸建住宅・マンションの新築', 'active', 1),
-('リフォーム','内外装の改修', 'active', 2),
-('耐震補強','耐震診断・補強工事', 'active', 3),
-('外構工事','エクステリア・外構', 'active', 4),
-('設備工事','電気・空調・給排水', 'active', 5),
-('解体工事','家屋解体', 'active', 6);
+-- Seed Services
+INSERT INTO public.services (title, description, icon, status, sort_order) VALUES
+('土木工事', '造成・河川などの土木工事', 'civil', 'active', 1),
+('建築工事', '住宅・お店の建設', 'building', 'active', 2),
+('リフォーム', '住宅リフォーム', 'reform', 'active', 3),
+('外構工事', 'エクステリア工事', 'exterior', 'active', 4),
+('公共工事', '自治体向け工事', 'public', 'active', 5),
+('設備工事', '電気・給排水など', 'facility', 'active', 6);
 
-insert into public.testimonials (author, content, status)
-values
-('A様','とても満足しています。', 'active'),
-('B様','丁寧な対応でした。', 'active'),
-('C様','仕上がりが綺麗でした。', 'active'),
-('D様','提案が的確でした。', 'active'),
-('E様','また依頼したいです。', 'active');
+-- Seed News
+INSERT INTO public.news (title, content, category, status, published_date) VALUES
+('ホームページをリニューアルしました', '平素は格別のご高配を賜り、厚く御礼申し上げます。この度、弊社ホームページをリニューアルいたしました。', 'お知らせ', 'published', NOW()),
+('夏季休業のお知らせ', '誠に勝手ながら、8月13日〜16日は夏季休業とさせていただきます。', 'お知らせ', 'published', NOW() - INTERVAL '1 month');
 
-insert into public.company_stats (label, value, status, sort_order)
-values
-('年間施工件数','120件','active',1),
-('従業員数','45名','active',2),
-('創業','1975年','active',3),
-('受賞歴','10件','active',4);
+-- Seed Works
+INSERT INTO public.works (title, description, category, status, completion_date, location, featured_image) VALUES
+('S様邸 新築工事', '木造2階建て住宅の新築工事を行いました。', '住宅', 'published', NOW() - INTERVAL '2 months', '東京都世田谷区', 'https://placehold.co/800x600?text=House+Build'),
+('Kビル 改修工事', 'オフィスビルの外壁改修工事を行いました。', '商業施設', 'published', NOW() - INTERVAL '3 months', '東京都港区', 'https://placehold.co/800x600?text=Building+Renovation');
 
-insert into public.partners (name, logo_url, status, sort_order)
-values
-('パートナーA','assets/img/logo_a.png','active',1),
-('パートナーB','assets/img/logo_b.png','active',2),
-('パートナーC','assets/img/logo_c.png','active',3),
-('パートナーD','assets/img/logo_d.png','active',4),
-('パートナーE','assets/img/logo_e.png','active',5);
-
-insert into public.site_settings (setting_key, setting_value)
-values
-('site_name','片山建設工業'),
-('contact_phone','087-000-0000'),
-('contact_email','info@example.com'),
-('address','香川県高松市'),
-('hero_message','地域に根ざした施工品質');
-
+-- Seed Company Stats
+INSERT INTO public.company_stats (stat_name, stat_value, stat_unit, sort_order) VALUES
+('創業', '50', '年', 1),
+('施工実績', '1000', '件以上', 2),
+('有資格者', '20', '名', 3);

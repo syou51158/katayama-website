@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>お知らせ | 片山建設工業</title>
   <meta name="description" content="片山建設工業のお知らせ、イベント情報、施工事例など最新情報をご紹介します。">
-  
+
   <!-- OGP設定 -->
   <meta property="og:title" content="お知らせ | 片山建設工業">
   <meta property="og:description" content="片山建設工業のお知らせ、イベント情報、施工事例など最新情報をご紹介します。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.katayama-construction.co.jp/news.html">
   <meta property="og:image" content="https://www.katayama-construction.co.jp/assets/img/ogp.jpg">
-  
+
   <!-- ファビコン -->
   <link rel="icon" href="assets/img/favicon.ico">
-  
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -33,21 +34,22 @@
       }
     }
   </script>
-  
+
   <!-- Alpine.js -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  
+
   <!-- AOS - Animate On Scroll -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  
+
   <!-- カスタムCSS -->
   <link rel="stylesheet" href="assets/css/main.css">
-  
+
   <!-- Supabase統合 -->
   <script src="assets/js/mock-api.js"></script>
   <script src="assets/js/supabase-integration.js"></script>
 </head>
+
 <body class="bg-white text-text_dark">
   <!-- ヘッダー -->
   <header class="bg-white shadow z-50">
@@ -55,7 +57,7 @@
       <a href="index.html" class="flex items-center">
         <img src="assets/img/logo.svg" alt="片山建設工業" class="h-10">
       </a>
-      
+
       <!-- PC用ナビゲーション -->
       <nav class="hidden md:flex space-x-6">
         <a href="index.html" class="nav-link">ホーム</a>
@@ -66,7 +68,7 @@
         <a href="news.html" class="nav-link active">お知らせ</a>
         <a href="contact.html" class="nav-link">お問い合わせ</a>
       </nav>
-      
+
       <!-- ハンバーガーメニュー -->
       <button id="menu-button" class="md:hidden text-gray-700 focus:outline-none">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,7 +77,7 @@
       </button>
     </div>
   </header>
-  
+
   <!-- モバイルナビゲーション -->
   <div id="mobile-nav" class="mobile-nav hidden">
     <div class="container mx-auto py-4">
@@ -89,7 +91,7 @@
           </svg>
         </button>
       </div>
-      
+
       <nav class="flex flex-col space-y-4">
         <a href="index.html" class="nav-link">ホーム</a>
         <a href="services.html" class="nav-link">事業内容</a>
@@ -101,7 +103,7 @@
       </nav>
     </div>
   </div>
-  
+
   <!-- メインコンテンツ -->
   <main class="pt-20">
     <!-- パンくずリスト -->
@@ -114,7 +116,7 @@
         </nav>
       </div>
     </div>
-    
+
     <!-- ページヘッダー -->
     <section class="py-12 bg-primary text-white text-center">
       <div class="container">
@@ -122,7 +124,7 @@
         <p class="max-w-3xl mx-auto">片山建設工業からの最新情報やイベント、施工事例などをお届けします。</p>
       </div>
     </section>
-    
+
     <!-- ニュース一覧 -->
     <section class="section bg-white">
       <div class="container">
@@ -142,7 +144,7 @@
                 </li>
               </ul>
             </div>
-            
+
             <!-- アーカイブ -->
             <div class="bg-accent p-6 rounded-sm shadow-sm" data-aos="fade-up" data-aos-delay="100">
               <h2 class="text-xl font-bold mb-4 pb-2 border-b border-gray-200">アーカイブ</h2>
@@ -168,7 +170,7 @@
               </ul>
             </div>
           </div>
-          
+
           <!-- 右カラム: ニュース記事一覧 -->
           <div class="md:col-span-3" id="news-container">
             <!-- Supabaseからの動的データがここに読み込まれます -->
@@ -180,7 +182,7 @@
         </div>
       </div>
     </section>
-    
+
     <!-- お問い合わせセクション -->
     <section class="py-16 bg-primary text-white">
       <div class="container">
@@ -204,7 +206,7 @@
           <img src="assets/img/logo.svg" alt="片山建設工業" class="h-10 mb-4 brightness-200">
           <p class="text-sm text-gray-400">地域と共に歩み、<br>皆様の暮らしを支える建設会社です。</p>
         </div>
-        
+
         <div>
           <h3 class="text-lg font-bold mb-4">リンク</h3>
           <ul class="space-y-2">
@@ -217,7 +219,7 @@
             <li><a href="contact.html" class="text-gray-400 hover:text-white">お問い合わせ</a></li>
           </ul>
         </div>
-        
+
         <div>
           <h3 class="text-lg font-bold mb-4">サービス</h3>
           <ul class="space-y-2">
@@ -229,7 +231,7 @@
             <li><a href="services.html" class="text-gray-400 hover:text-white">ゴミ処理・運搬</a></li>
           </ul>
         </div>
-        
+
         <div>
           <h3 class="text-lg font-bold mb-4">会社情報</h3>
           <address class="not-italic text-sm text-gray-400">
@@ -241,7 +243,7 @@
           </address>
         </div>
       </div>
-      
+
       <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
         <p>© 2024 片山建設工業 All Rights Reserved.</p>
         <p class="mt-2">
@@ -250,48 +252,75 @@
       </div>
     </div>
   </footer>
-  
+
   <!-- カスタムJS -->
   <script src="assets/js/main.js"></script>
   <script>
+    // SupabaseIntegrationの初期化
+    const supabaseIntegration = new SupabaseIntegration();
+
+    // ニュースページの初期化関数
+    async function initializeNewsPage() {
+      try {
+        // URLパラメータからページ番号を取得（将来的なページネーション用）
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = parseInt(urlParams.get('page') || '1');
+        const limit = 20;
+        const offset = (page - 1) * limit;
+
+        const news = await supabaseIntegration.getNews(limit, offset);
+
+        const container = document.getElementById('news-container');
+        if (news && news.length > 0) {
+          supabaseIntegration.renderNewsList(news, '#news-container');
+        } else {
+          container.innerHTML = '<div class="text-center py-16 text-gray-500">現在、お知らせはありません。</div>';
+        }
+      } catch (error) {
+        console.error('Error initializing news page:', error);
+        document.getElementById('news-container').innerHTML =
+          '<div class="text-center py-16 text-red-500">データの読み込みに失敗しました。</div>';
+      }
+    }
+
     // AOSの初期化
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       AOS.init({
         duration: 800,
         once: true,
         offset: 100
       });
-      
+
       // ニュースページの動的データ読み込み（supabase-integration.jsを使用）
       if (typeof initializeNewsPage === 'function') {
         initializeNewsPage();
       } else {
         console.error('initializeNewsPage function not found. Make sure supabase-integration.js is loaded.');
       }
-      
+
       // カテゴリ表示も初期化
       loadCategoriesAndFilters();
     });
-    
+
     // カテゴリとフィルター機能の初期化
     async function loadCategoriesAndFilters() {
       try {
         const allNews = await supabaseIntegration.getNews(100); // 全ニュースを取得してカテゴリ分析
-        
+
         // カテゴリ別に分類
         const categories = {};
         allNews.forEach(item => {
           categories[item.category] = (categories[item.category] || 0) + 1;
         });
-        
+
         // カテゴリリストを表示
         displayCategories(categories, allNews.length);
-        
+
       } catch (error) {
         console.error('Error loading categories:', error);
       }
     }
-    
+
     function displayCategories(categories, totalCount) {
       const categoryList = document.getElementById('category-list');
       let html = `
@@ -303,7 +332,7 @@
           </a>
         </li>
       `;
-      
+
       Object.entries(categories).forEach(([category, count]) => {
         html += `
           <li>
@@ -315,17 +344,17 @@
           </li>
         `;
       });
-      
+
       categoryList.innerHTML = html;
     }
-    
+
     // displayNewsList と getCategoryClass は supabase-integration.js で定義済み
-    
+
     function filterNews(category) {
       console.log('🔍 フィルタリング:', category);
       const newsItems = document.querySelectorAll('.news-item');
       let visibleCount = 0;
-      
+
       newsItems.forEach(item => {
         if (category === 'all' || item.getAttribute('data-category') === category) {
           item.style.display = 'block';
@@ -334,9 +363,10 @@
           item.style.display = 'none';
         }
       });
-      
+
       console.log(`✅ ${visibleCount}件のニュースを表示`);
     }
   </script>
 </body>
+
 </html>
