@@ -11,40 +11,40 @@ jobs:
     - name: Get latest code
       uses: actions/checkout@v4
     
-    - name: Sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: ${{ secrets.FTP_SERVER_DIR }}
-        protocol: ftp
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/.github/**
-          **/node_modules/**
-          **/.env*
-          **/.tools/**
-          **/.trae/**
-          **/.vercel/**
-          **/supabase/**
-          **/scripts/**
-          **/cms/**
-          **/generate-password.php
-          **/MCP-SETUP.md
-          **/DEPLOYMENT-GUIDE.md
-          **/setup-guide.md
-          **/SUPABASE-SETUP-GUIDE.md
-          **/package.json
-          **/Trend Company.svg
-          **/config/supabase.secrets.php
-          **/debug-api.php
-          **/test-api.php
-          **/test-local.html
-          **/test-site-settings.html
-          **/admin/api/debug-supabase.php
-          **/admin/api/test-connection.php
-          **/admin/api/test-update.php
-          **/admin/tools/reseed.php
-          **/seed-supabase.php
+    - name: Install LFTP
+      run: sudo apt-get update && sudo apt-get install -y lftp
+
+    - name: Deploy via LFTP
+      run: |
+        lftp -c "
+        set ftp:ssl-allow no;
+        open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' '${{ secrets.FTP_SERVER }}';
+        mirror -R -v --parallel=2 \
+        --exclude-glob .git*/ \
+        --exclude-glob .github/ \
+        --exclude-glob .env* \
+        --exclude-glob node_modules/ \
+        --exclude-glob .tools/ \
+        --exclude-glob .trae/ \
+        --exclude-glob .vercel/ \
+        --exclude-glob supabase/ \
+        --exclude-glob scripts/ \
+        --exclude-glob cms/ \
+        --exclude-glob generate-password.php \
+        --exclude-glob MCP-SETUP.md \
+        --exclude-glob DEPLOYMENT-GUIDE.md \
+        --exclude-glob setup-guide.md \
+        --exclude-glob SUPABASE-SETUP-GUIDE.md \
+        --exclude-glob package.json \
+        --exclude-glob 'Trend Company.svg' \
+        --exclude-glob config/supabase.secrets.php \
+        --exclude-glob debug-api.php \
+        --exclude-glob test-api.php \
+        --exclude-glob test-local.html \
+        --exclude-glob test-site-settings.html \
+        --exclude-glob admin/api/debug-supabase.php \
+        --exclude-glob admin/api/test-connection.php \
+        --exclude-glob admin/api/test-update.php \
+        --exclude-glob admin/tools/reseed.php \
+        --exclude-glob seed-supabase.php \
+        ./ ${{ secrets.FTP_SERVER_DIR }}"
