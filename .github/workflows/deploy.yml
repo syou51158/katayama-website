@@ -1,4 +1,4 @@
-name: Deploy to Lolipop
+name: Deploy to Lolipop (SSH/Rsync)
 on:
   push:
     branches:
@@ -11,42 +11,41 @@ jobs:
     - name: Get latest code
       uses: actions/checkout@v4
     
-    - name: Install LFTP
-      run: sudo apt-get install -y lftp
+    - name: Install sshpass
+      run: sudo apt-get install -y sshpass
 
-    - name: Deploy via LFTP
+    - name: Deploy via Rsync
+      env:
+        SSH_PASSWORD: ${{ secrets.FTP_PASSWORD }}
       run: |
-        lftp -d -c "
-        set ftp:ssl-allow no;
-        set ssl:verify-certificate no;
-        open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' '${{ secrets.FTP_SERVER }}';
-        ls -la;
-        ls -la web;
-        mirror -R -v --parallel=2 \
-        --exclude-glob .git*/ \
-        --exclude-glob node_modules/ \
-        --exclude-glob .env* \
-        --exclude-glob .tools/ \
-        --exclude-glob .trae/ \
-        --exclude-glob .vercel/ \
-        --exclude-glob supabase/ \
-        --exclude-glob scripts/ \
-        --exclude-glob cms/ \
-        --exclude-glob generate-password.php \
-        --exclude-glob MCP-SETUP.md \
-        --exclude-glob DEPLOYMENT-GUIDE.md \
-        --exclude-glob setup-guide.md \
-        --exclude-glob SUPABASE-SETUP-GUIDE.md \
-        --exclude-glob package.json \
-        --exclude-glob 'Trend Company.svg' \
-        --exclude-glob config/supabase.secrets.php \
-        --exclude-glob debug-api.php \
-        --exclude-glob test-api.php \
-        --exclude-glob test-local.html \
-        --exclude-glob test-site-settings.html \
-        --exclude-glob admin/api/debug-supabase.php \
-        --exclude-glob admin/api/test-connection.php \
-        --exclude-glob admin/api/test-update.php \
-        --exclude-glob admin/tools/reseed.php \
-        --exclude-glob seed-supabase.php \
-        ./ web/katayama-website"
+        # Use sshpass to provide the password non-interactively
+        sshpass -p "$SSH_PASSWORD" rsync -avz --delete \
+          -e "ssh -p 2222 -o StrictHostKeyChecking=no" \
+          --exclude '.git*' \
+          --exclude 'node_modules' \
+          --exclude '.env*' \
+          --exclude '.tools' \
+          --exclude '.trae' \
+          --exclude '.vercel' \
+          --exclude 'supabase' \
+          --exclude 'scripts' \
+          --exclude 'cms' \
+          --exclude 'generate-password.php' \
+          --exclude 'MCP-SETUP.md' \
+          --exclude 'DEPLOYMENT-GUIDE.md' \
+          --exclude 'setup-guide.md' \
+          --exclude 'SUPABASE-SETUP-GUIDE.md' \
+          --exclude 'package.json' \
+          --exclude 'Trend Company.svg' \
+          --exclude 'config/supabase.secrets.php' \
+          --exclude 'debug-api.php' \
+          --exclude 'test-api.php' \
+          --exclude 'test-local.html' \
+          --exclude 'test-site-settings.html' \
+          --exclude 'admin/api/debug-supabase.php' \
+          --exclude 'admin/api/test-connection.php' \
+          --exclude 'admin/api/test-update.php' \
+          --exclude 'admin/tools/reseed.php' \
+          --exclude 'seed-supabase.php' \
+          --exclude 'server_check.php' \
+          ./ ${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}:web/katayama-website/
