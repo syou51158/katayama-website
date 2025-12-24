@@ -21,7 +21,8 @@ jobs:
         set ssl:verify-certificate no;
         open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' '${{ secrets.FTP_SERVER }}';
         ls -la;
-        mkdir -p -f web/${{ secrets.FTP_SERVER_DIR }};
+        pwd;
+        mkdir -p -f /home/users/2/deci.jp-trendcompany/web/katayama-website;
         mirror -R -v --parallel=2 \
         --exclude-glob .git*/ \
         --exclude-glob .github/ \
@@ -50,4 +51,4 @@ jobs:
         --exclude-glob admin/api/test-update.php \
         --exclude-glob admin/tools/reseed.php \
         --exclude-glob seed-supabase.php \
-        ./ web/${{ secrets.FTP_SERVER_DIR }}"
+        ./ /home/users/2/deci.jp-trendcompany/web/katayama-website"
