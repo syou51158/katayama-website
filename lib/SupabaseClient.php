@@ -1,10 +1,12 @@
 <?php
-require_once __DIR__ . '/../config/supabase.php';
+$__cfg = __DIR__ . '/../config/supabase.secrets.php';
+if (file_exists($__cfg)) { require_once $__cfg; } else { require_once __DIR__ . '/../config/supabase.secrets.dist.php'; }
 
 /**
  * Supabaseクライアントクラス
  */
 class SupabaseClient {
+    private static $lastError = null;
     
     /**
      * GETリクエストを実行
@@ -73,23 +75,27 @@ class SupabaseClient {
     }
     
     /**
-     * PATCHリクエストを実行（UPDATE）
+     * PUTリクエストを実行（UPDATE）
      * 
      * @param string $table テーブル名
      * @param array $data 更新するデータ
-     * @param array $filters 更新条件
+     * @param array $filters 更新対象のフィルター条件
      * @return array|false
      */
-    public static function update(string $table, array $data, array $filters) {
+    public static function update(string $table, array $data, array $filters = []) {
         $url = SupabaseConfig::getApiUrl() . $table;
         
         // フィルター条件をクエリパラメータに追加
-        $queryParams = [];
-        foreach ($filters as $column => $value) {
-            $queryParams[$column] = 'eq.' . $value;
-        }
-        
-        if (!empty($queryParams)) {
+        if (!empty($filters)) {
+            $queryParams = [];
+            foreach ($filters as $column => $value) {
+                if (is_array($value)) {
+                    $operator = $value['operator'] ?? 'eq';
+                    $queryParams[$column] = $operator . '.' . $value['value'];
+                } else {
+                    $queryParams[$column] = 'eq.' . $value;
+                }
+            }
             $url .= '?' . http_build_query($queryParams);
         }
         
@@ -100,19 +106,23 @@ class SupabaseClient {
      * DELETEリクエストを実行
      * 
      * @param string $table テーブル名
-     * @param array $filters 削除条件
+     * @param array $filters 削除対象のフィルター条件
      * @return array|false
      */
-    public static function delete(string $table, array $filters) {
+    public static function delete(string $table, array $filters = []) {
         $url = SupabaseConfig::getApiUrl() . $table;
         
         // フィルター条件をクエリパラメータに追加
-        $queryParams = [];
-        foreach ($filters as $column => $value) {
-            $queryParams[$column] = 'eq.' . $value;
-        }
-        
-        if (!empty($queryParams)) {
+        if (!empty($filters)) {
+            $queryParams = [];
+            foreach ($filters as $column => $value) {
+                if (is_array($value)) {
+                    $operator = $value['operator'] ?? 'eq';
+                    $queryParams[$column] = $operator . '.' . $value['value'];
+                } else {
+                    $queryParams[$column] = 'eq.' . $value;
+                }
+            }
             $url .= '?' . http_build_query($queryParams);
         }
         
@@ -120,92 +130,188 @@ class SupabaseClient {
     }
     
     /**
-     * HTTPリクエストを実行
+     * 実際のHTTPリクエストを実行
      * 
      * @param string $method HTTPメソッド
-     * @param string $url URL
+     * @param string $url リクエストURL
      * @param array|null $data 送信データ
-     * @param bool $useServiceRole サービスロールキーを使用するか
+     * @param bool $useServiceKey サービスロールキーを使用するか
      * @return array|false
      */
-    private static function makeRequest(string $method, string $url, array $data = null, bool $useServiceRole = false) {
-        $ch = curl_init();
-        
-        curl_setopt_array($ch, [
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => $method,
-            CURLOPT_HTTPHEADER => SupabaseConfig::getHeaders($useServiceRole),
-            CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_TIMEOUT => 30,
+    private static function makeRequest(string $method, string $url, ?array $data = null, bool $useServiceKey = false) {
+        $apiKey = $useServiceKey ? SupabaseConfig::getServiceRoleKey() : SupabaseConfig::getAnonKey();
+        $headers = [
+            'apikey: ' . $apiKey,
+            'Authorization: Bearer ' . $apiKey,
+            'Content-Type: application/json',
+            'Accept: application/json'
+        ];
+        if (in_array($method, ['POST','PUT','PATCH','DELETE'])) {
+            $headers[] = 'Prefer: return=representation';
+        }
+
+        if (function_exists('curl_init')) {
+            $ch = curl_init();
+            $disableSsl = true; // Windows環境のためSSL検証を無効化
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_HTTPHEADER => $headers,
+                CURLOPT_CUSTOMREQUEST => $method,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_SSL_VERIFYPEER => $disableSsl ? false : true,
+                CURLOPT_SSL_VERIFYHOST => $disableSsl ? 0 : 2
+            ]);
+            if ($data !== null && in_array($method, ['POST', 'PUT', 'PATCH'])) {
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+            }
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
+            if ($error) {
+                self::$lastError = 'curl error: ' . $error;
+                error_log('Supabase API Error: ' . $error);
+                return false;
+            }
+            if ($httpCode >= 200 && $httpCode < 300) {
+                self::$lastError = '';
+                $decoded = json_decode($response, true);
+                return $decoded ?: [];
+            } else {
+                self::$lastError = 'HTTP ' . $httpCode . ' - ' . $response;
+                error_log('Supabase API Error: HTTP ' . $httpCode . ' - Response: ' . $response . ' - URL: ' . $url . ' - Method: ' . $method . ' - Headers: ' . json_encode($headers));
+                return false;
+            }
+        }
+
+        $disableSsl = true; // Windows環境のためSSL検証を無効化
+        $context = stream_context_create([
+            'http' => [
+                'method' => $method,
+                'header' => implode("\r\n", $headers),
+                'content' => ($data !== null && in_array($method, ['POST', 'PUT', 'PATCH'])) ? json_encode($data) : '',
+                'ignore_errors' => true,
+                'timeout' => 30,
+            ],
+            'ssl' => [
+                'verify_peer' => $disableSsl ? false : true,
+                'verify_peer_name' => $disableSsl ? false : true,
+            ],
         ]);
-        
-        if ($data !== null) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        $response = @file_get_contents($url, false, $context);
+        $httpCode = 0;
+        if (isset($http_response_header) && is_array($http_response_header)) {
+            foreach ($http_response_header as $h) {
+                if (preg_match('/^HTTP\/\d+\.\d+\s+(\d+)/', $h, $m)) {
+                    $httpCode = (int)$m[1];
+                    break;
+                }
+            }
         }
-        
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-        curl_close($ch);
-        
-        if ($error) {
-            error_log("cURL Error: " . $error);
-            return false;
-        }
-        
-        if ($httpCode < 200 || $httpCode >= 300) {
-            error_log("HTTP Error {$httpCode}: " . $response);
-            error_log("Request URL: " . $url);
-            error_log("Request Method: " . $method);
-            if ($data !== null) {
-                error_log("Request Data: " . json_encode($data));
+        if ($response === false) {
+            // 追加の詳細を収集
+            $last = error_get_last();
+            $detail = $last && isset($last['message']) ? $last['message'] : '';
+            self::$lastError = 'stream error' . ($detail ? (': ' . $detail) : '');
+            error_log('Supabase API Error: ' . self::$lastError);
+            // curl.exe によるフォールバック（Windowsに同梱されるcurlコマンドを利用）
+            $curlPath = 'curl';
+            $cmdHeaders = [];
+            foreach ($headers as $h) {
+                // "-H \"Header: value\"" 形式に整形
+                $cmdHeaders[] = '-H ' . escapeshellarg($h);
+            }
+            $bodyArg = '';
+            $tmpFile = null;
+            if ($data !== null && in_array($method, ['POST','PUT','PATCH'])) {
+                $tmpFile = tempnam(sys_get_temp_dir(), 'sb_json_');
+                if ($tmpFile !== false) {
+                    $json = json_encode($data);
+                    if ($json !== false && file_put_contents($tmpFile, $json) !== false) {
+                        $bodyArg = '--data-binary ' . escapeshellarg('@' . $tmpFile);
+                    } else {
+                        @unlink($tmpFile);
+                        $tmpFile = null;
+                    }
+                } else {
+                    $tmpFile = null;
+                }
+            }
+            $cmd = $curlPath . ' -sS --connect-timeout 10 --max-time 30 -X ' . escapeshellarg($method) . ' ' . implode(' ', $cmdHeaders) . ' ' . $bodyArg . ' -w "\\n%{http_code}" ' . escapeshellarg($url);
+            $output = [];
+            $exitCode = 0;
+            @exec($cmd, $output, $exitCode);
+            if ($tmpFile) {
+                @unlink($tmpFile);
+            }
+            if ($exitCode === 0 && !empty($output)) {
+                $codeLine = array_pop($output);
+                $httpCodeCli = (int)$codeLine;
+                $body = implode("\n", $output);
+                if ($httpCodeCli >= 200 && $httpCodeCli < 300) {
+                    self::$lastError = '';
+                    $decoded = json_decode($body, true);
+                    if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
+                        self::$lastError = 'json_parse_error: ' . json_last_error_msg();
+                        error_log('Supabase API Error: ' . self::$lastError . ' Body: ' . substr($body, 0, 200));
+                        return false;
+                    }
+                    return $decoded ?: [];
+                }
+                self::$lastError = 'HTTP ' . $httpCodeCli . ' - ' . $body;
+                error_log('Supabase API Error (curl.exe): HTTP ' . $httpCodeCli . ' - Response: ' . $body);
+                return false;
             }
             return false;
         }
-        
-        $decodedResponse = json_decode($response, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            error_log("JSON Decode Error: " . json_last_error_msg());
+        if ($httpCode >= 200 && $httpCode < 300) {
+            self::$lastError = '';
+            $decoded = json_decode($response, true);
+            return $decoded ?: [];
+        } else {
+            self::$lastError = 'HTTP ' . $httpCode . ' - ' . $response;
+            error_log('Supabase API Error: HTTP ' . $httpCode . ' - Response: ' . $response . ' - URL: ' . $url . ' - Method: ' . $method . ' - Headers: ' . json_encode($headers));
             return false;
         }
-        
-        return $decodedResponse;
+    }
+
+    public static function getLastError(): ?string {
+        return self::$lastError;
     }
     
     /**
-     * 公開済みニュースを取得
+     * アクティブなニュースを取得
      */
-    public static function getPublishedNews(int $limit = 10, int $offset = 0): array {
-        $result = self::select('news', 
-            ['status' => 'published'], 
-            [
-                'order' => 'published_date.desc,created_at.desc',
-                'limit' => $limit,
-                'offset' => $offset
-            ]
-        );
+    public static function getActiveNews(int $limit = 10, int $offset = 0, ?string $category = null): array {
+        $filters = ['status' => 'published'];
+        if ($category && $category !== 'all') {
+            $filters['category'] = $category;
+        }
+        
+        $result = self::select('news', $filters, [
+            'order' => 'published_date.desc,created_at.desc',
+            'limit' => $limit,
+            'offset' => $offset
+        ]);
         
         return $result ?: [];
     }
     
     /**
-     * 公開済み施工実績を取得
+     * アクティブな施工実績を取得
      */
-    public static function getPublishedWorks(string $category = null, int $limit = 20, int $offset = 0): array {
+    public static function getActiveWorks(int $limit = 20, int $offset = 0, ?string $category = null): array {
         $filters = ['status' => 'published'];
-        if ($category) {
+        if ($category && $category !== 'all') {
             $filters['category'] = $category;
         }
         
-        $result = self::select('works', 
-            $filters, 
-            [
-                'order' => 'completion_date.desc,created_at.desc',
-                'limit' => $limit,
-                'offset' => $offset
-            ]
-        );
+        $result = self::select('works', $filters, [
+            'order' => 'completion_date.desc,created_at.desc',
+            'limit' => $limit,
+            'offset' => $offset
+        ]);
         
         return $result ?: [];
     }
@@ -229,7 +335,7 @@ class SupabaseClient {
      */
     public static function getActiveTestimonials(int $limit = 10): array {
         $result = self::select('testimonials', 
-            ['status' => 'active'], 
+            ['status' => 'published'], 
             [
                 'order' => 'created_at.desc',
                 'limit' => $limit
@@ -243,12 +349,9 @@ class SupabaseClient {
      * アクティブな会社統計を取得
      */
     public static function getActiveStats(): array {
-        $result = self::select('company_stats', 
-            ['status' => 'active'], 
-            [
-                'order' => 'sort_order.asc,created_at.asc'
-            ]
-        );
+        $result = self::select('company_stats', [], [
+            'order' => 'created_at.asc'
+        ]);
         
         return $result ?: [];
     }
@@ -257,7 +360,18 @@ class SupabaseClient {
      * アクティブなパートナー企業を取得
      */
     public static function getActivePartners(): array {
-        $result = self::select('partners', 
+        $result = self::select('partners', ['status' => 'active'], [
+            'order' => 'created_at.asc'
+        ]);
+        
+        return $result ?: [];
+    }
+    
+    /**
+     * アクティブな代表情報を取得
+     */
+    public static function getActiveRepresentatives(): array {
+        $result = self::select('representatives', 
             ['status' => 'active'], 
             [
                 'order' => 'sort_order.asc,created_at.asc'
@@ -297,6 +411,26 @@ class SupabaseClient {
         
         return $settings;
     }
+    
+    /**
+     * 会社情報を取得
+     */
+    public static function getCompanyInfo(): ?array {
+        $result = self::select('company_info', [], ['limit' => 1]);
+        return $result && count($result) > 0 ? $result[0] : null;
+    }
+    
+    /**
+     * 会社沿革を取得
+     */
+    public static function getCompanyHistory(): array {
+        $result = self::select('company_history', 
+            ['status' => 'active'], 
+            [
+                'order' => 'year.asc,month.asc'
+            ]
+        );
+        
+        return $result ?: [];
+    }
 }
-?>
-

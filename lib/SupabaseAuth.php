@@ -1,0 +1,304 @@
+<?php
+$__cfg = __DIR__ . '/../config/supabase.secrets.php';
+if (file_exists($__cfg)) { require_once $__cfg; } else { require_once __DIR__ . '/../config/supabase.secrets.dist.php'; }
+
+class SupabaseAuth {
+    private static $lastError = '';
+
+    private static function curlCliRequest(string $method, string $url, array $headers, string $body = '', ?string $bodyFilePath = null): array {
+        $curlPath = 'curl';
+        $cmdHeaders = [];
+        foreach ($headers as $h) {
+            $cmdHeaders[] = '-H ' . escapeshellarg($h);
+        }
+        $bodyArg = '';
+        if ($bodyFilePath !== null) {
+            $bodyArg = '--data-binary ' . escapeshellarg('@' . $bodyFilePath);
+        } elseif ($body !== '') {
+            $bodyArg = '-d ' . escapeshellarg($body);
+        }
+        $cmd = $curlPath . ' -sS --connect-timeout 10 --max-time 30 -X ' . escapeshellarg($method) . ' ' . implode(' ', $cmdHeaders) . ' ' . $bodyArg . ' -w "\\n%{http_code}" ' . escapeshellarg($url);
+
+        $output = [];
+        $exitCode = 0;
+        @exec($cmd, $output, $exitCode);
+        if ($exitCode !== 0 || empty($output)) {
+            return [0, '', 'curl_cli_failed'];
+        }
+        $codeLine = array_pop($output);
+        $httpCode = (int)trim((string)$codeLine);
+        $response = implode("\n", $output);
+        return [$httpCode, $response, ''];
+    }
+
+    private static function sendJson(string $url, array $headers, array $payload): array {
+        $body = json_encode($payload);
+        if (function_exists('curl_init')) {
+            $ch = curl_init();
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $url,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_POST => true,
+                CURLOPT_HTTPHEADER => $headers,
+                CURLOPT_POSTFIELDS => $body,
+                CURLOPT_SSL_VERIFYPEER => false, // Windows環境のためSSL検証を無効化
+                CURLOPT_TIMEOUT => 30,
+            ]);
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
+            return [$httpCode, $response, $error];
+        }
+        $context = stream_context_create([
+            'http' => [
+                'method' => 'POST',
+                'header' => implode("\r\n", $headers),
+                'content' => $body,
+                'ignore_errors' => true,
+                'timeout' => 30,
+            ],
+            'ssl' => [
+                'verify_peer' => false, // Windows環境のためSSL検証を無効化
+                'verify_peer_name' => false, // Windows環境のためSSL検証を無効化
+            ],
+        ]);
+        $response = @file_get_contents($url, false, $context);
+        $httpCode = 0;
+        if (isset($http_response_header) && is_array($http_response_header)) {
+            foreach ($http_response_header as $h) {
+                if (preg_match('/^HTTP\/\d+\.\d+\s+(\d+)/', $h, $m)) {
+                    $httpCode = (int)$m[1];
+                    break;
+                }
+            }
+        }
+        $error = $response === false ? 'stream error' : '';
+        if ($response === false) {
+            $last = error_get_last();
+            $detail = $last && isset($last['message']) ? $last['message'] : '';
+            $tmpFile = tempnam(sys_get_temp_dir(), 'sb_json_');
+            if ($tmpFile !== false) {
+                try {
+                    if (file_put_contents($tmpFile, (string)$body) !== false) {
+                        [$httpCodeCli, $responseCli, $errorCli] = self::curlCliRequest('POST', $url, $headers, '', $tmpFile);
+                        if ($errorCli === '') {
+                            return [$httpCodeCli, $responseCli, ''];
+                        }
+                    }
+                } finally {
+                    @unlink($tmpFile);
+                }
+            }
+            if ($detail !== '') {
+                $error = 'stream error: ' . $detail;
+            }
+        }
+        return [$httpCode, $response, $error];
+    }
+    public static function signInWithPassword(string $email, string $password): bool {
+        if (session_status() === PHP_SESSION_NONE) {
+            if (!headers_sent()) {
+                session_start();
+            }
+        }
+
+        $projectUrl = rtrim(SupabaseConfig::getProjectUrl(), '/');
+        $anonKey = SupabaseConfig::getAnonKey();
+        $url = $projectUrl . '/auth/v1/token?grant_type=password';
+
+        $headers = [
+            'Content-Type: application/json',
+            'apikey: ' . $anonKey,
+        ];
+        [$httpCode, $response, $error] = self::sendJson($url, $headers, [
+            'email' => $email,
+            'password' => $password,
+        ]);
+
+        // ネットワークエラー時のオフライン認証フォールバック
+        $networkFailure = $error || $httpCode === 0 || $response === false;
+        if ($networkFailure && SupabaseConfig::isOfflineMode()) {
+            $offlineEmail = SupabaseConfig::getOfflineAdminEmail();
+            $offlineHash = SupabaseConfig::getOfflineAdminPasswordHash();
+            if (strcasecmp($email, $offlineEmail) === 0 && password_verify($password, $offlineHash)) {
+                $_SESSION['sb_access_token'] = 'offline_access_token';
+                $_SESSION['sb_refresh_token'] = null;
+                $_SESSION['sb_user'] = [
+                    'email' => $offlineEmail,
+                    'user_metadata' => [ 'full_name' => '管理者(ローカル)' ],
+                    'aud' => 'authenticated',
+                ];
+                $_SESSION['sb_login_time'] = time();
+                self::$lastError = '';
+                return true;
+            }
+            self::$lastError = 'network_offline';
+            return false;
+        }
+
+        if ($httpCode < 200 || $httpCode >= 300) {
+            error_log('SupabaseAuth signIn http ' . $httpCode . ' ' . $response);
+            $j = json_decode($response, true);
+            if (is_array($j)) {
+                $code = $j['error_code'] ?? '';
+                $msg = $j['msg'] ?? '';
+                self::$lastError = trim($code . ' ' . $msg);
+            } else {
+                self::$lastError = 'http_' . $httpCode;
+            }
+            return false;
+        }
+
+        $json = json_decode($response, true);
+        if (!is_array($json) || empty($json['access_token']) || empty($json['user'])) {
+            self::$lastError = 'invalid_response';
+            return false;
+        }
+
+        $_SESSION['sb_access_token'] = $json['access_token'];
+        $_SESSION['sb_refresh_token'] = $json['refresh_token'] ?? null;
+        $_SESSION['sb_user'] = $json['user'];
+        $_SESSION['sb_login_time'] = time();
+        self::$lastError = '';
+        return true;
+    }
+
+    public static function signUp(string $email, string $password, array $userMeta = []): bool {
+        $projectUrl = rtrim(SupabaseConfig::getProjectUrl(), '/');
+        $anonKey = SupabaseConfig::getAnonKey();
+        $url = $projectUrl . '/auth/v1/signup';
+
+        $headers = [
+            'Content-Type: application/json',
+            'apikey: ' . $anonKey,
+        ];
+        [$httpCode, $response, $error] = self::sendJson($url, $headers, [
+            'email' => $email,
+            'password' => $password,
+            'data' => $userMeta,
+        ]);
+
+        if ($error) {
+            error_log('SupabaseAuth signUp error: ' . $error);
+            return false;
+        }
+        if ($httpCode < 200 || $httpCode >= 300) {
+            error_log('SupabaseAuth signUp http ' . $httpCode . ' ' . $response);
+            return false;
+        }
+        return true;
+    }
+
+    public static function getCurrentUser(): ?array {
+        if (session_status() === PHP_SESSION_NONE) {
+            if (!headers_sent()) {
+                session_start();
+            }
+        }
+        return $_SESSION['sb_user'] ?? null;
+    }
+
+    public static function isLoggedIn(): bool {
+        if (session_status() === PHP_SESSION_NONE) {
+            if (!headers_sent()) {
+                session_start();
+            }
+        }
+        return !empty($_SESSION['sb_access_token']) && !empty($_SESSION['sb_user']);
+    }
+
+    public static function adminCreateUser(string $email, string $password, array $userMeta = [], bool $emailConfirmed = true): bool {
+        $projectUrl = rtrim(SupabaseConfig::getProjectUrl(), '/');
+        $serviceKey = SupabaseConfig::getServiceRoleKey();
+        if (!$serviceKey || $serviceKey === 'YOUR_SERVICE_ROLE_KEY_HERE') {
+            error_log('SupabaseAuth adminCreateUser: SERVICE_ROLE_KEY missing');
+            return false;
+        }
+
+        $url = $projectUrl . '/auth/v1/admin/users';
+        $headers = [
+            'Content-Type: application/json',
+            'apikey: ' . $serviceKey,
+            'Authorization: Bearer ' . $serviceKey,
+        ];
+        [$httpCode, $response, $error] = self::sendJson($url, $headers, [
+            'email' => $email,
+            'password' => $password,
+            'email_confirm' => $emailConfirmed,
+            'user_metadata' => $userMeta,
+        ]);
+
+        if ($error) {
+            error_log('SupabaseAuth adminCreateUser curl error: ' . $error);
+            return false;
+        }
+        // 201 Created, 200 OK, 409 Conflict(既に存在)
+        if ($httpCode === 409) return true;
+        if ($httpCode < 200 || $httpCode >= 300) {
+            error_log('SupabaseAuth adminCreateUser http ' . $httpCode . ' ' . $response);
+            return false;
+        }
+        return true;
+    }
+
+    public static function requireAuth(): void {
+        if (!self::isLoggedIn()) {
+            header('Location: /admin/login.php');
+            exit;
+        }
+    }
+
+    public static function logout(): void {
+        if (session_status() === PHP_SESSION_NONE) {
+            if (!headers_sent()) {
+                session_start();
+            }
+        }
+        $_SESSION = [];
+        if (ini_get('session.use_cookies')) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params['path'], $params['domain'],
+                $params['secure'], $params['httponly']
+            );
+        }
+        session_destroy();
+    }
+
+    public static function getLastError(): string {
+        return self::$lastError;
+    }
+
+    public static function sendPasswordResetEmail(string $email, string $redirectTo = ''): bool {
+        $projectUrl = rtrim(SupabaseConfig::getProjectUrl(), '/');
+        $anonKey = SupabaseConfig::getAnonKey();
+        $url = $projectUrl . '/auth/v1/recover';
+        $headers = [
+            'Content-Type: application/json',
+            'apikey: ' . $anonKey,
+        ];
+        $payload = ['email' => $email];
+        if ($redirectTo !== '') {
+            $payload['redirect_to'] = $redirectTo;
+        }
+        [$httpCode, $response, $error] = self::sendJson($url, $headers, $payload);
+        if ($error) {
+            self::$lastError = $error;
+            return false;
+        }
+        if ($httpCode < 200 || $httpCode >= 300) {
+            $j = json_decode($response, true);
+            if (is_array($j)) {
+                $code = $j['error_code'] ?? '';
+                $msg = $j['msg'] ?? '';
+                self::$lastError = trim($code . ' ' . $msg);
+            } else {
+                self::$lastError = 'http_' . $httpCode;
+            }
+            return false;
+        }
+        self::$lastError = '';
+        return true;
+    }
+}

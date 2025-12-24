@@ -182,5 +182,8 @@ http://localhost/katayama-website/admin/pages/supabase-news.php
 
 すべて正常に動作するはずです！
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485

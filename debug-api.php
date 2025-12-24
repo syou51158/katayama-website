@@ -15,7 +15,7 @@ echo json_encode([
     'current_path' => __DIR__,
     'file_exists' => [
         'SupabaseClient' => file_exists(__DIR__ . '/lib/SupabaseClient.php'),
-        'config' => file_exists(__DIR__ . '/config/supabase.php'),
+        'config' => file_exists(__DIR__ . '/config/supabase.secrets.php'),
         'api_news' => file_exists(__DIR__ . '/api/supabase-news.php')
     ]
 ]);
@@ -40,6 +40,4 @@ try {
     echo "<!-- EXCEPTION: " . $e->getMessage() . " -->\n";
 }
 ?>
-
-
 

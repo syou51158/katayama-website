@@ -5,7 +5,11 @@ require_once '../../lib/SupabaseClient.php';
 // 認証チェック
 checkAuth();
 
+<<<<<<< HEAD
 $pageTitle = 'ニュース管理（Supabase）';
+=======
+$pageTitle = 'お知らせ管理';
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
 $currentPage = 'supabase-news';
 
 // ページネーション設定
@@ -65,6 +69,7 @@ try {
             }
         }
     </script>
+<<<<<<< HEAD
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen flex">
@@ -84,6 +89,36 @@ try {
 
         <!-- メインコンテンツ -->
         <div class="flex-1 p-8">
+=======
+    </head>
+<body class="bg-gray-50">
+    <!-- ヘッダー -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="../dashboard.php" class="text-gray-600 hover:text-primary mr-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </a>
+                    <h1 class="text-xl font-semibold text-primary"><?php echo htmlspecialchars($pageTitle); ?></h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="news-create.php" class="bg-primary text-white px-4 py-2 rounded-lg text-sm hover:bg-primary-light transition duration-200">
+                        新規作成
+                    </a>
+                    <a href="../logout.php" 
+                       class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition duration-200">
+                        ログアウト
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             <div class="mb-6">
                 <h2 class="text-3xl font-bold text-gray-800"><?php echo htmlspecialchars($pageTitle); ?></h2>
                 <p class="text-gray-600 mt-2">Supabaseデータベースのニュースを管理します</p>
@@ -95,6 +130,7 @@ try {
                 </div>
             <?php endif; ?>
             
+<<<<<<< HEAD
             <!-- デバッグ情報（開発用） -->
             <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-4">
                 <strong>デバッグ情報:</strong>
@@ -106,6 +142,17 @@ try {
                     <li>総件数: <?php echo isset($total) ? $total : '未取得'; ?></li>
                     <li>フィルター: <?php echo $category ? htmlspecialchars($category) : 'なし'; ?></li>
                 </ul>
+=======
+            <!-- サマリー -->
+            <div class="bg-gray-50 border border-gray-200 text-gray-700 px-4 py-3 rounded mb-4">
+                <div class="flex flex-wrap items-center gap-4 text-sm">
+                    <div>総件数: <span class="font-semibold"><?php echo $total; ?></span></div>
+                    <div>現在のページ: <span class="font-semibold"><?php echo $page; ?></span></div>
+                    <div>総ページ数: <span class="font-semibold"><?php echo max(1, (int)ceil(($total ?: 0) / $limit)); ?></span></div>
+                    <div>表示件数/ページ: <span class="font-semibold"><?php echo $limit; ?></span></div>
+                    <div>フィルター: <span class="font-semibold"><?php echo $category ? htmlspecialchars($category) : 'なし'; ?></span></div>
+                </div>
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             </div>
 
             <!-- フィルターとアクション -->
@@ -121,9 +168,15 @@ try {
                     </select>
                 </div>
                 
+<<<<<<< HEAD
                 <button onclick="openCreateModal()" class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-light">
                     新規作成
                 </button>
+=======
+                <a href="news-create.php" class="bg-primary text-white px-4 py-2 rounded hover:bg-primary-light">
+                    新規作成（ウィザード）
+                </a>
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             </div>
 
             <!-- ニュース一覧テーブル -->
@@ -176,7 +229,11 @@ try {
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+<<<<<<< HEAD
                                     <button onclick="editNews('<?php echo $item['id']; ?>')" 
+=======
+                                    <button onclick="location.href='news-edit.php?id=<?php echo $item['id']; ?>'" 
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                                             class="text-indigo-600 hover:text-indigo-900 mr-3">編集</button>
                                     <button onclick="deleteNews('<?php echo $item['id']; ?>')" 
                                             class="text-red-600 hover:text-red-900">削除</button>
@@ -189,6 +246,7 @@ try {
             </div>
 
             <!-- ページネーション -->
+<<<<<<< HEAD
             <?php if (!empty($news) && count($news) >= $limit): ?>
             <div class="mt-6 flex justify-center">
                 <div class="flex gap-2">
@@ -209,6 +267,23 @@ try {
             </div>
             <?php endif; ?>
         </div>
+=======
+            <?php 
+                $totalPages = max(1, (int)ceil(($total ?: 0) / $limit));
+                $prevPage = max(1, $page - 1);
+                $nextPage = min($totalPages, $page + 1);
+                $qsCategory = $category ? '&category=' . urlencode($category) : '';
+            ?>
+            <div class="mt-6 flex justify-center">
+                <div class="flex items-center gap-2 text-sm">
+                    <a href="?page=1<?php echo $qsCategory; ?>" class="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 <?php echo $page == 1 ? 'pointer-events-none opacity-50' : ''; ?>">最初</a>
+                    <a href="?page=<?php echo $prevPage; ?><?php echo $qsCategory; ?>" class="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 <?php echo $page == 1 ? 'pointer-events-none opacity-50' : ''; ?>">前へ</a>
+                    <span class="px-3 py-2 bg-primary text-white rounded"><?php echo $page; ?> / <?php echo $totalPages; ?></span>
+                    <a href="?page=<?php echo $nextPage; ?><?php echo $qsCategory; ?>" class="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 <?php echo $page >= $totalPages ? 'pointer-events-none opacity-50' : ''; ?>">次へ</a>
+                    <a href="?page=<?php echo $totalPages; ?><?php echo $qsCategory; ?>" class="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 <?php echo $page >= $totalPages ? 'pointer-events-none opacity-50' : ''; ?>">最後</a>
+                </div>
+            </div>
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     </div>
 
     <!-- 作成/編集モーダル -->
@@ -245,6 +320,31 @@ try {
                             <textarea id="content" name="content" rows="6" required 
                                       class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
                         </div>
+<<<<<<< HEAD
+=======
+
+                        <!-- サムネイル画像 -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">サムネイル画像</label>
+                            <div class="flex flex-col md:flex-row gap-4 items-start">
+                                <div class="w-full md:w-64 h-40 bg-gray-100 border border-gray-200 rounded flex items-center justify-center overflow-hidden">
+                                    <img id="imagePreview" src="" alt="プレビュー" class="max-w-full max-h-full object-contain hidden">
+                                    <span id="imageFallback" class="text-gray-400 text-sm">プレビューなし</span>
+                                </div>
+                                <div class="flex-1 w-full">
+                                    <label for="featured_image" class="block text-xs text-gray-500 mb-1">画像URL</label>
+                                    <input type="text" id="featured_image" name="featured_image" placeholder="https://... または /path/to.jpg" 
+                                           class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                    <div class="flex gap-2 mt-2">
+                                        <button type="button" id="btnPreview" class="px-3 py-2 border border-gray-300 rounded hover:bg-gray-50">プレビュー更新</button>
+                                        <button type="button" id="btnUpload" class="px-3 py-2 bg-primary text-white rounded hover:bg-primary-light">画像をアップロード</button>
+                                        <button type="button" id="btnClearImage" class="px-3 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50">クリア</button>
+                                    </div>
+                                    <input type="file" id="uploadNewsImageInput" accept="image/*" class="hidden">
+                                </div>
+                            </div>
+                        </div>
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                         
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div>
@@ -311,6 +411,10 @@ try {
             document.getElementById('newsForm').reset();
             document.getElementById('newsId').value = '';
             document.getElementById('published_date').value = new Date().toISOString().split('T')[0];
+<<<<<<< HEAD
+=======
+            updateImagePreview('');
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             document.getElementById('newsModal').classList.remove('hidden');
         }
 
@@ -326,7 +430,11 @@ try {
                 
                 if (result.success) {
                     const news = result.data;
+<<<<<<< HEAD
                     document.getElementById('modalTitle').textContent = 'ニュース編集';
+=======
+                    document.getElementById('modalTitle').textContent = (news.title ? news.title + ' の編集' : 'ニュース編集');
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                     document.getElementById('newsId').value = news.id;
                     document.getElementById('title').value = news.title;
                     document.getElementById('excerpt').value = news.excerpt || '';
@@ -334,6 +442,11 @@ try {
                     document.getElementById('category').value = news.category;
                     document.getElementById('published_date').value = news.published_date;
                     document.getElementById('status').value = news.status;
+<<<<<<< HEAD
+=======
+                    document.getElementById('featured_image').value = news.featured_image || '';
+                    updateImagePreview(news.featured_image || '');
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                     document.getElementById('newsModal').classList.remove('hidden');
                 } else {
                     alert('データの取得に失敗しました: ' + result.error);
@@ -377,6 +490,17 @@ try {
             const isEdit = !!data.id;
             const method = isEdit ? 'PUT' : 'POST';
             
+<<<<<<< HEAD
+=======
+            // デバッグ用ログ
+            console.log('送信データ:', data);
+            console.log('メソッド:', method);
+            console.log('ID値:', data.id);
+            console.log('タイトル値:', data.title);
+            console.log('コンテンツ値:', data.content);
+            console.log('日付値:', data.published_date);
+            
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             try {
                 const response = await fetch('../api/news-crud.php', {
                     method: method,
@@ -386,7 +510,33 @@ try {
                     body: JSON.stringify(data)
                 });
                 
+<<<<<<< HEAD
                 const result = await response.json();
+=======
+                console.log('レスポンスステータス:', response.status);
+                console.log('レスポンスヘッダー:', response.headers.get('content-type'));
+                
+                const responseText = await response.text();
+                console.log('レスポンステキスト:', responseText);
+                
+                let result;
+                try {
+                    result = JSON.parse(responseText);
+                } catch (parseError) {
+                    const start = responseText.indexOf('{');
+                    const end = responseText.lastIndexOf('}');
+                    if (start !== -1 && end !== -1) {
+                        const cleaned = responseText.slice(start, end + 1);
+                        result = JSON.parse(cleaned);
+                    } else {
+                        console.error('JSONパースエラー:', parseError);
+                        console.error('レスポンステキスト:', responseText);
+                        throw new Error('サーバーから無効なレスポンスが返されました: ' + responseText.substring(0, 200));
+                    }
+                }
+                
+                console.log('レスポンス:', result);
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                 
                 if (result.success) {
                     alert(isEdit ? 'ニュースを更新しました' : 'ニュースを作成しました');
@@ -396,6 +546,10 @@ try {
                     alert('保存に失敗しました: ' + result.error);
                 }
             } catch (error) {
+<<<<<<< HEAD
+=======
+                console.error('エラー:', error);
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                 alert('エラーが発生しました: ' + error.message);
             }
         });
@@ -406,6 +560,98 @@ try {
                 closeModal();
             }
         });
+<<<<<<< HEAD
+=======
+        // 画像プレビュー更新（相対/絶対URLを許容）
+        function resolveAdminImageUrl(url) {
+            if (!url) return '';
+            // 絶対URL
+            if (/^https?:\/\//i.test(url)) return url;
+            // ルート相対
+            if (url.startsWith('/')) return url;
+            // 管理画面から見た相対補完（一般的資産パス）
+            if (url.startsWith('assets/')) return '../../' + url;
+            // 画像ファイル名のみが来た場合はニュースバケットの想定はできないためそのまま
+            return url;
+        }
+
+        function updateImagePreview(url) {
+            const img = document.getElementById('imagePreview');
+            const fb = document.getElementById('imageFallback');
+            if (url) {
+                img.src = resolveAdminImageUrl(url);
+                img.classList.remove('hidden');
+                fb.classList.add('hidden');
+            } else {
+                img.src = '';
+                img.classList.add('hidden');
+                fb.classList.remove('hidden');
+            }
+        }
+
+        // 入力URLでプレビュー
+        document.getElementById('btnPreview').addEventListener('click', function() {
+            const url = document.getElementById('featured_image').value.trim();
+            updateImagePreview(url);
+        });
+
+        // クリア
+        document.getElementById('btnClearImage').addEventListener('click', function() {
+            document.getElementById('featured_image').value = '';
+            updateImagePreview('');
+        });
+
+        // アップロード
+        document.getElementById('btnUpload').addEventListener('click', function() {
+            document.getElementById('uploadNewsImageInput').click();
+        });
+
+        document.getElementById('uploadNewsImageInput').addEventListener('change', async function() {
+            const file = this.files && this.files[0];
+            if (!file) return;
+            console.log('アップロード開始:', file.name, file.size, file.type);
+            try {
+                const fd = new FormData();
+                fd.append('file', file);
+                const res = await fetch('../api/news-upload.php', {
+                    method: 'POST',
+                    body: fd,
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json' }
+                });
+                console.log('アップロードレスポンス:', res.status);
+                console.log('アップロードレスポンスヘッダー:', res.headers.get('content-type'));
+                
+                const responseText = await res.text();
+                console.log('アップロードレスポンステキスト:', responseText);
+                
+                let json;
+                try {
+                    json = JSON.parse(responseText);
+                } catch (parseError) {
+                    const start = responseText.indexOf('{');
+                    const end = responseText.lastIndexOf('}');
+                    if (start !== -1 && end !== -1) {
+                        const cleaned = responseText.slice(start, end + 1);
+                        json = JSON.parse(cleaned);
+                    } else {
+                        console.error('アップロードJSONパースエラー:', parseError);
+                        throw new Error('アップロードレスポンスの解析に失敗しました: ' + responseText.substring(0, 200));
+                    }
+                }
+                
+                console.log('アップロード結果:', json);
+                if (!res.ok || !json.success) throw new Error(json.error || 'アップロードに失敗しました');
+                document.getElementById('featured_image').value = json.url;
+                updateImagePreview(json.url);
+            } catch (err) {
+                console.error('アップロードエラー:', err);
+                alert('アップロードに失敗しました: ' + err.message);
+            } finally {
+                this.value = '';
+            }
+        });
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     </script>
 </body>
 </html>

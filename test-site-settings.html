@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サイト設定テスト - 片山建設工業</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        .loading { color: orange; }
+    </style>
+</head>
+<body>
+    <h1>サイト設定テストページ</h1>
+    
+    <div class="test-section">
+        <h2>会社名</h2>
+        <p data-site-setting="company_name">デフォルト会社名</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>電話番号</h2>
+        <p data-site-setting="company_phone">デフォルト電話番号</p>
+        <a href="tel:000-0000-0000" data-site-setting="company_phone">電話をかける</a>
+    </div>
+    
+    <div class="test-section">
+        <h2>FAX番号</h2>
+        <p data-site-setting="company_fax">デフォルトFAX番号</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>メールアドレス</h2>
+        <p data-site-setting="company_email">デフォルトメールアドレス</p>
+        <a href="mailto:test@example.com" data-site-setting="company_email">メールを送る</a>
+    </div>
+    
+    <div class="test-section">
+        <h2>住所</h2>
+        <p data-site-setting="company_address">デフォルト住所</p>
+        <p data-site-setting="company_address_postal">デフォルト郵便番号</p>
+        <p data-site-setting="company_address_detail">デフォルト住所詳細</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>タグライン</h2>
+        <p data-site-setting="company_tagline">デフォルトタグライン</p>
+    </div>
+    
+    <div class="test-section">
+        <h2>ヒーローセクション</h2>
+        <h3 data-site-setting="hero_title">デフォルトヒーロータイトル</h3>
+        <p data-site-setting="hero_subtitle">デフォルトヒーローサブタイトル</p>
+    </div>
+    
+    <div id="status" class="test-section">
+        <h2>ステータス</h2>
+        <p id="status-text" class="loading">読み込み中...</p>
+    </div>
+    
+    <div id="raw-data" class="test-section">
+        <h2>生データ</h2>
+        <pre id="raw-output">データなし</pre>
+    </div>
+
+    <!-- Supabase統合スクリプト -->
+    <script src="assets/js/supabase-integration.js"></script>
+    <script src="assets/js/mock-api.js"></script>
+    
+    <script>
+        // テスト用の追加処理
+        document.addEventListener('DOMContentLoaded', async function() {
+            const statusText = document.getElementById('status-text');
+            const rawOutput = document.getElementById('raw-output');
+            
+            try {
+                // サイト設定を取得
+                const siteSettings = await supabaseIntegration.getSiteSettings();
+                
+                if (siteSettings) {
+                    statusText.textContent = 'サイト設定の読み込みに成功しました！';
+                    statusText.className = 'success';
+                    rawOutput.textContent = JSON.stringify(siteSettings, null, 2);
+                    
+                    // 設定を適用
+                    supabaseIntegration.applySiteSettings(siteSettings);
+                    
+                    // 適用後の状態を確認
+                    setTimeout(() => {
+                        const updatedElements = document.querySelectorAll('[data-site-setting]');
+                        console.log('更新された要素数:', updatedElements.length);
+                        updatedElements.forEach(el => {
+                            console.log(`${el.getAttribute('data-site-setting')}: ${el.textContent}`);
+                        });
+                    }, 1000);
+                    
+                } else {
+                    statusText.textContent = 'サイト設定が見つかりませんでした';
+                    statusText.className = 'error';
+                }
+                
+            } catch (error) {
+                statusText.textContent = `エラーが発生しました: ${error.message}`;
+                statusText.className = 'error';
+                console.error('サイト設定読み込みエラー:', error);
+            }
+        });
+    </script>
+</body>
+</html>

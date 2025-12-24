@@ -14,5 +14,3 @@ echo '"password": "' . $hash . '"' . "\n";
 
 
 
-
-

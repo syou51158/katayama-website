@@ -122,7 +122,7 @@
     <!-- 企業理念 -->
     <section class="section bg-white">
       <div class="container">
-        <div class="max-w-4xl mx-auto text-center" data-aos="fade-up">
+        <div id="philosophy-container">
           <h2 class="section-title">企業理念</h2>
           <div class="mt-16 space-y-10">
             <div class="relative">
@@ -162,7 +162,7 @@
     <!-- 会社概要テーブル -->
     <section class="section bg-accent">
       <div class="container">
-        <div data-aos="fade-up">
+        <div id="company-info-container">
           <h2 class="section-title">会社情報</h2>
           
           <div class="max-w-4xl mx-auto mt-12 bg-white shadow-md rounded-sm overflow-hidden">
@@ -181,9 +181,9 @@
                   <td class="py-4 px-6">
                     〒520-2279<br>
                     滋賀県大津市大石東6丁目6-28<br>
-                    TEL: 090-5650-1106<br>
-                    FAX: 077-511-9983<br>
-                    E-mail: kkensetsu1106@outlook.jp
+                    TEL: <span data-site-setting="company_phone">090-5650-1106</span><br>
+                    FAX: <span data-site-setting="company_fax">077-511-9983</span><br>
+                    E-mail: <span data-site-setting="company_email">kkensetsu1106@outlook.jp</span>
                   </td>
                 </tr>
                 <tr>
@@ -222,7 +222,7 @@
     <!-- 沿革 -->
     <section class="section bg-white">
       <div class="container">
-        <div data-aos="fade-up">
+        <div id="company-history-container">
           <h2 class="section-title">沿革</h2>
           
           <div class="max-w-4xl mx-auto mt-12">
@@ -440,15 +440,15 @@
           <address class="not-italic text-gray-400 space-y-3">
             <p>〒520-2279</p>
             <p>滋賀県大津市大石東6丁目6-28</p>
-            <p>TEL: <a href="tel:09056501106" class="text-gray-400 hover:text-white transition-colors">090-5650-1106</a></p>
-            <p>FAX: 077-511-9983</p>
-            <p>E-mail: kkensetsu1106@outlook.jp</p>
+            <p>TEL: <a href="tel:09056501106" class="text-gray-400 hover:text-white transition-colors" data-site-setting="company_phone">090-5650-1106</a></p>
+            <p data-site-setting="company_fax">FAX: 077-511-9983</p>
+            <p>E-mail: <a href="mailto:kkensetsu1106@outlook.jp" class="text-gray-400 hover:text-white transition-colors" data-site-setting="company_email">kkensetsu1106@outlook.jp</a></p>
           </address>
         </div>
       </div>
       
       <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
-        <p>© 2024 片山建設工業 All Rights Reserved.</p>
+        <p>© 2024 <span data-site-setting="company_name">片山建設工業</span> All Rights Reserved.</p>
         <p class="mt-2">
           <a href="privacy.html" class="hover:text-white">プライバシーポリシー</a>
         </p>
@@ -458,6 +458,8 @@
   
   <!-- カスタムJS -->
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/mock-api.js"></script>
+  <script src="assets/js/supabase-integration.js"></script>
   <script>
     // AOSの初期化
     document.addEventListener('DOMContentLoaded', function() {

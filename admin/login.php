@@ -1,23 +1,33 @@
 <?php
-require_once '../cms/includes/auth.php';
+require_once 'includes/auth.php';
 
-$auth = new Auth();
 $error = '';
+$message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'] ?? '';
+    $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
+    $action = $_POST['action'] ?? '';
     
-    if ($auth->login($username, $password)) {
-        header('Location: dashboard.php');
-        exit;
+    if ($action === 'reset') {
+        $ok = SupabaseAuth::sendPasswordResetEmail($email, 'http://localhost:8010/admin/login.php');
+        if ($ok) {
+            $message = 'パスワードリセット用のメールを送信しました。メールをご確認ください。';
+        } else {
+            $error = 'パスワードリセットの送信に失敗しました。詳細: ' . SupabaseAuth::getLastError();
+        }
     } else {
-        $error = 'ユーザー名またはパスワードが正しくありません。';
+        if (loginWithSupabase($email, $password)) {
+            header('Location: dashboard.php');
+            exit;
+        } else {
+            $error = 'メールアドレスまたはパスワードが正しくありません。詳細: ' . SupabaseAuth::getLastError();
+        }
     }
 }
 
 // すでにログインしている場合はダッシュボードにリダイレクト
-if ($auth->isLoggedIn()) {
+if (SupabaseAuth::isLoggedIn()) {
     header('Location: dashboard.php');
     exit;
 }
@@ -68,13 +78,23 @@ if ($auth->isLoggedIn()) {
                 </div>
             </div>
         <?php endif; ?>
+        <?php if ($message): ?>
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-6">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-10a1 1 0 10-2 0v4a1 1 0 102 0V8zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                    </svg>
+                    <?php echo htmlspecialchars($message); ?>
+                </div>
+            </div>
+        <?php endif; ?>
         
         <form method="POST" action="" class="space-y-6">
             <div>
-                <label for="username" class="block text-sm font-medium text-gray-700 mb-2">ユーザー名</label>
-                <input type="text" id="username" name="username" required
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">メールアドレス</label>
+                <input type="email" id="email" name="email" required
                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition duration-200"
-                       placeholder="ユーザー名を入力">
+                       placeholder="メールアドレスを入力">
             </div>
             
             <div>
@@ -93,6 +113,10 @@ if ($auth->isLoggedIn()) {
                     class="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition duration-200 font-medium">
                 ログイン
             </button>
+            <button type="submit" name="action" value="reset" 
+                    class="w-full mt-3 bg-secondary text-white py-3 px-4 rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2 transition duration-200 font-medium">
+                パスワードをリセット
+            </button>
         </form>
         
         <div class="mt-8 text-center">
@@ -105,12 +129,12 @@ if ($auth->isLoggedIn()) {
     <script>
         // フォームのバリデーション
         document.querySelector('form').addEventListener('submit', function(e) {
-            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             
-            if (!username.trim() || !password.trim()) {
+            if (!email.trim() || !password.trim()) {
                 e.preventDefault();
-                alert('ユーザー名とパスワードを入力してください。');
+                alert('メールアドレスとパスワードを入力してください。');
             }
         });
         

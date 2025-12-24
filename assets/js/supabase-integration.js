@@ -9,6 +9,11 @@ class SupabaseIntegration {
         this.apiBase = this.detectApiBase();
         this.cache = new Map();
         this.cacheExpiry = 5 * 60 * 1000; // 5分間キャッシュ
+<<<<<<< HEAD
+=======
+        this.supabaseUrl = window.SUPABASE_URL || 'https://kmdoqdsftiorzmjczzyk.supabase.co';
+        this.supabaseAnonKey = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZG9xZHNmdGlvcnptamN6enlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NTIyODIsImV4cCI6MjA3ODUyODI4Mn0.ZoztxEfNKUX1iMuvV0czfywvyNuxMXY2fhRFeoycBIQ';
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     }
     
     /**
@@ -20,6 +25,10 @@ class SupabaseIntegration {
         
         // ローカル環境の場合
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
+<<<<<<< HEAD
+=======
+            this.useSupabaseDirect = !window.SUPABASE_OFFLINE;
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             if (path.includes('/katayama-website/')) {
                 return '/katayama-website/api/';
             }
@@ -27,6 +36,10 @@ class SupabaseIntegration {
         }
         
         // プロダクション環境
+<<<<<<< HEAD
+=======
+        this.useSupabaseDirect = false;
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
         return '/api/';
     }
 
@@ -49,11 +62,55 @@ class SupabaseIntegration {
             console.log(`📡 フルURL: ${url.toString()}`);
             const response = await fetch(url);
             
+<<<<<<< HEAD
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const data = await response.json();
+=======
+            // PHPが実行されていない場合（生のPHPコードが返された場合）はモックAPIを使用
+            const responseText = await response.text();
+            console.log(`📄 レスポンス内容プレビュー (${endpoint}):`, responseText.substring(0, 100));
+            
+            if ((responseText.includes('<?php') || responseText.includes('require_once')) && (typeof window !== 'undefined' && window.mockApiEnabled === true)) {
+                console.log(`⚠️ PHPが実行されていないため、モックAPIを使用します: ${endpoint}`);
+                if (typeof getMockApiResponse === 'function') {
+                    const mockData = await getMockApiResponse(endpoint);
+                    // キャッシュに保存
+                    this.cache.set(cacheKey, {
+                        data: mockData,
+                        timestamp: Date.now()
+                    });
+                    return mockData;
+                } else {
+                    // モックAPIが利用できない場合は空配列を返す
+                    console.warn('モックAPIが利用できません。空データを返します。');
+                    return [];
+                }
+            }
+            
+            // JSONとしてパースを試みる
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error(`JSONパースエラー (${endpoint}):`, parseError);
+                console.log(`レスポンス内容:`, responseText.substring(0, 200));
+                // JSONパースに失敗した場合もモックAPIを試す
+                if ((typeof window !== 'undefined' && window.mockApiEnabled === true) && typeof getMockApiResponse === 'function') {
+                    console.log(`モックAPIを試行します: ${endpoint}`);
+                    const mockData = await getMockApiResponse(endpoint);
+                    this.cache.set(cacheKey, {
+                        data: mockData,
+                        timestamp: Date.now()
+                    });
+                    return mockData;
+                }
+                return [];
+            }
+            
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             console.log(`📦 APIレスポンス:`, data);
             
             // 様々なレスポンス形式に対応
@@ -82,10 +139,125 @@ class SupabaseIntegration {
             return resultData;
         } catch (error) {
             console.error(`🚨 API fetch error (${endpoint}):`, error);
+<<<<<<< HEAD
+=======
+            const fallback = this.useSupabaseDirect ? await this.fetchSupabaseFallback(endpoint, params) : [];
+            const isSettings = endpoint === 'supabase-site-settings.php' && fallback && typeof fallback === 'object' && !Array.isArray(fallback);
+            if ((fallback && Array.isArray(fallback)) || isSettings) {
+                this.cache.set(cacheKey, { data: fallback, timestamp: Date.now() });
+                return fallback;
+            }
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             return [];
         }
     }
 
+<<<<<<< HEAD
+=======
+    async fetchSupabaseFallback(endpoint, params = {}) {
+        try {
+            const tableMap = {
+                'supabase-news.php': 'news',
+                'supabase-works.php': 'works',
+                'supabase-services.php': 'services',
+                'supabase-testimonials.php': 'testimonials',
+                'supabase-stats.php': 'company_stats',
+                'supabase-representatives.php': 'representatives',
+                'supabase-site-settings.php': 'site_settings'
+            };
+            const table = tableMap[endpoint];
+            if (!table) return [];
+            const url = new URL(this.supabaseUrl + '/rest/v1/' + table);
+            url.searchParams.set('select', '*');
+            if (endpoint === 'supabase-news.php') {
+                url.searchParams.set('status', 'eq.published');
+                if (params.category && params.category !== 'all') {
+                    url.searchParams.set('category', 'eq.' + params.category);
+                }
+                if (params.limit) url.searchParams.set('limit', String(params.limit));
+                if (params.offset) url.searchParams.set('offset', String(params.offset));
+                url.searchParams.append('order', 'published_date.desc');
+                url.searchParams.append('order', 'created_at.desc');
+            } else if (endpoint === 'supabase-works.php') {
+                url.searchParams.set('status', 'eq.published');
+                if (params.category && params.category !== 'all') {
+                    url.searchParams.set('category', 'eq.' + params.category);
+                }
+                if (params.limit) url.searchParams.set('limit', String(params.limit));
+                if (params.offset) url.searchParams.set('offset', String(params.offset));
+                url.searchParams.append('order', 'completion_date.desc');
+                url.searchParams.append('order', 'created_at.desc');
+            } else if (endpoint === 'supabase-services.php') {
+                url.searchParams.set('status', 'eq.active');
+                url.searchParams.append('order', 'sort_order.asc');
+                url.searchParams.append('order', 'created_at.asc');
+            } else if (endpoint === 'supabase-testimonials.php') {
+                url.searchParams.set('status', 'eq.published');
+                if (params.limit) url.searchParams.set('limit', String(params.limit));
+                url.searchParams.append('order', 'created_at.desc');
+            } else if (endpoint === 'supabase-stats.php') {
+                url.searchParams.append('order', 'created_at.asc');
+            } else if (endpoint === 'supabase-representatives.php') {
+                url.searchParams.set('status', 'eq.active');
+                url.searchParams.append('order', 'sort_order.asc');
+                url.searchParams.append('order', 'created_at.asc');
+            } else if (endpoint === 'supabase-partners.php') {
+                url.searchParams.set('status', 'eq.active');
+                url.searchParams.append('order', 'created_at.asc');
+            } else if (endpoint === 'supabase-company-info.php') {
+                // 会社情報は1件のみ取得
+                url.searchParams.append('limit', '1');
+            } else if (endpoint === 'supabase-company-history.php') {
+                url.searchParams.set('status', 'eq.active');
+                url.searchParams.append('order', 'year.asc');
+                url.searchParams.append('order', 'month.asc');
+            }
+
+            const res = await fetch(url.toString(), {
+                headers: {
+                    apikey: this.supabaseAnonKey,
+                    Authorization: 'Bearer ' + this.supabaseAnonKey,
+                    'Content-Type': 'application/json'
+                }
+            });
+            if (!res.ok) {
+                return [];
+            }
+            const json = await res.json();
+            if (endpoint === 'supabase-site-settings.php') {
+                const obj = {};
+                if (Array.isArray(json)) {
+                    json.forEach(row => {
+                        if (row && row.setting_key) obj[row.setting_key] = row.setting_value;
+                    });
+                }
+                return obj;
+            }
+            return Array.isArray(json) ? json : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    resolveImageUrl(path) {
+        if (!path) return '';
+        const p = String(path);
+        const partnerSample = p.match(/^\/images\/partners\/sample([1-5])\.png$/);
+        if (partnerSample) return `assets/img/partner${partnerSample[1]}.svg`;
+        if (p === '/images/service_exterior.png') return 'assets/img/service_exterior.png';
+        if (p === '/images/service_equipment.png') return 'assets/img/service_equipment.png';
+        if (p.startsWith('http://') || p.startsWith('https://')) return p;
+        if (p.startsWith('/storage/')) return this.supabaseUrl + p;
+        if (p.startsWith('/images/')) return this.supabaseUrl + '/storage/v1/object/public/website-assets' + p;
+        return p;
+    }
+
+    getWorksFallbackImage(index) {
+        const i = (index % 7) + 1;
+        return `assets/img/works_0${i}.jpg`;
+    }
+
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     /**
      * ニュースデータを取得
      */
@@ -130,6 +302,44 @@ class SupabaseIntegration {
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * 代表者データを取得
+     */
+    async getRepresentatives() {
+        return await this.fetchData('supabase-representatives.php');
+    }
+
+    /**
+     * パートナー企業データを取得
+     */
+    async getPartners() {
+        return await this.fetchData('supabase-partners.php');
+    }
+
+    /**
+     * サイト設定を取得
+     */
+    async getSiteSettings() {
+        return await this.fetchData('supabase-site-settings.php');
+    }
+
+    /**
+     * 会社情報を取得
+     */
+    async getCompanyInfo() {
+        return await this.fetchData('supabase-company-info.php');
+    }
+
+    /**
+     * 会社沿革を取得
+     */
+    async getCompanyHistory() {
+        return await this.fetchData('supabase-company-history.php');
+    }
+
+    /**
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
      * ニュース一覧をHTMLにレンダリング
      */
     renderNewsList(news, containerSelector) {
@@ -170,15 +380,28 @@ class SupabaseIntegration {
         const container = document.querySelector(containerSelector);
         if (!container || !works.length) return;
 
+<<<<<<< HEAD
         const worksHtml = works.map(item => {
             const completionYear = item.completion_date ? 
                 new Date(item.completion_date).getFullYear() + '年竣工' : '';
+=======
+        const worksHtml = works.map((item, index) => {
+            const completionYear = item.completion_date ? 
+                new Date(item.completion_date).getFullYear() + '年竣工' : '';
+            const resolved = this.resolveImageUrl(item.featured_image);
+            const imgSrc = resolved || this.getWorksFallbackImage(index);
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
             
             return `
                 <div class="card group work-item" data-category="${item.category.toLowerCase()}">
                     <div class="relative overflow-hidden">
+<<<<<<< HEAD
                         <img src="${item.featured_image}" alt="${this.escapeHtml(item.title)}" 
                              class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
+=======
+                        <img src="${imgSrc}" alt="${this.escapeHtml(item.title)}" 
+                             class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110" onerror="this.onerror=null;this.src='${this.getWorksFallbackImage(index)}'">
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                         <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">
                             ${item.category}
                         </div>
@@ -203,12 +426,154 @@ class SupabaseIntegration {
         container.innerHTML = worksHtml;
     }
 
+<<<<<<< HEAD
+=======
+    renderServices(services, containerSelector) {
+        const container = document.querySelector(containerSelector);
+        if (!container) return;
+        if (!Array.isArray(services) || services.length === 0) {
+            services = this.getDefaultServices();
+        }
+
+        const cards = services.map((svc, index) => {
+            const title = this.escapeHtml(svc.title || '');
+            const desc = this.escapeHtml(svc.description || svc.detailed_description || '');
+            const features = Array.isArray(svc.features) ? svc.features : [];
+            const featureHtml = features.length ? `<ul class="service-features">${features.map(f => `<li>${this.escapeHtml(f)}</li>`).join('')}</ul>` : '';
+            const remoteImg = this.resolveImageUrl(svc.service_image);
+            const fallbackImg = this.getServiceFallbackImage(svc);
+            const secondaryFallbackImg = this.getServiceSecondaryFallbackImage(svc);
+            const img = remoteImg || fallbackImg;
+            const icon = this.escapeHtml(svc.icon || '');
+            const derivedIcon = icon || this.getServiceIconByTitle(svc.title || '');
+            const badge = derivedIcon ? `<span class="service-tag">${derivedIcon}</span>` : '';
+            
+            // Alternate layout direction for better visual flow
+            const isEven = index % 2 === 0;
+            const imageOrder = isEven ? 'order-1' : 'order-1 md:order-2';
+            const textOrder = isEven ? 'order-2' : 'order-2 md:order-1';
+            const bgColor = index % 2 === 1 ? 'bg-gray-50' : 'bg-white';
+            
+            return `
+                <section class="service-section ${bgColor}">
+                    <div class="container mx-auto px-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                            <div class="relative ${imageOrder}">
+                                ${badge}
+                                <div class="service-parallax-wrapper rounded-lg shadow-lg">
+                                    <img src="${img}" alt="${title}" class="service-parallax-img" onerror="this.onerror=null;this.src='${fallbackImg}'">
+                                </div>
+                            </div>
+                            <div class="${textOrder}">
+                                <h3 class="service-title">${title}</h3>
+                                ${desc ? `<p class=\"service-description\">${desc}</p>` : ''}
+                                ${featureHtml}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            `;
+        }).join('');
+
+        container.innerHTML = `${cards}`;
+        if (typeof AOS !== 'undefined' && typeof AOS.refresh === 'function') {
+            try {
+                AOS.refresh();
+            } catch (_) {}
+        }
+        if (typeof setupParallax === 'function') {
+            setupParallax();
+        }
+    }
+
+    getServiceFallbackImage(svc) {
+        const t = String(svc.title || '').toLowerCase();
+        if (t.includes('土木')) return 'assets/img/service_doboku.jpg';
+        if (t.includes('建築')) return 'assets/img/service_house.jpg';
+        if (t.includes('リフォーム')) return 'assets/img/service_reform.jpg';
+        if (t.includes('外構')) return 'assets/img/service_exterior.png';
+        if (t.includes('公共')) return 'assets/img/service_public.jpg';
+        if (t.includes('設備')) return 'assets/img/service_equipment.png';
+        return 'assets/img/service_house.jpg';
+    }
+
+    getServiceSecondaryFallbackImage(svc) {
+        const t = String(svc.title || '').toLowerCase();
+        if (t.includes('外構')) return 'assets/img/service_commercial.jpg';
+        if (t.includes('設備')) return 'assets/img/works_07.jpg';
+        if (t.includes('土木')) return 'assets/img/works_01.jpg';
+        if (t.includes('建築')) return 'assets/img/service_house.jpg';
+        if (t.includes('リフォーム')) return 'assets/img/service_reform.jpg';
+        if (t.includes('公共')) return 'assets/img/service_public.jpg';
+        return this.getWorksFallbackImage(0);
+    }
+
+    getServiceIconByTitle(title) {
+        const t = String(title || '').toLowerCase();
+        if (t.includes('土木')) return 'civil';
+        if (t.includes('建築')) return 'building';
+        if (t.includes('リフォーム')) return 'reform';
+        if (t.includes('外構')) return 'exterior';
+        if (t.includes('公共')) return 'public';
+        if (t.includes('設備')) return 'facility';
+        return '';
+    }
+
+    getDefaultServices() {
+        return [
+            {
+                title: '土木工事',
+                description: '造成・河川などの土木工事',
+                features: ['造成','河川改修','舗装','擁壁'],
+                service_image: 'assets/img/service_doboku.jpg',
+                icon: 'residence'
+            },
+            {
+                title: '建築工事',
+                description: '住宅・お店の建設',
+                features: ['新築','増改築','改修'],
+                service_image: 'assets/img/service_house.jpg',
+                icon: 'building'
+            },
+            {
+                title: 'リフォーム',
+                description: '住宅リフォーム',
+                features: ['キッチン','バス','洗面'],
+                service_image: 'assets/img/service_reform.jpg',
+                icon: 'rock'
+            },
+            {
+                title: '外構工事',
+                description: 'エクステリア工事',
+                features: ['カーポート','塀','舗装'],
+                service_image: 'assets/img/service_exterior.png',
+                icon: 'fence'
+            },
+            {
+                title: '公共工事',
+                description: '自治体向け工事',
+                features: ['道路','公園'],
+                service_image: 'assets/img/service_public.jpg',
+                icon: 'government'
+            },
+            {
+                title: '設備工事',
+                description: '電気・給排水など',
+                features: ['電気設備','空調','給排水'],
+                service_image: 'assets/img/service_equipment.png',
+                icon: 'electric'
+            }
+        ];
+    }
+
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     /**
      * お客様の声をHTMLにレンダリング
      */
     renderTestimonials(testimonials, containerSelector) {
         const container = document.querySelector(containerSelector);
         if (!container || !testimonials.length) return;
+<<<<<<< HEAD
 
         const testimonialsHtml = testimonials.map((item, index) => `
             <div class="testimonial-card" data-aos="fade-up" data-aos-delay="${index * 100}">
@@ -220,6 +585,34 @@ class SupabaseIntegration {
                 </div>
             </div>
         `).join('');
+=======
+        const testimonialsHtml = testimonials.map((item, index) => {
+            const name = this.escapeHtml(item.customer_name || '');
+            const project = this.escapeHtml(item.project_type || '');
+            const content = this.escapeHtml(item.content || '');
+            const rating = Math.max(0, Math.min(5, Number(item.rating || 0)));
+            const stars = Array.from({ length: 5 }, (_, i) => {
+                return i < rating
+                    ? `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-secondary" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.036a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.036a1 1 0 00-1.176 0l-2.802 2.036c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`
+                    : `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.802 2.036a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.802-2.036a1 1 0 00-1.176 0l-2.802 2.036c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>`;
+            }).join('');
+
+            return `
+            <div class="card elegant-shadow p-6" data-aos="fade-up" data-aos-delay="${index * 100}">
+                <div class="flex items-start mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary mr-3 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M7.17 6A5.17 5.17 0 002 11.17V20h7v-8H6.83A3.83 3.83 0 0110.66 8V6H7.17zm9 0A5.17 5.17 0 0011 11.17V20h7v-8h-2.17A3.83 3.83 0 0119.66 8V6h-3.49z"/></svg>
+                    <p class="text-gray-700">${content}</p>
+                </div>
+                <div class="flex items-center justify-between mt-6">
+                    <div class="flex items-center">
+                        <span class="font-bold">${name}</span>
+                        ${project ? `<span class="text-sm text-gray-500 ml-2">${project}</span>` : ''}
+                    </div>
+                    <div class="flex items-center">${stars}</div>
+                </div>
+            </div>`;
+        }).join('');
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
 
         container.innerHTML = testimonialsHtml;
     }
@@ -246,6 +639,351 @@ class SupabaseIntegration {
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * 代表者をHTMLにレンダリング
+     */
+    renderRepresentatives(representatives, containerSelector) {
+        const container = document.querySelector(containerSelector);
+        if (!container || !representatives.length) return;
+
+        const html = representatives.map((item, index) => {
+            const photoUrl = item.photo_url || 'assets/img/ogp.jpg';
+            const signatureUrl = item.signature_url || '';
+            const biography = item.biography || {};
+            
+            // 経歴データをHTMLに変換
+            let biographyHtml = '';
+            if (biography.career && Array.isArray(biography.career)) {
+                biographyHtml += '<h4 class="font-bold mb-2">経歴</h4><ul class="list-disc list-inside mb-4 text-gray-700">';
+                biographyHtml += biography.career.map(career => `<li>${this.escapeHtml(career)}</li>`).join('');
+                biographyHtml += '</ul>';
+            }
+            
+            if (biography.education && Array.isArray(biography.education)) {
+                biographyHtml += '<h4 class="font-bold mb-2">学歴</h4><ul class="list-disc list-inside mb-4 text-gray-700">';
+                biographyHtml += biography.education.map(edu => `<li>${this.escapeHtml(edu)}</li>`).join('');
+                biographyHtml += '</ul>';
+            }
+
+            // 資格データをHTMLに変換
+            let qualificationsHtml = '';
+            if (item.qualifications && Array.isArray(item.qualifications)) {
+                qualificationsHtml = '<h4 class="font-bold mb-2">保有資格</h4><ul class="list-disc list-inside text-gray-700">';
+                qualificationsHtml += item.qualifications.map(qual => `<li>${this.escapeHtml(qual)}</li>`).join('');
+                qualificationsHtml += '</ul>';
+            }
+
+            return `
+                <div class="bg-white shadow-md rounded-sm overflow-hidden mb-12" data-aos="fade-up" data-aos-delay="${index * 100}">
+                    <div class="grid grid-cols-1 md:grid-cols-3">
+                        <div class="md:col-span-1">
+                            <img src="${photoUrl}" alt="${this.escapeHtml(item.name)}" 
+                                 class="w-full h-full object-cover" onerror="this.onerror=null;this.src='assets/img/ogp.jpg'">
+                        </div>
+                        <div class="p-8 md:col-span-2">
+                            <div class="mb-6">
+                                <h3 class="text-2xl font-bold mb-2">${this.escapeHtml(item.name)}</h3>
+                                <p class="text-secondary font-medium mb-4">${this.escapeHtml(item.position)}</p>
+                                
+                                <div class="prose max-w-none mb-6">
+                                    <h4 class="font-bold mb-2">${this.escapeHtml(item.greeting_title)}</h4>
+                                    <p class="text-gray-700 leading-relaxed">${this.escapeHtml(item.greeting_content)}</p>
+                                </div>
+
+                                ${biographyHtml}
+                                ${qualificationsHtml}
+
+                                ${signatureUrl ? `
+                                    <div class="mt-6">
+                                        <img src="${signatureUrl}" alt="${this.escapeHtml(item.name)} 署名" 
+                                             class="h-12 object-contain" onerror="this.style.display='none'">
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        container.innerHTML = html;
+    }
+
+    /**
+     * サイト設定を適用
+     */
+    applySiteSettings(siteSettings) {
+        if (!siteSettings) return;
+
+        const companyName = siteSettings.company_name || siteSettings.site_name;
+        const companyPhone = siteSettings.company_phone || siteSettings.contact_tel;
+        const companyFax = siteSettings.company_fax;
+        const companyEmail = siteSettings.company_email || siteSettings.contact_email;
+        const companyAddress = siteSettings.company_address || siteSettings.address;
+        const heroTitle = siteSettings.hero_title;
+        const heroSubtitle = siteSettings.hero_subtitle;
+
+        if (companyName) {
+            const els = document.querySelectorAll('[data-site-setting="company_name"]');
+            els.forEach(el => { el.textContent = companyName; });
+        }
+
+        if (companyPhone) {
+            const els = document.querySelectorAll('[data-site-setting="company_phone"]');
+            els.forEach(el => {
+                el.textContent = companyPhone;
+                if (el.tagName === 'A') { el.href = `tel:${companyPhone}`; }
+            });
+        }
+
+        if (companyFax) {
+            const els = document.querySelectorAll('[data-site-setting="company_fax"]');
+            els.forEach(el => { el.textContent = companyFax; });
+        }
+
+        if (companyEmail) {
+            const els = document.querySelectorAll('[data-site-setting="company_email"]');
+            els.forEach(el => {
+                el.textContent = companyEmail;
+                if (el.tagName === 'A') { el.href = `mailto:${companyEmail}`; }
+            });
+        }
+
+        if (companyAddress) {
+            const els = document.querySelectorAll('[data-site-setting="company_address"]');
+            els.forEach(el => { el.textContent = companyAddress; });
+        }
+
+        if (heroTitle) {
+            const els = document.querySelectorAll('[data-site-setting="hero_title"]');
+            els.forEach(el => { el.textContent = heroTitle; });
+        }
+
+        if (heroSubtitle) {
+            const els = document.querySelectorAll('[data-site-setting="hero_subtitle"]');
+            els.forEach(el => { el.textContent = heroSubtitle; });
+        }
+        
+        // 住所の更新
+        if (siteSettings.company_address) {
+            const addressElements = document.querySelectorAll('[data-site-setting="company_address"]');
+            addressElements.forEach(el => {
+                el.textContent = siteSettings.company_address;
+            });
+        }
+        
+        // 郵便番号の更新
+        if (siteSettings.company_address_postal) {
+            const postalElements = document.querySelectorAll('[data-site-setting="company_address_postal"]');
+            postalElements.forEach(el => {
+                el.textContent = siteSettings.company_address_postal;
+            });
+        }
+        
+        // 住所詳細の更新
+        if (siteSettings.company_address_detail) {
+            const detailElements = document.querySelectorAll('[data-site-setting="company_address_detail"]');
+            detailElements.forEach(el => {
+                el.textContent = siteSettings.company_address_detail;
+            });
+        }
+        
+        // タグラインの更新
+        if (siteSettings.company_tagline) {
+            const taglineElements = document.querySelectorAll('[data-site-setting="company_tagline"]');
+            taglineElements.forEach(el => {
+                el.textContent = siteSettings.company_tagline;
+            });
+        }
+        
+        // ヒーローセクションの更新
+        if (siteSettings.hero_title) {
+            const heroTitleElements = document.querySelectorAll('[data-site-setting="hero_title"]');
+            heroTitleElements.forEach(el => {
+                el.textContent = siteSettings.hero_title;
+            });
+        }
+        
+        if (siteSettings.hero_subtitle) {
+            const heroSubtitleElements = document.querySelectorAll('[data-site-setting="hero_subtitle"]');
+            heroSubtitleElements.forEach(el => {
+                el.textContent = siteSettings.hero_subtitle;
+            });
+        }
+    }
+
+    /**
+     * 会社情報をHTMLにレンダリング
+     */
+    renderCompanyInfo(companyInfo, containerSelector) {
+        const container = document.querySelector(containerSelector);
+        if (!container || !companyInfo) return;
+
+        const businessItems = companyInfo.business_details || [];
+        const licenses = companyInfo.licenses || [];
+        
+        const businessHtml = businessItems.map(item => `<li>${this.escapeHtml(item)}</li>`).join('');
+        const licensesHtml = licenses.map(license => `<li>${this.escapeHtml(license)}</li>`).join('');
+
+        const html = `
+            <table class="w-full">
+                <tbody class="divide-y divide-gray-200">
+                    <tr>
+                        <th class="py-4 px-6 bg-gray-50 text-left w-1/3">会社名</th>
+                        <td class="py-4 px-6">${this.escapeHtml(companyInfo.company_name)}</td>
+                    </tr>
+                    <tr>
+                        <th class="py-4 px-6 bg-gray-50 text-left">代表者</th>
+                        <td class="py-4 px-6">${this.escapeHtml(companyInfo.representative_title)} ${this.escapeHtml(companyInfo.representative_name)}</td>
+                    </tr>
+                    <tr>
+                        <th class="py-4 px-6 bg-gray-50 text-left">所在地</th>
+                        <td class="py-4 px-6">
+                            ${this.escapeHtml(companyInfo.address_postal)}<br>
+                            ${this.escapeHtml(companyInfo.address_detail)}<br>
+                            TEL: ${this.escapeHtml(companyInfo.phone)}<br>
+                            ${companyInfo.fax ? `FAX: ${this.escapeHtml(companyInfo.fax)}<br>` : ''}
+                            E-mail: ${this.escapeHtml(companyInfo.email)}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="py-4 px-6 bg-gray-50 text-left">登録番号</th>
+                        <td class="py-4 px-6">${this.escapeHtml(companyInfo.registration_number)}</td>
+                    </tr>
+                    <tr>
+                        <th class="py-4 px-6 bg-gray-50 text-left">事業内容</th>
+                        <td class="py-4 px-6">
+                            <ul class="list-disc list-inside">
+                                ${businessHtml}
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th class="py-4 px-6 bg-gray-50 text-left">許可・登録</th>
+                        <td class="py-4 px-6">
+                            <ul class="list-disc list-inside">
+                                ${licensesHtml}
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+
+        container.innerHTML = html;
+    }
+
+    /**
+     * 企業理念をHTMLにレンダリング
+     */
+    renderPhilosophy(companyInfo, containerSelector) {
+        const container = document.querySelector(containerSelector);
+        if (!container || !companyInfo) return;
+
+        const philosophyItems = companyInfo.philosophy_items || [];
+        
+        const itemsHtml = philosophyItems.map((item, index) => `
+            <div class="bg-accent p-8 rounded-sm" data-aos="fade-up" data-aos-delay="${(index + 1) * 100}">
+                <div class="text-secondary text-4xl font-bold mb-4">${this.escapeHtml(item.number)}</div>
+                <h3 class="text-xl font-bold mb-3">${this.escapeHtml(item.title)}</h3>
+                <p>${this.escapeHtml(item.description)}</p>
+            </div>
+        `).join('');
+
+        const html = `
+            <div class="max-w-4xl mx-auto text-center" data-aos="fade-up">
+                <h2 class="section-title">企業理念</h2>
+                <div class="mt-16 space-y-10">
+                    <div class="relative">
+                        <div class="text-2xl md:text-3xl font-bold mb-6 text-primary">
+                            「${this.escapeHtml(companyInfo.philosophy_title)}」
+                        </div>
+                        <p class="text-lg leading-relaxed">
+                            ${this.escapeHtml(companyInfo.philosophy_content)}
+                        </p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
+                        ${itemsHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+    }
+
+    /**
+     * パートナー企業をHTMLにレンダリング
+     */
+    renderPartners(partners, containerSelector) {
+        const container = document.querySelector(containerSelector);
+        if (!container || !partners.length) return;
+
+        const partnersHtml = partners.map((partner, index) => {
+            const resolvedLogo = this.resolveImageUrl(partner.logo_image);
+            const fallbackLogo = `assets/img/partner${Math.min(index + 1, 5)}.svg`;
+            const src = resolvedLogo || fallbackLogo;
+            const img = `<img src="${src}" alt="${this.escapeHtml(partner.company_name || '')}" 
+                           class="h-10 md:h-12 opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all"
+                           onerror="this.onerror=null;this.src='${fallbackLogo}'">`;
+            if (partner.website_url) {
+                const href = this.escapeHtml(partner.website_url);
+                return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="flex justify-center items-center">${img}</a>`;
+            }
+            return `<div class="flex justify-center items-center">${img}</div>`;
+        }).join('');
+
+        container.innerHTML = partnersHtml;
+    }
+
+    /**
+     * 会社沿革をHTMLにレンダリング
+     */
+    renderCompanyHistory(history, containerSelector) {
+        const container = document.querySelector(containerSelector);
+        if (!container || !history.length) return;
+
+        const historyHtml = history.map((item, index) => {
+            const yearShort = String(item.year).slice(-2);
+            const monthText = item.month ? `${item.month}月` : '';
+            const detailsHtml = item.details ? item.details.map(detail => `<p>${this.escapeHtml(detail)}</p>`).join('') : '';
+            
+            return `
+                <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="${(index + 1) * 100}">
+                    <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold">${yearShort}</div>
+                    <div class="ml-6">
+                        <div class="text-xl font-bold text-primary">${item.year}年${monthText ? monthText : ''}</div>
+                        <div class="mt-2">
+                            <p>${this.escapeHtml(item.title)}</p>
+                            ${detailsHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        const html = `
+            <div class="max-w-4xl mx-auto" data-aos="fade-up">
+                <h2 class="section-title">沿革</h2>
+                
+                <div class="max-w-4xl mx-auto mt-12">
+                    <div class="space-y-8 relative">
+                        <!-- 縦線 -->
+                        <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-200 z-0 ml-6"></div>
+                        
+                        ${historyHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+    }
+
+    /**
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
      * カテゴリに応じたCSSクラスを取得
      */
     getCategoryClass(category) {
@@ -319,6 +1057,37 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.querySelector('#works-grid')) {
         initializeWorksPage();
     }
+<<<<<<< HEAD
+=======
+
+    // サービスページの初期化
+    if (document.querySelector('#services-container')) {
+        initializeServicesPage();
+    }
+
+    // Aboutページの初期化
+    if (document.querySelector('#representatives-container')) {
+        initializeAboutPage();
+    }
+
+    // 会社概要ページの初期化
+    if (document.querySelector('#philosophy-container') || document.querySelector('#company-info-container') || document.querySelector('#company-history-container')) {
+        initializeCompanyPage();
+    }
+
+    // パートナー企業の初期化
+    if (document.querySelector('#partners-container')) {
+        initializePartners();
+    }
+
+    // お問い合わせフォームの初期化
+    if (document.querySelector('#contact-form')) {
+        initializeContactForm();
+    }
+
+    // サイト設定の初期化（全ページ共通）
+    initializeSiteSettings();
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
 });
 
 /**
@@ -348,12 +1117,63 @@ async function initializeHomePage() {
             supabaseIntegration.renderStats(stats, '.stats-container');
         }
 
+<<<<<<< HEAD
+=======
+        // ホーム: 施工実績スライダーに最新を反映
+        const homeWorksSlider = document.querySelector('.works-slider');
+        if (homeWorksSlider) {
+            const works = await supabaseIntegration.getWorks(6);
+            renderHomeWorksSlider(works);
+        }
+
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     } catch (error) {
         console.error('Homepage initialization error:', error);
     }
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * ホームの施工実績スライダーをレンダリング
+ */
+function renderHomeWorksSlider(works) {
+    const slider = document.querySelector('.works-slider');
+    if (!slider) return;
+    if (!Array.isArray(works) || works.length === 0) {
+        slider.innerHTML = '<div class="w-full text-center text-gray-500 py-8">施工実績がありません。</div>';
+        return;
+    }
+
+    const cards = works.map((item, index) => {
+        const img = supabaseIntegration.resolveImageUrl(item.featured_image) || supabaseIntegration.getWorksFallbackImage(index);
+        const category = item.category || '';
+        const title = supabaseIntegration.escapeHtml(item.title || '');
+        const desc = supabaseIntegration.escapeHtml((item.description || '').substring(0, 40));
+        return `
+            <div class="w-80 md:w-96 flex-shrink-0 px-4">
+              <div class="card h-full group">
+                <div class="relative overflow-hidden">
+                  <img src="${img}" alt="${title}" class="w-full h-64 object-cover lightbox-image transition-transform duration-700 group-hover:scale-110" onerror="this.onerror=null;this.src='${supabaseIntegration.getWorksFallbackImage(index)}'">
+                  <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('${img}','${title}','${desc}')">詳細を見る</button>
+                  </div>
+                </div>
+                <div class="p-6">
+                  <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">${category}</span>
+                  <h3 class="text-xl font-bold mb-2">${title}</h3>
+                  <p class="text-gray-600">${desc}</p>
+                </div>
+              </div>
+            </div>
+        `;
+    }).join('');
+
+    slider.innerHTML = cards;
+}
+
+/**
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
  * ニュースページ用のレンダリング関数
  */
 function renderNewsPage(news) {
@@ -378,8 +1198,14 @@ function renderNewsPage(news) {
                      data-category="${item.category}" data-aos="fade-up" data-aos-delay="${index * 100}">
                 <div class="grid grid-cols-1 md:grid-cols-3">
                     <div class="md:col-span-1">
+<<<<<<< HEAD
                         <img src="${item.featured_image || 'assets/img/default-news.jpg'}" 
                              alt="${item.title}" class="w-full h-full object-cover">
+=======
+                        <img src="${supabaseIntegration.resolveImageUrl(item.featured_image) || 'assets/img/ogp.jpg'}" 
+                             alt="${item.title}" class="w-full h-full object-cover" 
+                             onerror="this.onerror=null;this.src='assets/img/ogp.jpg'">
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
                     </div>
                     <div class="p-6 md:col-span-2">
                         <div class="flex items-center mb-4">
@@ -446,6 +1272,12 @@ async function initializeWorksPage() {
             supabaseIntegration.showLoading('#works-grid');
             const works = await supabaseIntegration.getWorks(20);
             supabaseIntegration.renderWorksList(works, '#works-grid');
+<<<<<<< HEAD
+=======
+            if (typeof setupCategoryFilter === 'function') {
+                setupCategoryFilter();
+            }
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
         }
     } catch (error) {
         console.error('Works page initialization error:', error);
@@ -453,6 +1285,119 @@ async function initializeWorksPage() {
     }
 }
 
+<<<<<<< HEAD
+=======
+async function initializeServicesPage() {
+    try {
+        const container = document.querySelector('#services-container');
+        if (container) {
+            supabaseIntegration.showLoading('#services-container');
+            const services = await supabaseIntegration.getServices();
+            supabaseIntegration.renderServices(services, '#services-container');
+            if (typeof setupParallax === 'function') { setupParallax(); }
+        }
+    } catch (error) {
+        console.error('Services page initialization error:', error);
+        supabaseIntegration.showError(error.message, '#services-container');
+    }
+}
+
+function setupParallax() {
+    const els = Array.from(document.querySelectorAll('.service-parallax-img'));
+    if (!els.length) return;
+    const onScroll = () => {
+        const vh = window.innerHeight || 800;
+        for (const el of els) {
+            const r = el.getBoundingClientRect();
+            if (r.bottom < 0 || r.top > vh) continue;
+            const s = 0.15;
+            const max = 30;
+            const o = Math.max(-max, Math.min(max, (r.top - vh / 2) * s));
+            el.style.transform = `translateY(${o}px)`;
+        }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+}
+
+/**
+ * Aboutページの初期化
+ */
+async function initializeAboutPage() {
+    try {
+        const container = document.querySelector('#representatives-container');
+        if (container) {
+            supabaseIntegration.showLoading('#representatives-container');
+            const representatives = await supabaseIntegration.getRepresentatives();
+            supabaseIntegration.renderRepresentatives(representatives, '#representatives-container');
+        }
+    } catch (error) {
+        console.error('About page initialization error:', error);
+        supabaseIntegration.showError(error.message, '#representatives-container');
+    }
+}
+
+/**
+ * パートナー企業ページの初期化
+ */
+async function initializePartners() {
+    try {
+        const container = document.querySelector('#partners-container');
+        if (container) {
+            supabaseIntegration.showLoading('#partners-container');
+            const partners = await supabaseIntegration.getPartners();
+            if (Array.isArray(partners) && partners.length > 0) {
+                supabaseIntegration.renderPartners(partners, '#partners-container');
+            } else {
+                const fallback = [1,2,3,4,5].map(i => ({
+                    company_name: '',
+                    logo_image: `assets/img/partner${i}.svg`,
+                    website_url: ''
+                }));
+                supabaseIntegration.renderPartners(fallback, '#partners-container');
+            }
+        }
+    } catch (error) {
+        console.error('Partners initialization error:', error);
+        supabaseIntegration.showError(error.message, '#partners-container');
+    }
+}
+
+/**
+ * 会社概要ページの初期化
+ */
+async function initializeCompanyPage() {
+    try {
+        // 企業理念の読み込み
+        const philosophyContainer = document.querySelector('#philosophy-container');
+        if (philosophyContainer) {
+            supabaseIntegration.showLoading('#philosophy-container');
+            const companyInfo = await supabaseIntegration.getCompanyInfo();
+            supabaseIntegration.renderPhilosophy(companyInfo, '#philosophy-container');
+        }
+
+        // 会社情報の読み込み
+        const infoContainer = document.querySelector('#company-info-container');
+        if (infoContainer) {
+            supabaseIntegration.showLoading('#company-info-container');
+            const companyInfo = await supabaseIntegration.getCompanyInfo();
+            supabaseIntegration.renderCompanyInfo(companyInfo, '#company-info-container');
+        }
+
+        // 会社沿革の読み込み
+        const historyContainer = document.querySelector('#company-history-container');
+        if (historyContainer) {
+            supabaseIntegration.showLoading('#company-history-container');
+            const companyHistory = await supabaseIntegration.getCompanyHistory();
+            supabaseIntegration.renderCompanyHistory(companyHistory, '#company-history-container');
+        }
+    } catch (error) {
+        console.error('Company page initialization error:', error);
+        supabaseIntegration.showError(error.message, '#philosophy-container');
+    }
+}
+
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
 /**
  * 施工実績の詳細を開く
  */
@@ -463,8 +1408,107 @@ function openWorkDetail(workId) {
     alert('詳細機能は準備中です。ID: ' + workId);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * お問い合わせフォームの初期化
+ */
+async function initializeContactForm() {
+    const form = document.getElementById('contact-form');
+    if (!form) return;
+    
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        // フォームデータの収集
+        const formData = new FormData(form);
+        const data = {
+            name: formData.get('name'),
+            company: formData.get('company'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            inquiry_type: formData.get('inquiry_type'),
+            message: formData.get('message')
+        };
+        
+        // 送信前の検証
+        if (!data.name || !data.email || !data.inquiry_type || !data.message) {
+            alert('必須項目をすべて入力してください。');
+            return;
+        }
+        
+        // メールアドレスの検証
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(data.email)) {
+            alert('有効なメールアドレスを入力してください。');
+            return;
+        }
+        
+        // プライバシーポリシーの同意確認
+        const privacyCheckbox = form.querySelector('input[type="checkbox"]');
+        if (!privacyCheckbox.checked) {
+            alert('プライバシーポリシーに同意してください。');
+            return;
+        }
+        
+        try {
+            // 送信ボタンを無効化
+            const submitButton = form.querySelector('button[type="submit"]');
+            const originalText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = '送信中...';
+            
+            // Supabaseに送信
+            const response = await fetch('api/supabase-inquiries.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                // 成功時の処理
+                alert('お問い合わせありがとうございます。内容を確認の上、担当者より連絡いたします。');
+                form.reset();
+            } else {
+                // エラー時の処理
+                alert(result.error || '送信に失敗しました。しばらく経ってからもう一度お試しください。');
+            }
+            
+        } catch (error) {
+            console.error('送信エラー:', error);
+            alert('送信に失敗しました。しばらく経ってからもう一度お試しください。');
+        } finally {
+            // ボタンを再有効化
+            submitButton.disabled = false;
+            submitButton.textContent = originalText;
+        }
+    });
+}
+
+/**
+ * サイト設定の初期化（全ページ共通）
+ */
+async function initializeSiteSettings() {
+    try {
+        const siteSettings = await supabaseIntegration.getSiteSettings();
+        if (siteSettings) {
+            supabaseIntegration.applySiteSettings(siteSettings);
+        }
+    } catch (error) {
+        console.error('Site settings initialization error:', error);
+    }
+}
+
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
 // エクスポート（モジュール形式での使用時）
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = SupabaseIntegration;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485

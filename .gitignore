@@ -1,0 +1,5 @@
+config/supabase.secrets.php
+.env*
+node_modules/
+vendor/
+.DS_Store

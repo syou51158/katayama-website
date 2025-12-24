@@ -129,25 +129,25 @@
               <div class="space-y-6">
                 <div>
                   <h3 class="text-xl font-bold mb-3 text-primary">お電話でのお問い合わせ</h3>
-                  <p class="text-lg font-bold">090-5650-1106</p>
+                  <p class="text-lg font-bold" data-site-setting="company_phone">090-5650-1106</p>
                   <p class="text-gray-600">平日 8:30〜17:30</p>
                 </div>
 
                 <div>
                   <h3 class="text-xl font-bold mb-3 text-primary">FAXでのお問い合わせ</h3>
-                  <p class="text-lg font-bold">077-511-9983</p>
+                  <p class="text-lg font-bold" data-site-setting="company_fax">077-511-9983</p>
                 </div>
                 
                 <div>
                   <h3 class="text-xl font-bold mb-3 text-primary">メールでのお問い合わせ</h3>
-                  <p class="text-gray-600">kkensetsu1106@outlook.jp</p>
+                  <p class="text-gray-600" data-site-setting="company_email">kkensetsu1106@outlook.jp</p>
                 </div>
                 
                 <div>
                   <h3 class="text-xl font-bold mb-3 text-primary">所在地</h3>
                   <address class="not-italic text-gray-600">
-                    〒520-2279<br>
-                    滋賀県大津市大石東6丁目6-28
+                    <span data-site-setting="company_address_postal">〒520-2279</span><br>
+                    <span data-site-setting="company_address_detail">滋賀県大津市大石東6丁目6-28</span>
                   </address>
                 </div>
                 
@@ -433,17 +433,17 @@
         <div>
           <h3 class="text-lg font-bold mb-4">会社情報</h3>
           <address class="not-italic text-sm text-gray-400">
-            <p class="mb-2">〒520-2279</p>
-            <p class="mb-2">滋賀県大津市大石東6丁目6-28</p>
-            <p class="mb-2">TEL: 090-5650-1106</p>
-            <p class="mb-2">FAX: 077-511-9983</p>
-            <p>E-mail: kkensetsu1106@outlook.jp</p>
+            <p class="mb-2"><span data-site-setting="company_address_postal">〒520-2279</span></p>
+            <p class="mb-2"><span data-site-setting="company_address_detail">滋賀県大津市大石東6丁目6-28</span></p>
+            <p class="mb-2">TEL: <span data-site-setting="company_phone">090-5650-1106</span></p>
+            <p class="mb-2">FAX: <span data-site-setting="company_fax">077-511-9983</span></p>
+            <p>E-mail: <span data-site-setting="company_email">kkensetsu1106@outlook.jp</span></p>
           </address>
         </div>
       </div>
       
       <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
-        <p>© 2024 片山建設工業 All Rights Reserved.</p>
+        <p>© 2024 <span data-site-setting="company_name">片山建設工業</span> All Rights Reserved.</p>
         <p class="mt-2">
           <a href="privacy.html" class="hover:text-white">プライバシーポリシー</a>
         </p>
@@ -453,6 +453,8 @@
   
   <!-- カスタムJS -->
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/mock-api.js"></script>
+  <script src="assets/js/supabase-integration.js"></script>
   <script>
     // AOSの初期化
     document.addEventListener('DOMContentLoaded', function() {

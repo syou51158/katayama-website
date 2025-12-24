@@ -45,6 +45,7 @@
   <link rel="stylesheet" href="assets/css/main.css">
   
   <!-- Supabase統合 -->
+  <script src="assets/js/mock-api.js"></script>
   <script src="assets/js/supabase-integration.js"></script>
 </head>
 <body class="bg-white text-text_dark">
@@ -135,7 +136,7 @@
       </div>
     </section>
     
-    <!-- 施工実績一覧 -->
+    <!-- 施工実績一覧（動的レンダリング専用・スタティック要素は削除） -->
     <section class="section bg-white">
       <div class="container">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="works-grid">
@@ -144,183 +145,8 @@
             <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             <p class="mt-4 text-gray-500">施工実績を読み込み中...</p>
           </div>
-        
-        <!-- もっと見るボタン -->
-        <div class="text-center mt-16" data-aos="fade-up">
-          <button id="load-more" class="btn-outline">もっと見る</button>
-        </div>
-      </div>
-    </section>
-    
-    <!-- お問い合わせセクション -->
-    <section class="py-16 bg-primary text-white">
-      <div class="container">
-        <div class="max-w-3xl mx-auto text-center" data-aos="fade-up">
-          <h2 class="text-3xl font-bold mb-6">お問い合わせ</h2>
-          <p class="text-lg mb-8">
-            施工事例についてのご質問や、お見積りのご依頼など<br>
-            お気軽にお問い合わせください。
-          </p>
-          <a href="contact.html" class="btn-secondary">お問い合わせはこちら</a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- ライトボックス -->
-  <div id="lightbox" class="fixed inset-0 bg-black bg-opacity-90 z-50 hidden flex items-center justify-center">
-    <button id="lightbox-close" class="absolute top-6 right-6 text-white focus:outline-none hover:text-gray-300 transition-colors">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-    <div class="max-w-6xl w-full mx-4">
-      <img id="lightbox-img" src="" alt="" class="max-h-[70vh] mx-auto">
-      <div class="text-white mt-6">
-        <h3 id="lightbox-title" class="text-2xl font-bold mb-2"></h3>
-        <p id="lightbox-desc" class="text-gray-300"></p>
-      </div>
-    </div>
-  </div>
-                <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('assets/img/works_03.jpg', '市民ホール改修', '老朽化した市民ホールの耐震補強および内装リニューアル工事。最新の音響設備を導入し、バリアフリー対応も強化。様々な世代が利用しやすい公共空間として生まれ変わりました。')">詳細を見る</button>
-              </div>
-            </div>
-            <div class="p-6">
-              <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">Public</span>
-              <h3 class="text-xl font-bold mb-2">市民ホール改修</h3>
-              <p class="text-gray-600 mb-4">市民ホールの耐震補強及び内装リニューアル</p>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-500">2020年竣工</span>
-                <span class="text-sm bg-accent text-primary px-2 py-1 rounded-sm">東京都</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- 施工実績4 -->
-          <div class="card group work-item" data-category="commercial" data-aos="fade-up" data-aos-delay="0">
-            <div class="relative overflow-hidden">
-              <img src="assets/img/works_04.jpg" alt="省エネオフィスビル" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
-              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">Commercial</div>
-              <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('assets/img/works_04.jpg', '省エネオフィスビル', '最新の省エネ技術を導入した次世代型オフィスビル。太陽光発電システムや高効率空調設備により、環境負荷を低減しながらも快適な執務環境を実現しています。')">詳細を見る</button>
-              </div>
-            </div>
-            <div class="p-6">
-              <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">Commercial</span>
-              <h3 class="text-xl font-bold mb-2">省エネオフィスビル</h3>
-              <p class="text-gray-600 mb-4">鉄骨3階建て、省エネ設計のオフィスビル</p>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-500">2019年竣工</span>
-                <span class="text-sm bg-accent text-primary px-2 py-1 rounded-sm">埼玉県</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- 施工実績5 -->
-          <div class="card group work-item" data-category="renovation" data-aos="fade-up" data-aos-delay="100">
-            <div class="relative overflow-hidden">
-              <img src="assets/img/works_05.jpg" alt="マンション大規模修繕" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
-              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">Renovation</div>
-              <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('assets/img/works_05.jpg', 'マンション大規模修繕', '築15年のマンション全面改修工事。外壁塗装や防水工事だけでなく、共用部のデザインリニューアルも実施し、資産価値の向上に貢献しました。')">詳細を見る</button>
-              </div>
-            </div>
-            <div class="p-6">
-              <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">Renovation</span>
-              <h3 class="text-xl font-bold mb-2">マンション大規模修繕</h3>
-              <p class="text-gray-600 mb-4">築15年のマンション外壁・共用部分の全面改修</p>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-500">2020年竣工</span>
-                <span class="text-sm bg-accent text-primary px-2 py-1 rounded-sm">千葉県</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- 施工実績6 -->
-          <div class="card group work-item" data-category="residential" data-aos="fade-up" data-aos-delay="200">
-            <div class="relative overflow-hidden">
-              <img src="assets/img/works_06.jpg" alt="都市型コンパクトハウス" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
-              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">Residential</div>
-              <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('assets/img/works_06.jpg', '都市型コンパクトハウス', '限られた敷地を最大限に活かした都市型住宅。スマートな収納計画と開放的な空間構成により、コンパクトながらも豊かな住空間を実現しました。')">詳細を見る</button>
-              </div>
-            </div>
-            <div class="p-6">
-              <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">Residential</span>
-              <h3 class="text-xl font-bold mb-2">都市型コンパクトハウス</h3>
-              <p class="text-gray-600 mb-4">狭小地に建つ3階建て都市型住宅</p>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-500">2021年竣工</span>
-                <span class="text-sm bg-accent text-primary px-2 py-1 rounded-sm">東京都</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- 施工実績7 -->
-          <div class="card group work-item" data-category="residential" data-aos="fade-up" data-aos-delay="0">
-            <div class="relative overflow-hidden">
-              <img src="assets/img/works_07.jpg" alt="二世帯住宅" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
-              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">Residential</div>
-              <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('assets/img/works_07.jpg', '二世帯住宅', '親世帯と子世帯が快適に暮らせる二世帯住宅。適度な距離感を保ちながらも、共用部分では家族の絆を深められる設計になっています。それぞれのプライバシーと家族の結びつきを両立しました。')">詳細を見る</button>
-              </div>
-            </div>
-            <div class="p-6">
-              <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">Residential</span>
-              <h3 class="text-xl font-bold mb-2">二世帯住宅</h3>
-              <p class="text-gray-600 mb-4">独立型二世帯住宅、親世帯と子世帯の共存</p>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-500">2022年竣工</span>
-                <span class="text-sm bg-accent text-primary px-2 py-1 rounded-sm">神奈川県</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- 施工実績8 -->
-          <div class="card group work-item" data-category="public" data-aos="fade-up" data-aos-delay="100">
-            <div class="relative overflow-hidden">
-              <img src="assets/img/works_08.jpg" alt="児童館新築" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
-              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">Public</div>
-              <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('assets/img/works_08.jpg', '児童館新築', '子どもたちの創造性を育む児童館の新築工事。安全性に配慮しながらも、楽しく遊べる空間設計を実現。自然光を取り入れた明るい室内と、のびのびと活動できる屋外スペースを備えています。')">詳細を見る</button>
-              </div>
-            </div>
-            <div class="p-6">
-              <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">Public</span>
-              <h3 class="text-xl font-bold mb-2">児童館新築</h3>
-              <p class="text-gray-600 mb-4">木造平屋建て、子どもたちが安心して遊べる空間</p>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-500">2023年竣工</span>
-                <span class="text-sm bg-accent text-primary px-2 py-1 rounded-sm">埼玉県</span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- 施工実績9 -->
-          <div class="card group work-item" data-category="commercial" data-aos="fade-up" data-aos-delay="200">
-            <div class="relative overflow-hidden">
-              <img src="assets/img/works_09.jpg" alt="レストラン内装" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
-              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">Commercial</div>
-              <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('assets/img/works_09.jpg', 'レストラン内装', '居心地の良い空間づくりにこだわったレストランの内装工事。素材の質感を大切にしながら、店舗コンセプトに合わせた独自の世界観を表現しました。お客様の記憶に残る空間を創出しています。')">詳細を見る</button>
-              </div>
-            </div>
-            <div class="p-6">
-              <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">Commercial</span>
-              <h3 class="text-xl font-bold mb-2">レストラン内装</h3>
-              <p class="text-gray-600 mb-4">高級イタリアンレストランの内装デザイン・施工</p>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-500">2022年竣工</span>
-                <span class="text-sm bg-accent text-primary px-2 py-1 rounded-sm">東京都</span>
-              </div>
-            </div>
-          </div>
         </div>
         
-        <!-- もっと見るボタン -->
-        <div class="text-center mt-16" data-aos="fade-up">
-          <button id="load-more" class="btn-outline">もっと見る</button>
-        </div>
       </div>
     </section>
     
@@ -420,101 +246,7 @@
         once: true,
         offset: 100
       });
-      
-      // 施工実績ページの動的データ読み込み
-      loadWorksPage();
     });
-    
-    // 施工実績ページ専用のデータ読み込み関数
-    async function loadWorksPage() {
-      try {
-        // 全施工実績を取得（複数のパスで試行）
-        let allWorks;
-        const possiblePaths = [
-            'api/supabase-works.php',
-            '/katayama-website/api/supabase-works.php',
-            './api/supabase-works.php',
-            '../api/supabase-works.php'
-        ];
-        
-        for (const path of possiblePaths) {
-            try {
-                const response = await fetch(path);
-                if (response.ok) {
-                    allWorks = await response.json();
-                    console.log('✅ 施工実績API成功:', path);
-                    break;
-                }
-            } catch (e) {
-                console.warn('❌ APIパス失敗:', path, e.message);
-            }
-        }
-        
-        if (!allWorks) {
-            throw new Error('すべてのAPIパスで接続に失敗しました');
-        }
-        
-        // 施工実績一覧を表示
-        displayWorksList(allWorks);
-        
-        // カテゴリフィルター機能を設定
-        setupCategoryFilter();
-        
-      } catch (error) {
-        console.error('Error loading works:', error);
-        document.getElementById('works-grid').innerHTML = 
-          '<div class="col-span-full text-center py-16 text-red-500">施工実績の読み込みに失敗しました。</div>';
-      }
-    }
-    
-    function displayWorksList(works) {
-      const container = document.getElementById('works-grid');
-      
-      if (!works || works.length === 0) {
-        container.innerHTML = '<div class="col-span-full text-center py-16 text-gray-500">施工実績がありません。</div>';
-        return;
-      }
-      
-      let html = '';
-      works.forEach((item, index) => {
-        const categoryClass = getCategoryLabel(item.category);
-        const formattedDate = item.completion_date ? new Date(item.completion_date).getFullYear() + '年竣工' : '';
-        
-        html += `
-          <div class="card group work-item" data-category="${item.category.toLowerCase()}" data-aos="fade-up" data-aos-delay="${index * 100}">
-            <div class="relative overflow-hidden">
-              <img src="${item.featured_image || 'assets/img/default-work.jpg'}" 
-                   alt="${item.title}" class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110">
-              <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">${categoryClass}</div>
-              <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <button class="btn-secondary px-4 py-2 text-sm" onclick="openLightbox('${item.featured_image || 'assets/img/default-work.jpg'}', '${item.title}', '${item.description}')">詳細を見る</button>
-              </div>
-            </div>
-            <div class="p-6">
-              <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">${categoryClass}</span>
-              <h3 class="text-xl font-bold mb-2">${item.title}</h3>
-              <p class="text-gray-600 mb-4">${item.description.substring(0, 60)}...</p>
-              <div class="flex justify-between items-center">
-                <span class="text-sm text-gray-500">${formattedDate}</span>
-                <span class="text-sm bg-accent text-primary px-2 py-1 rounded-sm">${item.location || '滋賀県'}</span>
-              </div>
-            </div>
-          </div>
-        `;
-      });
-      
-      container.innerHTML = html;
-    }
-    
-    function getCategoryLabel(category) {
-      const labels = {
-        'Residential': 'Residential',
-        'Commercial': 'Commercial', 
-        'Public': 'Public',
-        'Renovation': 'Renovation'
-      };
-      return labels[category] || category;
-    }
     
     function setupCategoryFilter() {
       const categoryBtns = document.querySelectorAll('.category-btn');
