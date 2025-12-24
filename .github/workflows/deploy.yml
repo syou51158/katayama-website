@@ -26,6 +26,7 @@ jobs:
           **/.env*
           **/.tools/**
           **/.trae/**
+          **/.vercel/**
           **/config/supabase.secrets.php
           **/debug-api.php
           **/test-api.php
