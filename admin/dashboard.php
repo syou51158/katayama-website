@@ -5,18 +5,19 @@ require_once '../lib/SupabaseClient.php';
 // 認証チェック
 checkAuth();
 
-<<<<<<< HEAD
 try {
     // Supabaseから統計データを取得
     $allNews = SupabaseClient::select('news');
     $allWorks = SupabaseClient::select('works');
     $allServices = SupabaseClient::select('services');
     $allTestimonials = SupabaseClient::select('testimonials');
+    $allRepresentatives = SupabaseClient::select('representatives');
     
     // 統計を計算
     $publishedNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'published');
     $publishedWorks = array_filter($allWorks ?: [], fn($item) => $item['status'] === 'published');
     $draftNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'draft');
+    $activeRepresentatives = array_filter($allRepresentatives ?: [], fn($item) => ($item['status'] ?? 'active') === 'active');
     
     // 今月の更新を計算
     $thisMonth = date('Y-m');
@@ -24,65 +25,36 @@ try {
         return isset($item['updated_at']) && strpos($item['updated_at'], $thisMonth) === 0;
     });
     
+    // やることリスト用の集計
+    $newsWithoutImage = array_filter($allNews ?: [], function($item) {
+        return empty($item['featured_image']);
+    });
+    $worksWithoutImage = array_filter($allWorks ?: [], function($item) {
+        return empty($item['featured_image']);
+    });
+    $scheduledDrafts = array_filter($allNews ?: [], function($item) {
+        return ($item['status'] === 'draft') && !empty($item['published_date']);
+    });
+    
     // 最近の更新（最新5件）
     $recentNews = array_slice(array_reverse($allNews ?: []), 0, 3);
     $recentWorks = array_slice(array_reverse($allWorks ?: []), 0, 2);
-=======
-    try {
-        // Supabaseから統計データを取得
-        $allNews = SupabaseClient::select('news');
-        $allWorks = SupabaseClient::select('works');
-        $allServices = SupabaseClient::select('services');
-        $allTestimonials = SupabaseClient::select('testimonials');
-        $allRepresentatives = SupabaseClient::select('representatives');
-        
-        // 統計を計算
-        $publishedNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'published');
-        $publishedWorks = array_filter($allWorks ?: [], fn($item) => $item['status'] === 'published');
-        $draftNews = array_filter($allNews ?: [], fn($item) => $item['status'] === 'draft');
-        $activeRepresentatives = array_filter($allRepresentatives ?: [], fn($item) => ($item['status'] ?? 'active') === 'active');
-        
-        // 今月の更新を計算
-        $thisMonth = date('Y-m');
-        $monthlyUpdates = array_filter(array_merge($allNews ?: [], $allWorks ?: []), function($item) use ($thisMonth) {
-            return isset($item['updated_at']) && strpos($item['updated_at'], $thisMonth) === 0;
-        });
-        
-        // やることリスト用の集計
-        $newsWithoutImage = array_filter($allNews ?: [], function($item) {
-            return empty($item['featured_image']);
-        });
-        $worksWithoutImage = array_filter($allWorks ?: [], function($item) {
-            return empty($item['featured_image']);
-        });
-        $scheduledDrafts = array_filter($allNews ?: [], function($item) {
-            return ($item['status'] === 'draft') && !empty($item['published_date']);
-        });
-        
-        // 最近の更新（最新5件）
-        $recentNews = array_slice(array_reverse($allNews ?: []), 0, 3);
-        $recentWorks = array_slice(array_reverse($allWorks ?: []), 0, 2);
-        $connectOk = ($allNews !== false) && ($allWorks !== false);
-        $serviceRoleKey = SupabaseConfig::getServiceRoleKey();
+    $connectOk = ($allNews !== false) && ($allWorks !== false);
+    $serviceRoleKey = SupabaseConfig::getServiceRoleKey();
     $serviceRoleOk = ($serviceRoleKey && $serviceRoleKey !== 'YOUR_SERVICE_ROLE_KEY_HERE' && $serviceRoleKey !== 'CHANGE_ME');
     $lastError = SupabaseClient::getLastError();
     $offlineMode = method_exists('SupabaseConfig', 'isOfflineMode') ? SupabaseConfig::isOfflineMode() : false;
->>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
     
 } catch (Exception $e) {
     // エラーハンドリング
     $error = $e->getMessage();
     $publishedNews = $publishedWorks = $draftNews = $monthlyUpdates = [];
     $recentNews = $recentWorks = [];
-<<<<<<< HEAD
-}
-=======
     $activeRepresentatives = [];
     $connectOk = false;
     $serviceRoleOk = false;
 }
 $currentUser = getCurrentUser();
->>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -101,336 +73,231 @@ $currentUser = getCurrentUser();
                         primary: '#233A5C',
                         secondary: '#A68B5B',
                         accent: '#F8F9FB',
+                        text_dark: '#2C3241',
                     }
                 }
             }
         }
     </script>
-    
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
-        body { font-family: 'Noto Sans JP', sans-serif; }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gray-50">
-    <!-- ヘッダー -->
-    <header class="bg-white shadow-sm border-b">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center">
-                    <img src="../assets/img/logo.svg" alt="片山建設工業" class="h-8 mr-4">
-                    <h1 class="text-xl font-semibold text-primary">CMS管理画面</h1>
-                </div>
-                
-                <div class="flex items-center space-x-4">
-                    <span class="text-sm text-gray-600">
-                        ようこそ、<?php echo htmlspecialchars($currentUser['username'] ?? '管理者'); ?>さん
-                    </span>
-                    <a href="../index.html" target="_blank" 
-                       class="text-sm text-gray-600 hover:text-primary transition duration-200">
-                        サイトを見る
-                    </a>
-                    <div class="hidden md:flex items-center space-x-2">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-medium <?php echo $connectOk ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
-                            DB: <?php echo $connectOk ? 'オンライン' : 'オフライン'; ?>
-                        </span>
-                        <span class="px-2.5 py-1 rounded-full text-xs font-medium <?php echo $serviceRoleOk ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'; ?>">
-                            画像: <?php echo $serviceRoleOk ? 'アップロード可' : '要設定'; ?>
-                        </span>
-                        <span class="px-2.5 py-1 rounded-full text-xs font-medium <?php echo $offlineMode ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'; ?>">
-                            モード: <?php echo $offlineMode ? 'オフライン' : 'オンライン'; ?>
-                        </span>
+<body class="bg-gray-100 text-text_dark">
+    <div class="flex h-screen overflow-hidden">
+        <!-- サイドバー -->
+        <aside class="w-64 bg-primary text-white flex-shrink-0 hidden md:flex flex-col">
+            <div class="p-6">
+                <a href="/admin/dashboard.php" class="flex items-center space-x-3 text-xl font-bold">
+                    <i class="fas fa-building text-secondary"></i>
+                    <span>片山建設工業 CMS</span>
+                </a>
+            </div>
+            
+            <nav class="flex-1 overflow-y-auto py-4">
+                <ul class="space-y-2 px-4">
+                    <li>
+                        <a href="/admin/dashboard.php" class="flex items-center space-x-3 p-3 rounded-lg bg-white/10 text-white">
+                            <i class="fas fa-tachometer-alt w-6 text-center"></i>
+                            <span>ダッシュボード</span>
+                        </a>
+                    </li>
+                    <li class="pt-4 pb-2 px-3 text-xs uppercase text-gray-400 font-semibold">コンテンツ管理</li>
+                    <li>
+                        <a href="/admin/pages/news.php" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
+                            <i class="fas fa-newspaper w-6 text-center"></i>
+                            <span>お知らせ</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/pages/works.php" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
+                            <i class="fas fa-hard-hat w-6 text-center"></i>
+                            <span>施工実績</span>
+                        </a>
+                    </li>
+                    <li class="pt-4 pb-2 px-3 text-xs uppercase text-gray-400 font-semibold">システム</li>
+                    <li>
+                        <a href="/" target="_blank" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/5 text-gray-300 hover:text-white transition-colors">
+                            <i class="fas fa-external-link-alt w-6 text-center"></i>
+                            <span>サイトを確認</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/logout.php" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-red-500/20 text-red-300 hover:text-red-100 transition-colors">
+                            <i class="fas fa-sign-out-alt w-6 text-center"></i>
+                            <span>ログアウト</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="p-4 border-t border-white/10">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-white font-bold">
+                        A
                     </div>
-                    <a href="logout.php" 
-                       class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition duration-200">
-                        ログアウト
-                    </a>
+                    <div>
+                        <p class="text-sm font-medium">管理者</p>
+                        <p class="text-xs text-gray-400">admin</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </header>
-    
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <?php if (isset($error)): ?>
-        <!-- エラー表示 -->
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            <strong>データベース接続エラー:</strong> <?php echo htmlspecialchars($error); ?>
-            <br><small>Supabaseからのデータ取得に失敗しました。設定を確認してください。</small>
-        </div>
-        <?php endif; ?>
+        </aside>
         
-        <!-- 統計カード -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-lg bg-blue-100 text-blue-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <h3 class="text-sm font-medium text-gray-500">公開中のお知らせ</h3>
-                        <p class="text-2xl font-semibold text-gray-900"><?php echo count($publishedNews); ?></p>
-                    </div>
+        <!-- メインコンテンツ -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- モバイルヘッダー -->
+            <header class="bg-white shadow-sm md:hidden z-10">
+                <div class="flex items-center justify-between p-4">
+                    <a href="/admin/dashboard.php" class="text-lg font-bold text-primary">片山建設工業 CMS</a>
+                    <button class="text-gray-500 hover:text-primary">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
                 </div>
-            </div>
+            </header>
             
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-lg bg-green-100 text-green-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
+            <!-- コンテンツエリア -->
+            <main class="flex-1 overflow-y-auto p-4 md:p-8 bg-gray-50">
+                <div class="max-w-7xl mx-auto">
+                    <h1 class="text-2xl md:text-3xl font-bold text-primary mb-8">ダッシュボード</h1>
+                    
+                    <?php if (isset($connectOk) && !$connectOk): ?>
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-8" role="alert">
+                        <p class="font-bold">データベース接続エラー</p>
+                        <p>Supabaseへの接続に失敗しました。設定を確認してください。</p>
+                        <?php if (isset($lastError) && $lastError): ?>
+                        <p class="text-sm mt-2 font-mono bg-red-50 p-2 rounded"><?php echo htmlspecialchars($lastError); ?></p>
+                        <?php endif; ?>
                     </div>
-                    <div class="ml-4">
-                        <h3 class="text-sm font-medium text-gray-500">公開中の施工実績</h3>
-                        <p class="text-2xl font-semibold text-gray-900"><?php echo count($publishedWorks); ?></p>
+                    <?php endif; ?>
+
+                    <?php if (isset($serviceRoleOk) && !$serviceRoleOk): ?>
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-8" role="alert">
+                        <p class="font-bold">設定警告</p>
+                        <p>書き込み用APIキー（Service Role Key）が設定されていないか、デフォルトのままです。データの更新・削除ができません。</p>
                     </div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-lg bg-yellow-100 text-yellow-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <h3 class="text-sm font-medium text-gray-500">下書きの記事</h3>
-                        <p class="text-2xl font-semibold text-gray-900">
-                            <?php echo count($draftNews); ?>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-lg bg-purple-100 text-purple-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <h3 class="text-sm font-medium text-gray-500">今月の更新</h3>
-                        <p class="text-2xl font-semibold text-gray-900">
-                            <?php echo count($monthlyUpdates); ?>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow p-6">
-                <div class="flex items-center">
-                    <div class="p-3 rounded-lg bg-indigo-100 text-indigo-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                        </svg>
-                    </div>
-                    <div class="ml-4">
-                        <h3 class="text-sm font-medium text-gray-500">代表者（アクティブ）</h3>
-                        <p class="text-2xl font-semibold text-gray-900"><?php echo count($activeRepresentatives); ?></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- やることリスト -->
-            <div class="bg-white rounded-lg shadow">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">やることリスト</h2>
-                </div>
-                <div class="p-6 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <div class="text-sm text-gray-700">下書きのお知らせ</div>
-                        <div class="flex items-center space-x-3">
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800"><?php echo count($draftNews); ?></span>
-                            <a href="pages/supabase-news.php" class="text-sm text-primary hover:underline">開く</a>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="text-sm text-gray-700">画像未設定のお知らせ</div>
-                        <div class="flex items-center space-x-3">
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"><?php echo count($newsWithoutImage); ?></span>
-                            <a href="pages/supabase-news.php" class="text-sm text-primary hover:underline">開く</a>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="text-sm text-gray-700">画像未設定の施工実績</div>
-                        <div class="flex items-center space-x-3">
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"><?php echo count($worksWithoutImage); ?></span>
-                            <a href="pages/supabase-works.php" class="text-sm text-primary hover:underline">開く</a>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <div class="text-sm text-gray-700">公開予定の下書き</div>
-                        <div class="flex items-center space-x-3">
-                            <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"><?php echo count($scheduledDrafts); ?></span>
-                            <a href="pages/supabase-news.php" class="text-sm text-primary hover:underline">開く</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- 管理メニュー -->
-            <div class="bg-white rounded-lg shadow">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">管理メニュー</h2>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 gap-4">
-                        <a href="pages/supabase-news.php" 
-                           class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-200">
-                            <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="font-medium text-gray-900">お知らせ管理（Supabase）</h3>
-                                <p class="text-sm text-gray-500">お知らせの作成・編集・削除</p>
-                            </div>
-                        </a>
-                        
-<<<<<<< HEAD
-                        <a href="pages/news.php" 
-                           class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-200 opacity-60">
-                            <div class="p-2 bg-gray-100 text-gray-600 rounded-lg">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="font-medium text-gray-500">お知らせ管理（旧JSON）</h3>
-                                <p class="text-sm text-gray-400">従来のJSONベース（参考用）</p>
-                            </div>
-                        </a>
-                        
-                        <a href="pages/works.php" 
-=======
-                        
-                        
-                        <a href="pages/supabase-works.php" 
->>>>>>> 82c831298bb2405620692e687e44f5d7d5eb8485
-                           class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-200">
-                            <div class="p-2 bg-green-100 text-green-600 rounded-lg">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="font-medium text-gray-900">施工実績管理（Supabase）</h3>
-                                <p class="text-sm text-gray-500">施工実績の作成・編集・削除</p>
-                            </div>
-                        </a>
-                        <a href="pages/supabase-representatives.php" 
-                           class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-200">
-                            <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="font-medium text-gray-900">代表管理（Supabase）</h3>
-                                <p class="text-sm text-gray-500">代表者情報の作成・編集・削除</p>
-                            </div>
-                        </a>
-                        
-                        <a href="pages/settings.php" 
-                           class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition duration-200">
-                            <div class="p-2 bg-gray-100 text-gray-600 rounded-lg">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                            </div>
-                            <div class="ml-4">
-                                <h3 class="font-medium text-gray-900">システム設定</h3>
-                                <p class="text-sm text-gray-500">サイト設定とバックアップ</p>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 最近の更新 -->
-            <div class="bg-white rounded-lg shadow">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">最近の更新</h2>
-                </div>
-                <div class="p-6">
-                    <div class="space-y-4">
-                        <?php foreach (array_slice(array_merge($recentNews, $recentWorks), 0, 5) as $item): ?>
-                            <div class="flex items-center justify-between">
-                                <div class="flex-1">
-                                    <h3 class="text-sm font-medium text-gray-900 truncate">
-                                        <?php echo htmlspecialchars($item['title']); ?>
-                                    </h3>
-                                    <p class="text-xs text-gray-500">
-                                        <?php echo date('Y年m月d日', strtotime($item['updated_at'])); ?>
-                                    </p>
+                    <?php endif; ?>
+                    
+                    <!-- 統計カード -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-blue-500">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500 text-sm font-medium uppercase">お知らせ</p>
+                                    <h3 class="text-3xl font-bold text-gray-800 mt-1"><?php echo count($publishedNews); ?></h3>
                                 </div>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                           <?php echo $item['status'] === 'published' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'; ?>">
-                                    <?php echo $item['status'] === 'published' ? '公開中' : '下書き'; ?>
-                                </span>
+                                <div class="p-3 bg-blue-50 rounded-full text-blue-500">
+                                    <i class="fas fa-newspaper"></i>
+                                </div>
                             </div>
-                        <?php endforeach; ?>
-                        <?php if (empty($recentNews) && empty($recentWorks)): ?>
-                            <p class="text-sm text-gray-500">最近の更新はありません。</p>
-                        <?php endif; ?>
+                            <div class="mt-4 text-sm text-gray-500">
+                                <span class="text-green-500 font-medium"><i class="fas fa-arrow-up"></i> 公開中</span>
+                                <span class="mx-2">|</span>
+                                <span>下書き: <?php echo count($draftNews); ?></span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-yellow-500">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500 text-sm font-medium uppercase">施工実績</p>
+                                    <h3 class="text-3xl font-bold text-gray-800 mt-1"><?php echo count($publishedWorks); ?></h3>
+                                </div>
+                                <div class="p-3 bg-yellow-50 rounded-full text-yellow-500">
+                                    <i class="fas fa-hard-hat"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-sm text-gray-500">
+                                <span class="text-green-500 font-medium"><i class="fas fa-check"></i> 公開済み</span>
+                                <span class="mx-2">|</span>
+                                <span>全件数: <?php echo count($allWorks ?: []); ?></span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-green-500">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500 text-sm font-medium uppercase">今月の更新</p>
+                                    <h3 class="text-3xl font-bold text-gray-800 mt-1"><?php echo count($monthlyUpdates); ?></h3>
+                                </div>
+                                <div class="p-3 bg-green-50 rounded-full text-green-500">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-sm text-gray-500">
+                                <span><?php echo date('Y年m月'); ?>の更新数</span>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg shadow-sm p-6 border-l-4 border-purple-500">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-gray-500 text-sm font-medium uppercase">アクセス数</p>
+                                    <h3 class="text-3xl font-bold text-gray-800 mt-1">-</h3>
+                                </div>
+                                <div class="p-3 bg-purple-50 rounded-full text-purple-500">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 text-sm text-gray-500">
+                                <span>Google Analytics連携未定</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- 最近の更新 -->
+                        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                                <h3 class="font-bold text-gray-800">最近のお知らせ</h3>
+                                <a href="/admin/pages/news.php" class="text-sm text-primary hover:underline">すべて見る</a>
+                            </div>
+                            <div class="divide-y divide-gray-100">
+                                <?php if (empty($recentNews)): ?>
+                                    <div class="p-6 text-center text-gray-500">データがありません</div>
+                                <?php else: ?>
+                                    <?php foreach ($recentNews as $item): ?>
+                                    <div class="p-4 hover:bg-gray-50 transition-colors">
+                                        <div class="flex justify-between items-start mb-1">
+                                            <span class="text-xs text-gray-500"><?php echo htmlspecialchars(substr($item['published_date'], 0, 10)); ?></span>
+                                            <span class="px-2 py-0.5 text-xs rounded-full 
+                                                <?php echo $item['status'] === 'published' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'; ?>">
+                                                <?php echo $item['status'] === 'published' ? '公開中' : '下書き'; ?>
+                                            </span>
+                                        </div>
+                                        <h4 class="font-medium text-gray-800 mb-1"><?php echo htmlspecialchars($item['title']); ?></h4>
+                                        <p class="text-sm text-gray-500 truncate"><?php echo htmlspecialchars($item['excerpt'] ?? ''); ?></p>
+                                    </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        
+                        <!-- クイックアクション -->
+                        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                            <div class="px-6 py-4 border-b border-gray-100">
+                                <h3 class="font-bold text-gray-800">クイックアクション</h3>
+                            </div>
+                            <div class="p-6 grid grid-cols-2 gap-4">
+                                <a href="/admin/pages/news-create.php" class="flex flex-col items-center justify-center p-6 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors text-blue-700 group">
+                                    <i class="fas fa-plus-circle text-3xl mb-3 group-hover:scale-110 transition-transform"></i>
+                                    <span class="font-medium">お知らせ作成</span>
+                                </a>
+                                <a href="/admin/pages/works-create.php" class="flex flex-col items-center justify-center p-6 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors text-yellow-700 group">
+                                    <i class="fas fa-camera text-3xl mb-3 group-hover:scale-110 transition-transform"></i>
+                                    <span class="font-medium">実績追加</span>
+                                </a>
+                                <a href="/admin/pages/representatives.php" class="flex flex-col items-center justify-center p-6 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors text-purple-700 group">
+                                    <i class="fas fa-user-tie text-3xl mb-3 group-hover:scale-110 transition-transform"></i>
+                                    <span class="font-medium">代表者編集</span>
+                                </a>
+                                <a href="/admin/settings.php" class="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors text-gray-700 group">
+                                    <i class="fas fa-cog text-3xl mb-3 group-hover:scale-110 transition-transform"></i>
+                                    <span class="font-medium">設定</span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <!-- クイック操作 / システム状態 -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-            <div class="bg-white rounded-lg shadow">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">クイック操作</h2>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <a href="pages/supabase-news.php" class="block text-center p-6 border rounded-xl hover:bg-gray-50 bg-white shadow-sm">
-                            <span class="block text-base font-medium text-gray-800">お知らせを作る</span>
-                        </a>
-                        <a href="pages/supabase-works.php" class="block text-center p-6 border rounded-xl hover:bg-gray-50 bg-white shadow-sm">
-                            <span class="block text-base font-medium text-gray-800">施工実績を作る</span>
-                        </a>
-                        <a href="pages/supabase-representatives.php" class="block text-center p-6 border rounded-xl hover:bg-gray-50 bg-white shadow-sm">
-                            <span class="block text-base font-medium text-gray-800">代表者を追加</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-semibold text-gray-900">システム状態</h2>
-                </div>
-                <div class="p-6 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-700">Supabase接続</span>
-                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $connectOk ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
-                            <?php echo $connectOk ? '正常' : '失敗'; ?>
-                        </span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-700">サービスロールキー（画像アップロード等）</span>
-                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium <?php echo $serviceRoleOk ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'; ?>">
-                            <?php echo $serviceRoleOk ? '設定済み' : '未設定'; ?>
-                        </span>
-                    </div>
-                    <div class="text-xs text-gray-500 space-y-1">
-                        <?php if (!$serviceRoleOk): ?>
-                            <div>画像アップロードや管理者の本番作成にはサービスロールキーが必要です。</div>
-                        <?php endif; ?>
-                        <?php if (!$connectOk && !empty($lastError)): ?>
-                            <div>接続エラー詳細: <?php echo htmlspecialchars($lastError); ?></div>
-                        <?php endif; ?>
-                        <div>モード: <?php echo $offlineMode ? 'オフライン（ローカル動作）' : 'オンライン（Supabaseを使用）'; ?></div>
-                    </div>
-                </div>
-            </div>
+            </main>
         </div>
     </div>
 </body>
