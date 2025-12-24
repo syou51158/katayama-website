@@ -27,9 +27,21 @@ jobs:
           **/.tools/**
           **/.trae/**
           **/.vercel/**
+          **/supabase/**
+          **/scripts/**
+          **/cms/**
+          **/generate-password.php
+          **/MCP-SETUP.md
+          **/DEPLOYMENT-GUIDE.md
+          **/setup-guide.md
+          **/SUPABASE-SETUP-GUIDE.md
+          **/package.json
+          **/Trend Company.svg
           **/config/supabase.secrets.php
           **/debug-api.php
           **/test-api.php
+          **/test-local.html
+          **/test-site-settings.html
           **/admin/api/debug-supabase.php
           **/admin/api/test-connection.php
           **/admin/api/test-update.php
