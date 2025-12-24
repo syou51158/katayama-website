@@ -16,8 +16,9 @@ jobs:
 
     - name: Deploy via LFTP
       run: |
-        lftp -c "
+        lftp -d -c "
         set ftp:ssl-allow no;
+        set ssl:verify-certificate no;
         open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' '${{ secrets.FTP_SERVER }}';
         mirror -R -v --parallel=2 \
         --exclude-glob .git*/ \
