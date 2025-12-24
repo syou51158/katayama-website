@@ -20,7 +20,8 @@ jobs:
         set ftp:ssl-allow no;
         set ssl:verify-certificate no;
         open -u '${{ secrets.FTP_USERNAME }}','${{ secrets.FTP_PASSWORD }}' '${{ secrets.FTP_SERVER }}';
-        ls -la;
+        ls -la /;
+        ls -la ./;
         mkdir -p -f ${{ secrets.FTP_SERVER_DIR }};
         cd ${{ secrets.FTP_SERVER_DIR }};
         mirror -R -v --parallel=2 \
