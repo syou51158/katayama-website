@@ -9,9 +9,9 @@ class SupabaseIntegration {
         this.apiBase = this.detectApiBase();
         this.cache = new Map();
         this.cacheExpiry = 5 * 60 * 1000; // 5分間キャッシュ
-        this.supabaseUrl = window.SUPABASE_URL || 'https://kmdoqdsftiorzmjczzyk.supabase.co';
+this.supabaseUrl = window.SUPABASE_URL || 'https://kmdoqdsftiorzmjczzyk.supabase.co';
         this.supabaseAnonKey = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZG9xZHNmdGlvcnptamN6enlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NTIyODIsImV4cCI6MjA3ODUyODI4Mn0.ZoztxEfNKUX1iMuvV0czfywvyNuxMXY2fhRFeoycBIQ';
-    }
+}
     
     /**
      * 環境に応じて適切なAPIベースパスを検出
@@ -22,16 +22,16 @@ class SupabaseIntegration {
         
         // ローカル環境の場合
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
-            this.useSupabaseDirect = !window.SUPABASE_OFFLINE;
-            if (path.includes('/katayama-website/')) {
+this.useSupabaseDirect = !window.SUPABASE_OFFLINE;
+if (path.includes('/katayama-website/')) {
                 return '/katayama-website/api/';
             }
             return 'api/'; // 相対パス
         }
         
         // プロダクション環境
-        this.useSupabaseDirect = false;
-        return '/api/';
+this.useSupabaseDirect = false;
+return '/api/';
     }
 
     /**
@@ -53,7 +53,7 @@ class SupabaseIntegration {
             console.log(`📡 フルURL: ${url.toString()}`);
             const response = await fetch(url);
             
-            // PHPが実行されていない場合（生のPHPコードが返された場合）はモックAPIを使用
+// PHPが実行されていない場合（生のPHPコードが返された場合）はモックAPIを使用
             const responseText = await response.text();
             console.log(`📄 レスポンス内容プレビュー (${endpoint}):`, responseText.substring(0, 100));
             
@@ -94,7 +94,7 @@ class SupabaseIntegration {
                 return [];
             }
             
-            console.log(`📦 APIレスポンス:`, data);
+console.log(`📦 APIレスポンス:`, data);
             
             // 様々なレスポンス形式に対応
             let resultData;
@@ -122,17 +122,17 @@ class SupabaseIntegration {
             return resultData;
         } catch (error) {
             console.error(`🚨 API fetch error (${endpoint}):`, error);
-            const fallback = this.useSupabaseDirect ? await this.fetchSupabaseFallback(endpoint, params) : [];
+const fallback = this.useSupabaseDirect ? await this.fetchSupabaseFallback(endpoint, params) : [];
             const isSettings = endpoint === 'supabase-site-settings.php' && fallback && typeof fallback === 'object' && !Array.isArray(fallback);
             if ((fallback && Array.isArray(fallback)) || isSettings) {
                 this.cache.set(cacheKey, { data: fallback, timestamp: Date.now() });
                 return fallback;
             }
-            return [];
+return [];
         }
     }
 
-    async fetchSupabaseFallback(endpoint, params = {}) {
+async fetchSupabaseFallback(endpoint, params = {}) {
         try {
             const tableMap = {
                 'supabase-news.php': 'news',
@@ -235,7 +235,7 @@ class SupabaseIntegration {
         return `assets/img/works_0${i}.jpg`;
     }
 
-    /**
+/**
      * ニュースデータを取得
      */
     async getNews(limit = 10, offset = 0, category = null) {
@@ -279,7 +279,7 @@ class SupabaseIntegration {
     }
 
     /**
-     * 代表者データを取得
+* 代表者データを取得
      */
     async getRepresentatives() {
         return await this.fetchData('supabase-representatives.php');
@@ -314,7 +314,7 @@ class SupabaseIntegration {
     }
 
     /**
-     * ニュース一覧をHTMLにレンダリング
+* ニュース一覧をHTMLにレンダリング
      */
     renderNewsList(news, containerSelector) {
         const container = document.querySelector(containerSelector);
@@ -354,18 +354,17 @@ class SupabaseIntegration {
         const container = document.querySelector(containerSelector);
         if (!container || !works.length) return;
 
-        const worksHtml = works.map((item, index) => {
+const worksHtml = works.map((item, index) => {
             const completionYear = item.completion_date ? 
                 new Date(item.completion_date).getFullYear() + '年竣工' : '';
             const resolved = this.resolveImageUrl(item.featured_image);
             const imgSrc = resolved || this.getWorksFallbackImage(index);
-            
-            return `
+return `
                 <div class="card group work-item" data-category="${item.category.toLowerCase()}">
                     <div class="relative overflow-hidden">
-                        <img src="${imgSrc}" alt="${this.escapeHtml(item.title)}" 
+<img src="${imgSrc}" alt="${this.escapeHtml(item.title)}" 
                              class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110" onerror="this.onerror=null;this.src='${this.getWorksFallbackImage(index)}'">
-                        <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">
+<div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">
                             ${item.category}
                         </div>
                         <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
@@ -389,7 +388,7 @@ class SupabaseIntegration {
         container.innerHTML = worksHtml;
     }
 
-    renderServices(services, containerSelector) {
+renderServices(services, containerSelector) {
         const container = document.querySelector(containerSelector);
         if (!container) return;
         if (!Array.isArray(services) || services.length === 0) {
@@ -527,13 +526,13 @@ class SupabaseIntegration {
         ];
     }
 
-    /**
+/**
      * お客様の声をHTMLにレンダリング
      */
     renderTestimonials(testimonials, containerSelector) {
         const container = document.querySelector(containerSelector);
         if (!container || !testimonials.length) return;
-        const testimonialsHtml = testimonials.map((item, index) => {
+const testimonialsHtml = testimonials.map((item, index) => {
             const name = this.escapeHtml(item.customer_name || '');
             const project = this.escapeHtml(item.project_type || '');
             const content = this.escapeHtml(item.content || '');
@@ -559,8 +558,7 @@ class SupabaseIntegration {
                 </div>
             </div>`;
         }).join('');
-
-        container.innerHTML = testimonialsHtml;
+container.innerHTML = testimonialsHtml;
     }
 
     /**
@@ -585,7 +583,7 @@ class SupabaseIntegration {
     }
 
     /**
-     * 代表者をHTMLにレンダリング
+* 代表者をHTMLにレンダリング
      */
     renderRepresentatives(representatives, containerSelector) {
         const container = document.querySelector(containerSelector);
@@ -927,7 +925,7 @@ class SupabaseIntegration {
     }
 
     /**
-     * カテゴリに応じたCSSクラスを取得
+* カテゴリに応じたCSSクラスを取得
      */
     getCategoryClass(category) {
         const categoryClasses = {
@@ -1000,8 +998,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.querySelector('#works-grid')) {
         initializeWorksPage();
     }
-
-    // サービスページの初期化
+// サービスページの初期化
     if (document.querySelector('#services-container')) {
         initializeServicesPage();
     }
@@ -1057,20 +1054,20 @@ async function initializeHomePage() {
             supabaseIntegration.renderStats(stats, '.stats-container');
         }
 
-        // ホーム: 施工実績スライダーに最新を反映
+// ホーム: 施工実績スライダーに最新を反映
         const homeWorksSlider = document.querySelector('.works-slider');
         if (homeWorksSlider) {
             const works = await supabaseIntegration.getWorks(6);
             renderHomeWorksSlider(works);
         }
 
-    } catch (error) {
+} catch (error) {
         console.error('Homepage initialization error:', error);
     }
 }
 
 /**
- * ホームの施工実績スライダーをレンダリング
+* ホームの施工実績スライダーをレンダリング
  */
 function renderHomeWorksSlider(works) {
     const slider = document.querySelector('.works-slider');
@@ -1108,7 +1105,7 @@ function renderHomeWorksSlider(works) {
 }
 
 /**
- * ニュースページ用のレンダリング関数
+* ニュースページ用のレンダリング関数
  */
 function renderNewsPage(news) {
     const container = document.querySelector('#news-container');
@@ -1132,10 +1129,10 @@ function renderNewsPage(news) {
                      data-category="${item.category}" data-aos="fade-up" data-aos-delay="${index * 100}">
                 <div class="grid grid-cols-1 md:grid-cols-3">
                     <div class="md:col-span-1">
-                        <img src="${supabaseIntegration.resolveImageUrl(item.featured_image) || 'assets/img/ogp.jpg'}" 
+<img src="${supabaseIntegration.resolveImageUrl(item.featured_image) || 'assets/img/ogp.jpg'}" 
                              alt="${item.title}" class="w-full h-full object-cover" 
                              onerror="this.onerror=null;this.src='assets/img/ogp.jpg'">
-                    </div>
+</div>
                     <div class="p-6 md:col-span-2">
                         <div class="flex items-center mb-4">
                             <span class="text-sm text-gray-500 mr-3">${formattedDate}</span>
@@ -1201,10 +1198,10 @@ async function initializeWorksPage() {
             supabaseIntegration.showLoading('#works-grid');
             const works = await supabaseIntegration.getWorks(20);
             supabaseIntegration.renderWorksList(works, '#works-grid');
-            if (typeof setupCategoryFilter === 'function') {
+if (typeof setupCategoryFilter === 'function') {
                 setupCategoryFilter();
             }
-        }
+}
     } catch (error) {
         console.error('Works page initialization error:', error);
         supabaseIntegration.showError(error.message, '#works-grid');
