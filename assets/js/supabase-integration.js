@@ -666,8 +666,7 @@ ${item.category}
             const unit = item.stat_unit ?? item.unit ?? '';
             const name = this.escapeHtml(item.stat_name ?? item.label ?? '');
             return `
-            <div data-aos="fade-up" data-aos-delay="${index * 100}" 
-                 class="p-6 border-b-2 border-secondary elegant-shadow">
+            <div class="p-6 border-b-2 border-secondary elegant-shadow">
                 <div class="text-4xl md:text-5xl font-bold mb-3">
                     ${value}<span class="text-secondary">${unit}</span>
                 </div>
@@ -714,7 +713,7 @@ ${item.category}
             }
 
             return `
-                <div class="bg-white shadow-md rounded-sm overflow-hidden mb-12" data-aos="fade-up" data-aos-delay="${index * 100}">
+                <div class="bg-white shadow-md rounded-sm overflow-hidden mb-12">
                     <div class="grid grid-cols-1 md:grid-cols-3">
                         <div class="md:col-span-1">
                             <img src="${photoUrl}" alt="${this.escapeHtml(item.name)}" 
