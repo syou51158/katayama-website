@@ -44,6 +44,23 @@
 
   <!-- カスタムCSS -->
   <link rel="stylesheet" href="assets/css/main.css">
+  <style>
+    /* ニュース表示の強制スタイル (AOSやJSによる非表示を防止) */
+    #news-container {
+      min-height: 200px; /* データ読み込み前でも高さを確保 */
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    .news-item {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+    }
+    /* ローディングスピナーの表示調整 */
+    #news-container .animate-spin {
+      display: inline-block !important;
+    }
+  </style>
 
   <!-- Supabase統合 -->
   <script src="assets/js/mock-api.js"></script>
@@ -258,29 +275,8 @@
   <!-- カスタムJS -->
   <script src="assets/js/main.js"></script>
   <script>
-    // デバッグ用: DOMが完全に読み込まれてから強制的にスタイルを適用
-    window.addEventListener('load', function () {
-      console.log('Window loaded. Checking news visibility...');
-      const newsContainer = document.getElementById('news-container');
-      if (newsContainer) {
-        console.log('news-container found. Content length:', newsContainer.innerHTML.length);
-        // 強制的に再描画を促す
-        newsContainer.style.display = 'none';
-        newsContainer.offsetHeight; // リフローを強制
-        newsContainer.style.display = 'block';
-
-        // 子要素の表示も確認
-        const items = newsContainer.querySelectorAll('.news-item');
-        console.log('Found news items:', items.length);
-        items.forEach(item => {
-          item.style.display = 'block';
-          item.style.visibility = 'visible';
-          item.style.opacity = '1';
-        });
-      } else {
-        console.error('news-container not found on window load');
-      }
-    });
+    // Supabase統合スクリプトによる自動初期化を防止し、このページ固有の初期化ロジックを優先します
+    window.suppressCommonInit = true;
 
     // SupabaseIntegrationの初期化（二重宣言を防ぐ）
     if (typeof supabaseIntegration === 'undefined') {
@@ -291,6 +287,20 @@
     async function initializeNewsPage() {
       try {
         console.log('📰 ニュースページの初期化を開始します...');
+        
+        const container = document.getElementById('news-container');
+        if (!container) {
+          console.error('❌ エラー: news-container要素が見つかりません');
+          return;
+        }
+
+        // ロード中表示
+        container.innerHTML = `
+          <div class="text-center py-16">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p class="mt-4 text-gray-500">ニュースを読み込み中...</p>
+          </div>
+        `;
 
         // URLパラメータからページ番号を取得（将来的なページネーション用）
         const urlParams = new URLSearchParams(window.location.search);
@@ -302,14 +312,20 @@
         const news = await supabaseIntegration.getNews(limit, offset);
         console.log(`✅ ニュース取得完了: ${news ? news.length : 0}件`);
 
-        const container = document.getElementById('news-container');
-        if (!container) {
-          console.error('❌ エラー: news-container要素が見つかりません');
-          return;
-        }
-
         if (news && news.length > 0) {
+          // レンダリング（AOS属性なしのHTMLが生成されます）
           supabaseIntegration.renderNewsList(news, '#news-container');
+          
+          // 念のため、表示を確実にするためのスタイル適用
+          setTimeout(() => {
+             const items = container.querySelectorAll('.news-item');
+             items.forEach(item => {
+                 item.style.opacity = '1';
+                 item.style.display = 'block';
+                 item.style.visibility = 'visible';
+             });
+          }, 100);
+          
         } else {
           container.innerHTML = '<div class="text-center py-16 text-gray-500">現在、お知らせはありません。</div>';
         }
@@ -327,20 +343,17 @@
       }
     }
 
-    // AOSの初期化
+    // AOSの初期化とページ初期化
     document.addEventListener('DOMContentLoaded', function () {
+      // AOS初期化
       AOS.init({
         duration: 800,
         once: true,
         offset: 100
       });
 
-      // ニュースページの動的データ読み込み（supabase-integration.jsを使用）
-      if (typeof initializeNewsPage === 'function') {
-        initializeNewsPage().catch(e => console.error('Unhandled error in initializeNewsPage:', e));
-      } else {
-        console.error('initializeNewsPage function not found. Make sure supabase-integration.js is loaded.');
-      }
+      // ニュースページの動的データ読み込み
+      initializeNewsPage().catch(e => console.error('Unhandled error in initializeNewsPage:', e));
 
       // カテゴリ表示も初期化（データ取得は共有する）
       loadCategoriesAndFilters().catch(e => console.error('Error in loadCategoriesAndFilters:', e));

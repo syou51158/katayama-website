@@ -144,7 +144,8 @@ class SupabaseClient {
             'apikey: ' . $apiKey,
             'Authorization: Bearer ' . $apiKey,
             'Content-Type: application/json',
-            'Accept: application/json'
+            'Accept: application/json',
+            'User-Agent: KatayamaWebsite/1.0' // WAF対策
         ];
         if (in_array($method, ['POST','PUT','PATCH','DELETE'])) {
             $headers[] = 'Prefer: return=representation';
@@ -152,7 +153,7 @@ class SupabaseClient {
 
         if (function_exists('curl_init')) {
             $ch = curl_init();
-            $disableSsl = true; // Windows環境のためSSL検証を無効化
+            $disableSsl = false; // 本番環境ではSSL検証を有効化
             curl_setopt_array($ch, [
                 CURLOPT_URL => $url,
                 CURLOPT_RETURNTRANSFER => true,
@@ -160,7 +161,8 @@ class SupabaseClient {
                 CURLOPT_CUSTOMREQUEST => $method,
                 CURLOPT_TIMEOUT => 30,
                 CURLOPT_SSL_VERIFYPEER => $disableSsl ? false : true,
-                CURLOPT_SSL_VERIFYHOST => $disableSsl ? 0 : 2
+                CURLOPT_SSL_VERIFYHOST => $disableSsl ? 0 : 2,
+                CURLOPT_USERAGENT => 'KatayamaWebsite/1.0' // cURL用のUser-Agent
             ]);
             if ($data !== null && in_array($method, ['POST', 'PUT', 'PATCH'])) {
                 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
@@ -185,7 +187,7 @@ class SupabaseClient {
             }
         }
 
-        $disableSsl = true; // Windows環境のためSSL検証を無効化
+        $disableSsl = false; // 本番環境（ロリポップ等）ではSSL検証を有効にする
         $context = stream_context_create([
             'http' => [
                 'method' => $method,
@@ -193,6 +195,7 @@ class SupabaseClient {
                 'content' => ($data !== null && in_array($method, ['POST', 'PUT', 'PATCH'])) ? json_encode($data) : '',
                 'ignore_errors' => true,
                 'timeout' => 30,
+                'user_agent' => 'KatayamaWebsite/1.0', // stream context用のUser-Agent
             ],
             'ssl' => [
                 'verify_peer' => $disableSsl ? false : true,

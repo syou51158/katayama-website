@@ -102,7 +102,19 @@ class SupabaseIntegration {
             } catch (parseError) {
                 console.error(`JSONパースエラー (${endpoint}):`, parseError);
                 console.log(`レスポンス内容:`, responseText.substring(0, 200));
-                // JSONパースに失敗した場合もモックAPIを試す
+                
+                // パースエラー時は、PHPがエラーを返している可能性が高いので、
+                // 即座にSupabase直接通信フォールバックを試行する
+                console.log('🔄 JSONパースエラーのため、Supabase直接通信を試行します...');
+                const fallback = await this.fetchSupabaseFallback(endpoint, params);
+                
+                const isSettings = endpoint === 'supabase-site-settings.php' && fallback && typeof fallback === 'object' && !Array.isArray(fallback);
+                if ((fallback && Array.isArray(fallback) && fallback.length > 0) || isSettings) {
+                    this.cache.set(cacheKey, { data: fallback, timestamp: Date.now() });
+                    return fallback;
+                }
+
+                // JSONパースに失敗し、フォールバックも失敗した場合にモックAPIを試す
                 if ((typeof window !== 'undefined' && window.mockApiEnabled === true) && typeof getMockApiResponse === 'function') {
                     console.log(`モックAPIを試行します: ${endpoint}`);
                     const mockData = await getMockApiResponse(endpoint);
@@ -1077,18 +1089,26 @@ const supabaseIntegration = new SupabaseIntegration();
 
 // ページ読み込み時の初期化
 document.addEventListener('DOMContentLoaded', function () {
+    // ページ固有の初期化ロジックがある場合は、共通初期化をスキップするフラグ
+    const skipInit = window.suppressCommonInit === true;
+
     // ホームページの初期化
-    if (document.querySelector('.news-list')) {
+    if (document.querySelector('.news-list') && !skipInit) {
         initializeHomePage();
     }
 
     // ニュースページの初期化
-    if (document.querySelector('#news-container')) {
-        initializeNewsPage();
+    // news.htmlなどの個別ページでinitializeNewsPageが再定義されている場合、
+    // そちら側で呼び出し制御を行いたい場合は window.suppressCommonInit = true を設定してください。
+    if (document.querySelector('#news-container') && !skipInit) {
+        // グローバル関数として定義されている場合のみ実行
+        if (typeof initializeNewsPage === 'function') {
+             initializeNewsPage();
+        }
     }
 
     // 施工実績ページの初期化
-    if (document.querySelector('#works-grid')) {
+    if (document.querySelector('#works-grid') && !skipInit) {
         initializeWorksPage();
     }
     // サービスページの初期化
@@ -1219,7 +1239,7 @@ function renderNewsPage(news) {
 
         html += `
             <article class="bg-white shadow-md rounded-sm overflow-hidden mb-8 news-item" 
-                     data-category="${item.category}" data-aos="fade-up" data-aos-delay="${index * 100}">
+                     data-category="${item.category}">
                 <div class="grid grid-cols-1 md:grid-cols-3">
                     <div class="md:col-span-1">
 <img src="${supabaseIntegration.resolveImageUrl(item.featured_image) || 'assets/img/ogp.jpg'}" 
