@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>代表紹介 | 片山建設工業</title>
   <meta name="description" content="片山建設工業の代表・片山太郎のプロフィールをご紹介します。建設業界での豊富な経験と地域への思いをお伝えします。">
-  
+
   <!-- OGP設定 -->
   <meta property="og:title" content="代表紹介 | 片山建設工業">
   <meta property="og:description" content="片山建設工業の代表・片山太郎のプロフィールをご紹介します。建設業界での豊富な経験と地域への思いをお伝えします。">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.katayama-construction.co.jp/about.html">
   <meta property="og:image" content="https://www.katayama-construction.co.jp/assets/img/ogp.jpg">
-  
+
   <!-- ファビコン -->
   <link rel="icon" href="assets/img/favicon.ico">
-  
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -33,17 +34,19 @@
       }
     }
   </script>
-  
+
   <!-- Alpine.js -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  
+
   <!-- AOS - Animate On Scroll -->
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-  
+
   <!-- カスタムCSS -->
   <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/mobile-custom.css">
 </head>
+
 <body class="bg-white text-text_dark">
   <!-- ヘッダー -->
   <header class="bg-white shadow z-50">
@@ -51,7 +54,7 @@
       <a href="index.html" class="flex items-center">
         <img src="assets/img/logo.svg" alt="片山建設工業" class="h-10">
       </a>
-      
+
       <!-- PC用ナビゲーション -->
       <nav class="hidden md:flex space-x-6">
         <a href="index.html" class="nav-link">ホーム</a>
@@ -62,7 +65,7 @@
         <a href="news.html" class="nav-link">お知らせ</a>
         <a href="contact.html" class="nav-link">お問い合わせ</a>
       </nav>
-      
+
       <!-- ハンバーガーメニュー -->
       <button id="menu-button" class="md:hidden text-gray-700 focus:outline-none">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,7 +74,7 @@
       </button>
     </div>
   </header>
-  
+
   <!-- モバイルナビゲーション -->
   <div id="mobile-nav" class="mobile-nav hidden">
     <div class="container mx-auto py-4">
@@ -85,7 +88,7 @@
           </svg>
         </button>
       </div>
-      
+
       <nav class="flex flex-col space-y-4">
         <a href="index.html" class="nav-link">ホーム</a>
         <a href="services.html" class="nav-link">事業内容</a>
@@ -97,7 +100,7 @@
       </nav>
     </div>
   </div>
-  
+
   <!-- メインコンテンツ -->
   <main class="pt-20">
     <!-- パンくずリスト -->
@@ -110,31 +113,32 @@
         </nav>
       </div>
     </div>
-    
+
     <!-- ページヘッダー -->
     <div class="parallax-container">
       <div class="parallax-bg" style="background-image: url('assets/img/hero.jpg')"></div>
       <section class="py-12 text-white text-center relative">
-      <div class="container">
-        <h1 class="text-4xl md:text-5xl font-bold mb-4">代表紹介</h1>
-        <p class="max-w-3xl mx-auto">片山建設工業の代表・片山秀樹のプロフィールをご紹介します。</p>
-      </div>
-    </section>
+        <div class="container">
+          <h1 class="text-4xl md:text-5xl font-bold mb-4">代表紹介</h1>
+          <p class="max-w-3xl mx-auto">片山建設工業の代表・片山秀樹のプロフィールをご紹介します。</p>
+        </div>
+      </section>
     </div>
-    
+
     <!-- 代表紹介 -->
     <section class="section bg-white">
       <div class="container">
         <div id="representatives-container" class="max-w-4xl mx-auto">
           <div class="flex flex-col md:flex-row gap-12 items-center md:items-start">
             <div class="w-full md:w-1/3">
-              <img src="assets/img/representative_official.jpg" alt="代表 片山秀樹" class="rounded-lg shadow-lg w-full" onerror="this.onerror=null;this.src='assets/img/representative_katayama.svg'">
+              <img src="assets/img/representative_official.jpg" alt="代表 片山秀樹" class="rounded-lg shadow-lg w-full"
+                onerror="this.onerror=null;this.src='assets/img/representative_katayama.svg'">
               <div class="mt-6 text-center">
                 <h2 class="text-xl font-bold">代表</h2>
                 <p class="text-2xl font-bold mt-2">片山 秀樹</p>
               </div>
             </div>
-            
+
             <div class="w-full md:w-2/3">
               <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-primary pb-2">ごあいさつ</h3>
               <p class="mb-6">
@@ -149,13 +153,13 @@
               <p class="mb-6">
                 これからも確かな技術と誠実な対応で、皆様の暮らしや事業の基盤となる建物づくりをサポートしてまいります。どうぞよろしくお願いいたします。
               </p>
-              
+
               <div class="mt-8 text-right">
                 <img src="assets/img/signature.png" alt="片山秀樹 署名" class="inline-block h-16">
               </div>
             </div>
           </div>
-          
+
           <!-- 経歴 -->
           <div class="mt-16" data-aos="fade-up" data-aos-delay="100">
             <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-primary pb-2">経歴</h3>
@@ -190,7 +194,7 @@
               </div>
             </dl>
           </div>
-          
+
           <!-- 資格 -->
           <div class="mt-16" data-aos="fade-up" data-aos-delay="200">
             <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-primary pb-2">資格</h3>
@@ -202,39 +206,47 @@
               <li>耐震診断技術者</li>
             </ul>
           </div>
-          
+
           <!-- 趣味・好きなこと -->
           <div class="mt-16" data-aos="fade-up" data-aos-delay="300">
             <h3 class="text-2xl font-bold mb-6 text-primary border-b-2 border-primary pb-2">趣味・好きなこと</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div class="bg-accent rounded-lg p-6">
                 <div class="text-center mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-primary" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                   </svg>
                   <h4 class="text-lg font-bold mt-2">旅行</h4>
                 </div>
                 <p class="text-gray-600">日本全国の伝統的な建築物を訪ね歩くのが趣味です。特に古民家や寺社仏閣の建築技術に関心があり、その地域ならではの建築様式を学んでいます。</p>
               </div>
-              
+
               <div class="bg-accent rounded-lg p-6">
                 <div class="text-center mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-primary" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                   </svg>
                   <h4 class="text-lg font-bold mt-2">読書</h4>
                 </div>
-                <p class="text-gray-600">建築関連の専門書から歴史小説まで幅広いジャンルの本を読みます。特に環境に配慮した建築や持続可能な街づくりに関する最新の知見を得るため、常に学び続けています。</p>
+                <p class="text-gray-600">建築関連の専門書から歴史小説まで幅広いジャンルの本を読みます。特に環境に配慮した建築や持続可能な街づくりに関する最新の知見を得るため、常に学び続けています。
+                </p>
               </div>
-              
+
               <div class="bg-accent rounded-lg p-6">
                 <div class="text-center mb-4">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-primary" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M21 15.546c-.523 0-1.046.151-1.5.454a2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.704 2.704 0 01-3 0 2.704 2.704 0 00-3 0 2.701 2.701 0 00-1.5-.454M9 6v2m3-2v2m3-2v2M9 3h.01M12 3h.01M15 3h.01M21 21v-7a2 2 0 00-2-2H5a2 2 0 00-2 2v7h18zm-3-9v-2a2 2 0 00-2-2H8a2 2 0 00-2 2v2h12z" />
                   </svg>
                   <h4 class="text-lg font-bold mt-2">料理</h4>
                 </div>
-                <p class="text-gray-600">休日には家族のために料理をすることが楽しみです。建築と同様に、素材を活かし、バランスの取れた構成を考えることに喜びを感じています。特に和食づくりが得意です。</p>
+                <p class="text-gray-600">休日には家族のために料理をすることが楽しみです。建築と同様に、素材を活かし、バランスの取れた構成を考えることに喜びを感じています。特に和食づくりが得意です。
+                </p>
               </div>
             </div>
           </div>
@@ -242,7 +254,7 @@
       </div>
     </section>
     </div>
-    
+
     <!-- メッセージ -->
     <section class="py-16 bg-primary text-white">
       <div class="container">
@@ -259,7 +271,7 @@
     </section>
     </div>
   </main>
-  
+
   <!-- フッター -->
   <footer class="bg-gray-800 text-white py-12">
     <div class="container">
@@ -268,7 +280,7 @@
           <img src="assets/img/logo.svg" alt="片山建設工業" class="h-10 mb-4 brightness-200">
           <p class="text-sm text-gray-400">地域と共に歩み、<br>皆様の暮らしを支える建設会社です。</p>
         </div>
-        
+
         <div>
           <h3 class="text-lg font-bold mb-4">リンク</h3>
           <ul class="space-y-2">
@@ -281,7 +293,7 @@
             <li><a href="contact.html" class="text-gray-400 hover:text-white">お問い合わせ</a></li>
           </ul>
         </div>
-        
+
         <div>
           <h3 class="text-lg font-bold mb-4">サービス</h3>
           <ul class="space-y-2">
@@ -293,7 +305,7 @@
             <li><a href="services.html#gomishori" class="text-gray-400 hover:text-white">ゴミ処理・運搬</a></li>
           </ul>
         </div>
-        
+
         <div>
           <h3 class="text-lg font-bold mb-4">会社情報</h3>
           <address class="not-italic text-sm text-gray-400">
@@ -305,7 +317,7 @@
           </address>
         </div>
       </div>
-      
+
       <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
         <p>© 2024 片山建設工業 All Rights Reserved.</p>
         <p class="mt-2">
@@ -314,14 +326,14 @@
       </div>
     </div>
   </footer>
-  
+
   <!-- カスタムJS -->
   <script src="assets/js/main.js"></script>
   <script src="assets/js/mock-api.js"></script>
   <script src="assets/js/supabase-integration.js"></script>
   <script>
     // AOSの初期化
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
       AOS.init({
         duration: 800,
         once: true,
@@ -331,7 +343,7 @@
       // パララックス効果
       const parallaxBg = document.querySelector('.parallax-bg');
       window.addEventListener('scroll', () => {
-        if(window.matchMedia('(min-width: 768px)').matches) {
+        if (window.matchMedia('(min-width: 768px)').matches) {
           const scrollY = window.pageYOffset;
           parallaxBg.style.transform = `translateY(${scrollY * 0.5}px)`;
         }
@@ -339,4 +351,5 @@
     });
   </script>
 </body>
+
 </html>

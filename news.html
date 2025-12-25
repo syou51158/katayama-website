@@ -44,18 +44,22 @@
 
   <!-- カスタムCSS -->
   <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/mobile-custom.css">
   <style>
     /* ニュース表示の強制スタイル (AOSやJSによる非表示を防止) */
     #news-container {
-      min-height: 200px; /* データ読み込み前でも高さを確保 */
+      min-height: 200px;
+      /* データ読み込み前でも高さを確保 */
       opacity: 1 !important;
       visibility: visible !important;
     }
+
     .news-item {
       opacity: 1 !important;
       visibility: visible !important;
       transform: none !important;
     }
+
     /* ローディングスピナーの表示調整 */
     #news-container .animate-spin {
       display: inline-block !important;
@@ -282,15 +286,15 @@
     if (typeof supabaseIntegration === 'undefined') {
       window.supabaseIntegration = new SupabaseIntegration();
     } else {
-        // 既存のインスタンスを使用
-        console.log('Using existing SupabaseIntegration instance');
+      // 既存のインスタンスを使用
+      console.log('Using existing SupabaseIntegration instance');
     }
 
     // ニュースページの初期化関数
     async function initializeNewsPage() {
       try {
         console.log('📰 ニュースページの初期化を開始します...');
-        
+
         const container = document.getElementById('news-container');
         if (!container) {
           console.error('❌ エラー: news-container要素が見つかりません');
@@ -318,17 +322,17 @@
         if (news && news.length > 0) {
           // レンダリング（AOS属性なしのHTMLが生成されます）
           supabaseIntegration.renderNewsList(news, '#news-container');
-          
+
           // 念のため、表示を確実にするためのスタイル適用
           setTimeout(() => {
-             const items = container.querySelectorAll('.news-item');
-             items.forEach(item => {
-                 item.style.opacity = '1';
-                 item.style.display = 'block';
-                 item.style.visibility = 'visible';
-             });
+            const items = container.querySelectorAll('.news-item');
+            items.forEach(item => {
+              item.style.opacity = '1';
+              item.style.display = 'block';
+              item.style.visibility = 'visible';
+            });
           }, 100);
-          
+
         } else {
           container.innerHTML = '<div class="text-center py-16 text-gray-500">現在、お知らせはありません。</div>';
         }

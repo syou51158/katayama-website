@@ -1,9 +1,28 @@
 /* メインスタイル */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Mobile Menu Fix - Placed at top to ensure parsing */
+#mobile-nav {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  background-color: white !important;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out, visibility 0.3s !important;
+  visibility: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  display: block !important;
+}
+
+#mobile-nav.active {
+  transform: translateX(0) !important;
+  visibility: visible !important;
+}
+
+/* @tailwind base; */
+/* @tailwind components; */
+/* @tailwind utilities; */
 
 :root {
   --primary-color: #233A5C;
@@ -18,16 +37,21 @@
     font-family: 'Noto Sans JP', sans-serif;
     color: var(--text-dark);
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Noto Serif JP', 'Playfair Display', serif;
     font-weight: 600;
   }
-  
+
   body {
     @apply leading-relaxed;
   }
-  
+
   /* パララックス効果 */
   .parallax-container {
     position: relative;
@@ -87,7 +111,7 @@
   }
 
   /* 高級感のあるデザイン要素 */
-  
+
   /* サービスタグのスタイル */
   .service-tag {
     position: absolute;
@@ -104,16 +128,16 @@
     z-index: 10;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
-  
+
   /* サービスセクションの改善 */
   .service-section {
     padding: 3rem 0;
   }
-  
+
   .service-section:nth-child(even) {
     background-color: var(--bg-accent);
   }
-  
+
   .service-title {
     font-size: 1.875rem;
     font-weight: 700;
@@ -121,26 +145,26 @@
     margin-bottom: 1rem;
     line-height: 1.3;
   }
-  
+
   .service-description {
     font-size: 1.125rem;
     color: #6b7280;
     margin-bottom: 1.5rem;
     line-height: 1.7;
   }
-  
+
   .service-features {
     list-style: none;
     padding: 0;
   }
-  
+
   .service-features li {
     position: relative;
     padding-left: 1.5rem;
     margin-bottom: 0.5rem;
     color: #6b7280;
   }
-  
+
   .service-features li::before {
     content: "・";
     position: absolute;
@@ -148,14 +172,15 @@
     color: var(--secondary-color);
     font-weight: bold;
   }
+
   .luxury-bg {
     @apply bg-gradient-to-r from-gray-50 via-white to-gray-50;
   }
-  
+
   .elegant-shadow {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   }
-  
+
   .gold-border {
     @apply border-[#A68B5B];
   }
@@ -169,50 +194,50 @@
     padding-left: 1rem;
     padding-right: 1rem;
   }
-  
+
   @media (min-width: 640px) {
     .container {
       padding-left: 1.5rem;
       padding-right: 1.5rem;
     }
   }
-  
+
   @media (min-width: 1024px) {
     .container {
       padding-left: 2rem;
       padding-right: 2rem;
     }
   }
-  
+
   .btn {
     @apply inline-block px-6 py-3 rounded-sm text-center font-medium transition-all duration-300 uppercase tracking-wider text-sm;
   }
-  
+
   .btn-primary {
     @apply btn bg-[#233A5C] text-white hover:bg-[#1A2A45] shadow-md hover:shadow-lg;
   }
-  
+
   .btn-outline {
     @apply btn border border-[#233A5C] text-[#233A5C] hover:bg-[#233A5C] hover:text-white shadow-sm hover:shadow-md;
   }
-  
+
   .btn-secondary {
     @apply btn bg-[#A68B5B] text-white hover:bg-[#8A7349] shadow-md hover:shadow-lg;
   }
-  
+
   .section {
     @apply py-16 md:py-20 lg:py-24;
   }
-  
+
   .section-title {
     @apply text-3xl md:text-4xl font-bold mb-10 md:mb-12 text-center relative;
   }
-  
+
   .section-title::after {
     content: '';
     @apply block absolute bottom-0 left-1/2 transform -translate-x-1/2 w-20 h-1 bg-[#A68B5B] mt-4;
   }
-  
+
   .card {
     @apply bg-white rounded-sm shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg border-b-4 border-transparent hover:border-[#A68B5B];
   }
@@ -234,22 +259,38 @@ header {
   left: 0px;
   width: 100%;
   z-index: 50;
-  background: rgba(255, 255, 255, 0.8); /* 背景を半透明に変更 */
+  background: rgba(255, 255, 255, 0.8);
+  /* 背景を半透明に変更 */
   transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); /* Tailwind default ease */
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Tailwind default ease */
   transition-duration: 300ms;
-  /* backdrop-filter: blur(5px); */ /* すりガラス効果を追加 */
-  /* -webkit-backdrop-filter: blur(5px); */ /* Safari用 */
+  /* backdrop-filter: blur(5px); */
+  /* すりガラス効果を追加 */
+  /* -webkit-backdrop-filter: blur(5px); */
+  /* Safari用 */
 }
 
 /* モバイルナビゲーション */
-.mobile-nav {
-  @apply fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-in-out;
+#mobile-nav {
+  position: fixed;
+  inset: 0;
+  background-color: white;
+  z-index: 50;
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out, visibility 0.3s;
+  visibility: hidden;
+  overflow-y: auto;
+  /* メニュー内のスクロールを許可 */
+  -webkit-overflow-scrolling: touch;
+  /* iOSでのスクロールを滑らかに */
 }
 
-.mobile-nav.hidden {
-  @apply translate-x-full;
+#mobile-nav.active {
+  transform: translateX(0);
+  visibility: visible;
 }
+
 
 /* お問い合わせフォーム */
 .form-group {
@@ -339,7 +380,7 @@ header {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.2) 100%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.2) 100%);
   z-index: 1;
 }
 
@@ -347,6 +388,7 @@ header {
   .hero-parallax-bg::after {
     opacity: 0.3;
   }
+
   .hero-parallax-bg {
     background-attachment: scroll;
   }
