@@ -385,8 +385,10 @@ class SupabaseIntegration {
             const title = this.escapeHtml(item.title || '無題');
             const id = item.id || '#';
 
+            // テンプレート文字列内のHTML要素に style="opacity: 1;" を追加して、AOSによる初期非表示を回避
+            // また、data-aos="fade-up" を残しつつ即座に表示させる
             return `
-                <div class="news-item border-b border-gray-100 last:border-0" data-category="${category}">
+                <div class="news-item border-b border-gray-100 last:border-0" data-category="${category}" data-aos="fade-up" style="opacity: 1 !important; visibility: visible !important;">
                     <a href="news.html?id=${id}" class="block p-6 hover:bg-accent transition-colors">
                         <div class="flex flex-col md:flex-row md:items-center">
                             <div class="flex items-center mb-2 md:mb-0 shrink-0">
@@ -404,10 +406,17 @@ class SupabaseIntegration {
         console.log(`✅ ニュースリストをレンダリングしました: ${news.length}件`);
 
         // 新しく追加された要素のためにAOSを更新
+        // 念のため、複数のタイミングでリフレッシュを試みる
         if (typeof AOS !== 'undefined') {
-            setTimeout(() => {
+            // 強制的にAOSをリフレッシュ
+            try {
                 AOS.refresh();
-            }, 100);
+                AOS.init(); // 再初期化も試みる
+            } catch (e) { console.error('AOS refresh failed', e); }
+
+            setTimeout(() => {
+                try { AOS.refresh(); } catch (e) { }
+            }, 500);
         }
     }
 
