@@ -35,6 +35,21 @@
   </script>
   
   <!-- Alpine.js -->
+  <style>
+    /* AOSフォールバック: JSの読み込み遅延対策 */
+    [data-aos] {
+      opacity: 1 !important;
+      transform: translate(0) scale(1) !important;
+    }
+    body.aos-initialized [data-aos] {
+      opacity: 0 !important;
+      transform: inherit !important;
+    }
+    body.aos-initialized [data-aos].aos-animate {
+      opacity: 1 !important;
+      transform: translate(0) scale(1) !important;
+    }
+  </style>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   
   <!-- AOS - Animate On Scroll -->
@@ -456,9 +471,9 @@
   </footer>
   
   <!-- カスタムJS -->
-  <script src="assets/js/main.js"></script>
-  <script src="assets/js/mock-api.js"></script>
-  <script src="assets/js/supabase-integration.js"></script>
+  <script src="assets/js/main.js?v=1.1"></script>
+  <script src="assets/js/mock-api.js?v=1.1"></script>
+  <script src="assets/js/supabase-integration.js?v=1.1"></script>
   <script>
     // AOSの初期化
     document.addEventListener('DOMContentLoaded', function() {

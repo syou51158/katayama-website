@@ -220,6 +220,11 @@ require_once __DIR__ . '/../../lib/SupabaseClient.php';
 
             <ul class="sidebar-menu">
                 <li class="nav-item">
+                    <a class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/admin/change-password.php') !== false ? 'active' : ''; ?>" href="/admin/change-password.php">
+                        <i class="bi bi-key-fill"></i> パスワード変更
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link logout" href="/admin/logout.php">
                         <i class="bi bi-box-arrow-right"></i> ログアウト
                     </a>

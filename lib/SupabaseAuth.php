@@ -31,19 +31,24 @@ class SupabaseAuth {
         return [$httpCode, $response, ''];
     }
 
-    private static function sendJson(string $url, array $headers, array $payload): array {
+    private static function sendJson(string $url, array $headers, array $payload, string $method = 'POST'): array {
         $body = json_encode($payload);
         if (function_exists('curl_init')) {
             $ch = curl_init();
-            curl_setopt_array($ch, [
+            $opts = [
                 CURLOPT_URL => $url,
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POST => true,
                 CURLOPT_HTTPHEADER => $headers,
                 CURLOPT_POSTFIELDS => $body,
                 CURLOPT_SSL_VERIFYPEER => false, // Windows環境のためSSL検証を無効化
                 CURLOPT_TIMEOUT => 30,
-            ]);
+            ];
+            if ($method === 'POST') {
+                $opts[CURLOPT_POST] = true;
+            } else {
+                $opts[CURLOPT_CUSTOMREQUEST] = $method;
+            }
+            curl_setopt_array($ch, $opts);
             $response = curl_exec($ch);
             $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $error = curl_error($ch);
@@ -52,7 +57,7 @@ class SupabaseAuth {
         }
         $context = stream_context_create([
             'http' => [
-                'method' => 'POST',
+                'method' => $method,
                 'header' => implode("\r\n", $headers),
                 'content' => $body,
                 'ignore_errors' => true,
@@ -81,7 +86,7 @@ class SupabaseAuth {
             if ($tmpFile !== false) {
                 try {
                     if (file_put_contents($tmpFile, (string)$body) !== false) {
-                        [$httpCodeCli, $responseCli, $errorCli] = self::curlCliRequest('POST', $url, $headers, '', $tmpFile);
+                        [$httpCodeCli, $responseCli, $errorCli] = self::curlCliRequest($method, $url, $headers, '', $tmpFile);
                         if ($errorCli === '') {
                             return [$httpCodeCli, $responseCli, ''];
                         }
@@ -187,6 +192,43 @@ class SupabaseAuth {
             error_log('SupabaseAuth signUp http ' . $httpCode . ' ' . $response);
             return false;
         }
+        return true;
+    }
+
+    public static function updateUserPassword(string $accessToken, string $newPassword): bool {
+        $projectUrl = rtrim(SupabaseConfig::getProjectUrl(), '/');
+        $anonKey = SupabaseConfig::getAnonKey();
+        $url = $projectUrl . '/auth/v1/user';
+
+        $headers = [
+            'Content-Type: application/json',
+            'apikey: ' . $anonKey,
+            'Authorization: Bearer ' . $accessToken,
+        ];
+        
+        [$httpCode, $response, $error] = self::sendJson($url, $headers, [
+            'password' => $newPassword
+        ], 'PUT');
+
+        if ($error) {
+            error_log('SupabaseAuth updateUserPassword error: ' . $error);
+            self::$lastError = $error;
+            return false;
+        }
+
+        if ($httpCode < 200 || $httpCode >= 300) {
+            error_log('SupabaseAuth updateUserPassword http ' . $httpCode . ' ' . $response);
+            $j = json_decode($response, true);
+            if (is_array($j)) {
+                $code = $j['error_code'] ?? '';
+                $msg = $j['msg'] ?? '';
+                self::$lastError = trim($code . ' ' . $msg);
+            } else {
+                self::$lastError = 'http_' . $httpCode;
+            }
+            return false;
+        }
+
         return true;
     }
 

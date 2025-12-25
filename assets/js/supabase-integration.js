@@ -189,7 +189,10 @@ class SupabaseIntegration {
                 'supabase-testimonials.php': 'testimonials',
                 'supabase-stats.php': 'company_stats',
                 'supabase-representatives.php': 'representatives',
-                'supabase-site-settings.php': 'site_settings'
+                'supabase-site-settings.php': 'site_settings',
+                'supabase-company-history.php': 'company_history',
+                'supabase-company-info.php': 'company_info',
+                'supabase-partners.php': 'partners'
             };
             const table = tableMap[endpoint];
             if (!table) return [];
@@ -743,6 +746,11 @@ ${item.category}
         }).join('');
 
         container.innerHTML = html;
+        if (typeof AOS !== 'undefined') {
+            setTimeout(() => {
+                AOS.refresh();
+            }, 100);
+        }
     }
 
     /**
@@ -959,6 +967,11 @@ ${item.category}
         `;
 
         container.innerHTML = html;
+        if (typeof AOS !== 'undefined') {
+            setTimeout(() => {
+                AOS.refresh();
+            }, 100);
+        }
     }
 
     /**
@@ -988,45 +1001,106 @@ ${item.category}
     /**
      * 会社沿革をHTMLにレンダリング
      */
-    renderCompanyHistory(history, containerSelector) {
+    renderCompanyHistory(history, containerSelector, companyInfo = null) {
         const container = document.querySelector(containerSelector);
-        if (!container || !history.length) return;
+        if (!container) return;
+        
+        // 沿革データがない場合のフォールバック
+        const historyData = Array.isArray(history) ? history : [];
 
-        const historyHtml = history.map((item, index) => {
+        const historyHtml = historyData.map((item, index) => {
             const yearShort = String(item.year).slice(-2);
             const monthText = item.month ? `${item.month}月` : '';
-            const detailsHtml = item.details ? item.details.map(detail => `<p>${this.escapeHtml(detail)}</p>`).join('') : '';
+            
+            // detailsの配列化処理を強化
+            let detailsArray = [];
+            if (Array.isArray(item.details)) {
+                detailsArray = item.details;
+            } else if (typeof item.details === 'string') {
+                try {
+                    // JSON形式の場合
+                    const parsed = JSON.parse(item.details);
+                    if (Array.isArray(parsed)) detailsArray = parsed;
+                    else detailsArray = [item.details];
+                } catch (e) {
+                    // PostgreSQLの配列形式 "{item1,item2}" の場合や通常の文字列の場合
+                    if (item.details.startsWith('{') && item.details.endsWith('}')) {
+                         // 簡易的なパース: 中身を取り出してカンマ区切り（引用符などは考慮しない簡易版）
+                         detailsArray = item.details.slice(1, -1).split(',').map(s => s.trim().replace(/^"|"$/g, ''));
+                    } else {
+                        detailsArray = [item.details];
+                    }
+                }
+            }
+            
+            const detailsHtml = detailsArray.map(detail => `<p>${this.escapeHtml(detail)}</p>`).join('');
 
             return `
-                <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="${(index + 1) * 100}">
-                    <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold">${yearShort}</div>
-                    <div class="ml-6">
-                        <div class="text-xl font-bold text-primary">${item.year}年${monthText ? monthText : ''}</div>
-                        <div class="mt-2">
-                            <p>${this.escapeHtml(item.title)}</p>
-                            ${detailsHtml}
-                        </div>
-                    </div>
+              <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="${(index % 5) * 100}">
+                <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold shrink-0 z-10 border-4 border-white shadow-sm">${yearShort}</div>
+                <div class="ml-6 pb-10">
+                  <div class="text-xl font-bold text-primary">${item.year}年${monthText}</div>
+                  <div class="mt-2 text-gray-700 leading-relaxed">
+                    ${detailsHtml}
+                  </div>
                 </div>
+              </div>
             `;
         }).join('');
+        
+        // 今後の展望（ビジョン）のレンダリング
+        let visionHtml = '';
+        if (companyInfo && companyInfo.future_vision) {
+            let visions = [];
+            try {
+                visions = typeof companyInfo.future_vision === 'string' ? JSON.parse(companyInfo.future_vision) : companyInfo.future_vision;
+            } catch (e) {
+                console.error('Failed to parse future_vision:', e);
+            }
+            
+            if (Array.isArray(visions) && visions.length > 0) {
+                const visionItemsHtml = visions.map((item, index) => `
+                    <div class="bg-accent p-6 rounded-sm border-l-4 border-primary" data-aos="fade-up" data-aos-delay="${(index + 1) * 100}">
+                        <h4 class="text-lg font-bold text-primary mb-2">${this.escapeHtml(item.title)}</h4>
+                        <p class="text-gray-700">${this.escapeHtml(item.description)}</p>
+                    </div>
+                `).join('');
+                
+                visionHtml = `
+                    <div class="mt-16 pt-10 border-t border-gray-200">
+                        <div class="text-center mb-10" data-aos="fade-up">
+                            <h3 class="text-2xl font-bold text-primary">今後の展望（ビジョン）</h3>
+                            <p class="mt-4 text-gray-600">片山建設工業は、単なる工事請負業に留まらず、以下の目標を掲げて成長を続けています。</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            ${visionItemsHtml}
+                        </div>
+                    </div>
+                `;
+            }
+        }
 
         const html = `
-            <div class="max-w-4xl mx-auto" data-aos="fade-up">
-                <h2 class="section-title">沿革</h2>
-                
-                <div class="max-w-4xl mx-auto mt-12">
-                    <div class="space-y-8 relative">
-                        <!-- 縦線 -->
-                        <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-200 z-0 ml-6"></div>
-                        
-                        ${historyHtml}
-                    </div>
-                </div>
+          <h2 class="section-title">沿革</h2>
+          
+          <div class="max-w-4xl mx-auto mt-12">
+            <div class="space-y-8 relative">
+              <!-- 縦線 -->
+              <div class="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-200 z-0 ml-6 h-full"></div>
+              
+              ${historyHtml}
             </div>
+            
+            ${visionHtml}
+          </div>
         `;
 
         container.innerHTML = html;
+        if (typeof AOS !== 'undefined') {
+            setTimeout(() => {
+                AOS.refresh();
+            }, 100);
+        }
     }
 
     /**
@@ -1402,11 +1476,13 @@ async function initializePartners() {
  */
 async function initializeCompanyPage() {
     try {
+        // 会社情報の取得（全セクションで使うため最初に取得）
+        const companyInfo = await supabaseIntegration.getCompanyInfo();
+
         // 企業理念の読み込み
         const philosophyContainer = document.querySelector('#philosophy-container');
         if (philosophyContainer) {
             supabaseIntegration.showLoading('#philosophy-container');
-            const companyInfo = await supabaseIntegration.getCompanyInfo();
             supabaseIntegration.renderPhilosophy(companyInfo, '#philosophy-container');
         }
 
@@ -1414,7 +1490,6 @@ async function initializeCompanyPage() {
         const infoContainer = document.querySelector('#company-info-container');
         if (infoContainer) {
             supabaseIntegration.showLoading('#company-info-container');
-            const companyInfo = await supabaseIntegration.getCompanyInfo();
             supabaseIntegration.renderCompanyInfo(companyInfo, '#company-info-container');
         }
 
@@ -1423,7 +1498,7 @@ async function initializeCompanyPage() {
         if (historyContainer) {
             supabaseIntegration.showLoading('#company-history-container');
             const companyHistory = await supabaseIntegration.getCompanyHistory();
-            supabaseIntegration.renderCompanyHistory(companyHistory, '#company-history-container');
+            supabaseIntegration.renderCompanyHistory(companyHistory, '#company-history-container', companyInfo);
         }
     } catch (error) {
         console.error('Company page initialization error:', error);
