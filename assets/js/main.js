@@ -345,4 +345,40 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
   });
+
+  // 管理者用ツールバーの表示
+  if (typeof localStorage !== 'undefined') {
+    const isAdmin = localStorage.getItem('isAdmin');
+    const loginTime = parseInt(localStorage.getItem('adminLoginTime') || '0', 10);
+    const now = new Date().getTime();
+    
+    // 24時間経過していたらセッション切れとみなす
+    if (isAdmin === 'true' && (now - loginTime) < 24 * 60 * 60 * 1000) {
+      const adminBar = document.createElement('div');
+      adminBar.className = 'admin-toolbar fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-3 z-50 flex justify-between items-center shadow-lg border-t border-gray-700';
+      adminBar.innerHTML = `
+        <div class="flex items-center space-x-4">
+          <span class="font-bold text-xs bg-secondary text-white px-2 py-1 rounded">管理者モード</span>
+          <span class="text-xs text-gray-300">ログイン中</span>
+        </div>
+        <div class="flex space-x-3">
+          <a href="/admin/" class="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded transition-colors text-white no-underline flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            管理画面へ
+          </a>
+        </div>
+      `;
+      document.body.appendChild(adminBar);
+      
+      // フッターが隠れないようにpaddingを追加
+      document.body.style.paddingBottom = '60px';
+    } else {
+      // 期限切れの場合はフラグ削除
+      localStorage.removeItem('isAdmin');
+      localStorage.removeItem('adminLoginTime');
+    }
+  }
 });

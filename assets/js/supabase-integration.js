@@ -9,29 +9,38 @@ class SupabaseIntegration {
         this.apiBase = this.detectApiBase();
         this.cache = new Map();
         this.cacheExpiry = 5 * 60 * 1000; // 5分間キャッシュ
-this.supabaseUrl = window.SUPABASE_URL || 'https://kmdoqdsftiorzmjczzyk.supabase.co';
+        this.supabaseUrl = window.SUPABASE_URL || 'https://kmdoqdsftiorzmjczzyk.supabase.co';
         this.supabaseAnonKey = window.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttZG9xZHNmdGlvcnptamN6enlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI5NTIyODIsImV4cCI6MjA3ODUyODI4Mn0.ZoztxEfNKUX1iMuvV0czfywvyNuxMXY2fhRFeoycBIQ';
-}
-/**
-     * 環境に応じて適切なAPIベースパスを検出
-     */
+    }
+    /**
+         * 環境に応じて適切なAPIベースパスを検出
+         */
     detectApiBase() {
         const path = window.location.pathname;
         const hostname = window.location.hostname;
-        
-        // ローカル環境の場合
-        if (hostname === 'localhost' || hostname === '127.0.0.1') {
-this.useSupabaseDirect = !window.SUPABASE_OFFLINE;
-if (path.includes('/katayama-website/')) {
-return '/katayama-website/api/';
+        const protocol = window.location.protocol;
+
+        // ローカルファイルとして開いている場合、または明示的にローカルの場合
+        if (protocol === 'file:' || hostname === 'localhost' || hostname === '127.0.0.1') {
+            console.log('📂 ローカル環境を検出しました');
+
+            // fileプロトコルの場合は常にDirectモード
+            if (protocol === 'file:') {
+                this.useSupabaseDirect = true;
+            } else {
+                this.useSupabaseDirect = !window.SUPABASE_OFFLINE;
+            }
+
+            if (path.includes('/katayama-website/')) {
+                return '/katayama-website/api/';
             }
             return 'api/'; // 相対パス
         }
-        
+
         // プロダクション環境
-this.useSupabaseDirect = false;
-return '/api/';
-}
+        this.useSupabaseDirect = false;
+        return '/api/';
+    }
 
     /**
      * APIからデータを取得（キャッシュ機能付き）
@@ -39,7 +48,7 @@ return '/api/';
     async fetchData(endpoint, params = {}) {
         const cacheKey = endpoint + JSON.stringify(params);
         const cached = this.cache.get(cacheKey);
-        
+
         if (cached && Date.now() - cached.timestamp < this.cacheExpiry) {
             return cached.data;
         }
@@ -48,14 +57,14 @@ return '/api/';
             console.log(`🔍 APIリクエスト: ${this.apiBase}${endpoint}`);
             const url = new URL(this.apiBase + endpoint, window.location.origin);
             Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-            
+
             console.log(`📡 フルURL: ${url.toString()}`);
             const response = await fetch(url);
-            
-// PHPが実行されていない場合（生のPHPコードが返された場合）はモックAPIを使用
-const responseText = await response.text();
+
+            // PHPが実行されていない場合（生のPHPコードが返された場合）はモックAPIを使用
+            const responseText = await response.text();
             console.log(`📄 レスポンス内容プレビュー (${endpoint}):`, responseText.substring(0, 100));
-            
+
             if ((responseText.includes('<?php') || responseText.includes('require_once')) && (typeof window !== 'undefined' && window.mockApiEnabled === true)) {
                 console.log(`⚠️ PHPが実行されていないため、モックAPIを使用します: ${endpoint}`);
                 if (typeof getMockApiResponse === 'function') {
@@ -72,11 +81,24 @@ const responseText = await response.text();
                     return [];
                 }
             }
-            
+
             // JSONとしてパースを試みる
             let data;
             try {
-                data = JSON.parse(responseText);
+                // PHPエラーが含まれている場合はJSON部分だけを抽出する試み
+                if (responseText.includes('<br />') || responseText.includes('<b>')) {
+                    const jsonStart = responseText.indexOf('{');
+                    const jsonEnd = responseText.lastIndexOf('}') + 1;
+                    if (jsonStart !== -1 && jsonEnd > jsonStart) {
+                        const jsonStr = responseText.substring(jsonStart, jsonEnd);
+                        data = JSON.parse(jsonStr);
+                        console.warn('⚠️ レスポンスにPHPエラーが含まれていましたが、JSONの抽出に成功しました');
+                    } else {
+                        throw new Error('Valid JSON not found in response');
+                    }
+                } else {
+                    data = JSON.parse(responseText);
+                }
             } catch (parseError) {
                 console.error(`JSONパースエラー (${endpoint}):`, parseError);
                 console.log(`レスポンス内容:`, responseText.substring(0, 200));
@@ -92,9 +114,9 @@ const responseText = await response.text();
                 }
                 return [];
             }
-            
-console.log(`📦 APIレスポンス:`, data);
-// 様々なレスポンス形式に対応
+
+            console.log(`📦 APIレスポンス:`, data);
+            // 様々なレスポンス形式に対応
             let resultData;
             if (Array.isArray(data)) {
                 // 直接配列が返された場合
@@ -109,29 +131,45 @@ console.log(`📦 APIレスポンス:`, data);
                 // その他の形式
                 resultData = data;
             }
-            
+
             // キャッシュに保存
             this.cache.set(cacheKey, {
                 data: resultData,
                 timestamp: Date.now()
             });
-            
+
             console.log(`✅ API成功: ${endpoint}`, resultData);
             return resultData;
         } catch (error) {
             console.error(`🚨 API fetch error (${endpoint}):`, error);
-const fallback = this.useSupabaseDirect ? await this.fetchSupabaseFallback(endpoint, params) : [];
-const isSettings = endpoint === 'supabase-site-settings.php' && fallback && typeof fallback === 'object' && !Array.isArray(fallback);
-            if ((fallback && Array.isArray(fallback)) || isSettings) {
+
+            // 1. エラー時は常にSupabase直接通信を試行 (本番環境でPHPが失敗した場合のバックアップ)
+            let fallback = [];
+            console.log('🔄 APIエラーのため、Supabase直接通信を試行します...');
+            fallback = await this.fetchSupabaseFallback(endpoint, params);
+
+            const isSettings = endpoint === 'supabase-site-settings.php' && fallback && typeof fallback === 'object' && !Array.isArray(fallback);
+            if ((fallback && Array.isArray(fallback) && fallback.length > 0) || isSettings) {
                 this.cache.set(cacheKey, { data: fallback, timestamp: Date.now() });
                 return fallback;
             }
-return [];
+
+            // 2. 最終手段：モックAPI
+            if (typeof window !== 'undefined' && window.mockApiEnabled === true && typeof getMockApiResponse === 'function') {
+                console.log(`⚠️ 最終フォールバック: モックAPIを使用します (${endpoint})`);
+                const mockResult = await getMockApiResponse(endpoint);
+                const mockData = (mockResult && mockResult.data) ? mockResult.data : mockResult;
+
+                this.cache.set(cacheKey, { data: mockData, timestamp: Date.now() });
+                return mockData;
+            }
+
+            return [];
         }
     }
 
-async fetchSupabaseFallback(endpoint, params = {}) {
-try {
+    async fetchSupabaseFallback(endpoint, params = {}) {
+        try {
             const tableMap = {
                 'supabase-news.php': 'news',
                 'supabase-works.php': 'works',
@@ -233,9 +271,9 @@ try {
         return `assets/img/works_0${i}.jpg`;
     }
 
-/**
-* ニュースデータを取得
-     */
+    /**
+    * ニュースデータを取得
+         */
     async getNews(limit = 10, offset = 0, category = null) {
         const params = { limit, offset };
         if (category && category !== 'all') {
@@ -312,37 +350,78 @@ try {
     }
 
     /**
-* ニュース一覧をHTMLにレンダリング
-*/
+     * ニュース一覧をHTMLにレンダリング
+     */
     renderNewsList(news, containerSelector) {
         const container = document.querySelector(containerSelector);
-        if (!container || !news.length) return;
+        if (!container) {
+            console.error(`❌ エラー: ${containerSelector} が見つかりません`);
+            return;
+        }
+
+        if (!Array.isArray(news) || news.length === 0) {
+            container.innerHTML = '<div class="text-center py-16 text-gray-500">現在、お知らせはありません。</div>';
+            return;
+        }
 
         const newsHtml = news.map(item => {
-            const date = new Date(item.published_date).toLocaleDateString('ja-JP', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            }).replace(/\//g, '.');
+            let date = '';
+            if (item.published_date) {
+                date = new Date(item.published_date).toLocaleDateString('ja-JP', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                }).replace(/\//g, '.');
+            } else if (item.created_at) {
+                date = new Date(item.created_at).toLocaleDateString('ja-JP', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                }).replace(/\//g, '.');
+            }
 
-            const categoryClass = this.getCategoryClass(item.category);
-            
+            const category = item.category || 'お知らせ';
+            const categoryClass = this.getCategoryClass(category);
+            const title = this.escapeHtml(item.title || '無題');
+            const id = item.id || '#';
+
             return `
-                <li>
-                    <a href="news.html?id=${item.id}" class="block p-6 hover:bg-accent transition-colors">
+                <div class="news-item border-b border-gray-100 last:border-0" data-category="${category}">
+                    <a href="news.html?id=${id}" class="block p-6 hover:bg-accent transition-colors">
                         <div class="flex flex-col md:flex-row md:items-center">
-                            <div class="flex items-center mb-2 md:mb-0">
-                                <span class="text-sm text-gray-500 mr-3">${date}</span>
-                                <span class="px-3 py-1 ${categoryClass} text-xs font-medium rounded-sm">${item.category}</span>
+                            <div class="flex items-center mb-2 md:mb-0 shrink-0">
+                                <span class="text-sm text-gray-500 mr-3 font-mono">${date}</span>
+                                <span class="px-3 py-1 ${categoryClass} text-xs font-medium rounded-sm whitespace-nowrap">${category}</span>
                             </div>
-                            <h3 class="md:ml-6 font-medium">${this.escapeHtml(item.title)}</h3>
+                            <h3 class="md:ml-6 font-medium text-lg leading-relaxed text-text_dark group-hover:text-primary transition-colors">${title}</h3>
                         </div>
                     </a>
-                </li>
+                </div>
             `;
         }).join('');
 
-        container.innerHTML = newsHtml;
+        container.innerHTML = `<div class="bg-white rounded-sm shadow-sm overflow-hidden border border-gray-100">${newsHtml}</div>`;
+        console.log(`✅ ニュースリストをレンダリングしました: ${news.length}件`);
+    }
+
+    getCategoryClass(category) {
+        if (!category) return 'bg-gray-100 text-gray-800';
+        const c = String(category).toLowerCase();
+        if (c.includes('お知らせ') || c.includes('news')) return 'bg-blue-100 text-blue-800';
+        if (c.includes('イベント') || c.includes('event')) return 'bg-green-100 text-green-800';
+        if (c.includes('施工') || c.includes('work')) return 'bg-orange-100 text-orange-800';
+        if (c.includes('メディア') || c.includes('media')) return 'bg-purple-100 text-purple-800';
+        return 'bg-gray-100 text-gray-800';
+    }
+
+    escapeHtml(unsafe) {
+        if (unsafe === null || unsafe === undefined) return '';
+        return String(unsafe)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
     /**
@@ -352,12 +431,12 @@ try {
         const container = document.querySelector(containerSelector);
         if (!container || !works.length) return;
 
-const worksHtml = works.map((item, index) => {
-const completionYear = item.completion_date ? 
+        const worksHtml = works.map((item, index) => {
+            const completionYear = item.completion_date ?
                 new Date(item.completion_date).getFullYear() + '年竣工' : '';
             const resolved = this.resolveImageUrl(item.featured_image);
             const imgSrc = resolved || this.getWorksFallbackImage(index);
-return `
+            return `
                 <div class="card group work-item" data-category="${item.category.toLowerCase()}">
                     <div class="relative overflow-hidden">
 <img src="${imgSrc}" alt="${this.escapeHtml(item.title)}" 
@@ -386,8 +465,8 @@ ${item.category}
         container.innerHTML = worksHtml;
     }
 
-renderServices(services, containerSelector) {
-const container = document.querySelector(containerSelector);
+    renderServices(services, containerSelector) {
+        const container = document.querySelector(containerSelector);
         if (!container) return;
         if (!Array.isArray(services) || services.length === 0) {
             services = this.getDefaultServices();
@@ -405,13 +484,13 @@ const container = document.querySelector(containerSelector);
             const icon = this.escapeHtml(svc.icon || '');
             const derivedIcon = icon || this.getServiceIconByTitle(svc.title || '');
             const badge = derivedIcon ? `<span class="service-tag">${derivedIcon}</span>` : '';
-            
+
             // Alternate layout direction for better visual flow
             const isEven = index % 2 === 0;
             const imageOrder = isEven ? 'order-1' : 'order-1 md:order-2';
             const textOrder = isEven ? 'order-2' : 'order-2 md:order-1';
             const bgColor = index % 2 === 1 ? 'bg-gray-50' : 'bg-white';
-            
+
             return `
                 <section class="service-section ${bgColor}">
                     <div class="container mx-auto px-4">
@@ -437,7 +516,7 @@ const container = document.querySelector(containerSelector);
         if (typeof AOS !== 'undefined' && typeof AOS.refresh === 'function') {
             try {
                 AOS.refresh();
-            } catch (_) {}
+            } catch (_) { }
         }
         if (typeof setupParallax === 'function') {
             setupParallax();
@@ -482,56 +561,56 @@ const container = document.querySelector(containerSelector);
             {
                 title: '土木工事',
                 description: '造成・河川などの土木工事',
-                features: ['造成','河川改修','舗装','擁壁'],
+                features: ['造成', '河川改修', '舗装', '擁壁'],
                 service_image: 'assets/img/service_doboku.jpg',
                 icon: 'residence'
             },
             {
                 title: '建築工事',
                 description: '住宅・お店の建設',
-                features: ['新築','増改築','改修'],
+                features: ['新築', '増改築', '改修'],
                 service_image: 'assets/img/service_house.jpg',
                 icon: 'building'
             },
             {
                 title: 'リフォーム',
                 description: '住宅リフォーム',
-                features: ['キッチン','バス','洗面'],
+                features: ['キッチン', 'バス', '洗面'],
                 service_image: 'assets/img/service_reform.jpg',
                 icon: 'rock'
             },
             {
                 title: '外構工事',
                 description: 'エクステリア工事',
-                features: ['カーポート','塀','舗装'],
+                features: ['カーポート', '塀', '舗装'],
                 service_image: 'assets/img/service_exterior.png',
                 icon: 'fence'
             },
             {
                 title: '公共工事',
                 description: '自治体向け工事',
-                features: ['道路','公園'],
+                features: ['道路', '公園'],
                 service_image: 'assets/img/service_public.jpg',
                 icon: 'government'
             },
             {
                 title: '設備工事',
                 description: '電気・給排水など',
-                features: ['電気設備','空調','給排水'],
+                features: ['電気設備', '空調', '給排水'],
                 service_image: 'assets/img/service_equipment.png',
                 icon: 'electric'
             }
         ];
     }
 
-/**
-* お客様の声をHTMLにレンダリング
-     */
+    /**
+    * お客様の声をHTMLにレンダリング
+         */
     renderTestimonials(testimonials, containerSelector) {
         const container = document.querySelector(containerSelector);
         if (!container || !testimonials.length) return;
-const testimonialsHtml = testimonials.map((item, index) => {
-const name = this.escapeHtml(item.customer_name || '');
+        const testimonialsHtml = testimonials.map((item, index) => {
+            const name = this.escapeHtml(item.customer_name || '');
             const project = this.escapeHtml(item.project_type || '');
             const content = this.escapeHtml(item.content || '');
             const rating = Math.max(0, Math.min(5, Number(item.rating || 0)));
@@ -556,8 +635,8 @@ const name = this.escapeHtml(item.customer_name || '');
                 </div>
             </div>`;
         }).join('');
-container.innerHTML = testimonialsHtml;
-}
+        container.innerHTML = testimonialsHtml;
+    }
 
     /**
      * 会社統計をHTMLにレンダリング
@@ -595,7 +674,7 @@ container.innerHTML = testimonialsHtml;
             const photoUrl = item.photo_url || 'assets/img/ogp.jpg';
             const signatureUrl = item.signature_url || '';
             const biography = item.biography || {};
-            
+
             // 経歴データをHTMLに変換
             let biographyHtml = '';
             if (biography.career && Array.isArray(biography.career)) {
@@ -603,7 +682,7 @@ container.innerHTML = testimonialsHtml;
                 biographyHtml += biography.career.map(career => `<li>${this.escapeHtml(career)}</li>`).join('');
                 biographyHtml += '</ul>';
             }
-            
+
             if (biography.education && Array.isArray(biography.education)) {
                 biographyHtml += '<h4 class="font-bold mb-2">学歴</h4><ul class="list-disc list-inside mb-4 text-gray-700">';
                 biographyHtml += biography.education.map(edu => `<li>${this.escapeHtml(edu)}</li>`).join('');
@@ -710,7 +789,7 @@ container.innerHTML = testimonialsHtml;
             const els = document.querySelectorAll('[data-site-setting="hero_subtitle"]');
             els.forEach(el => { el.textContent = heroSubtitle; });
         }
-        
+
         // 住所の更新
         if (siteSettings.company_address) {
             const addressElements = document.querySelectorAll('[data-site-setting="company_address"]');
@@ -718,7 +797,7 @@ container.innerHTML = testimonialsHtml;
                 el.textContent = siteSettings.company_address;
             });
         }
-        
+
         // 郵便番号の更新
         if (siteSettings.company_address_postal) {
             const postalElements = document.querySelectorAll('[data-site-setting="company_address_postal"]');
@@ -726,7 +805,7 @@ container.innerHTML = testimonialsHtml;
                 el.textContent = siteSettings.company_address_postal;
             });
         }
-        
+
         // 住所詳細の更新
         if (siteSettings.company_address_detail) {
             const detailElements = document.querySelectorAll('[data-site-setting="company_address_detail"]');
@@ -734,7 +813,7 @@ container.innerHTML = testimonialsHtml;
                 el.textContent = siteSettings.company_address_detail;
             });
         }
-        
+
         // タグラインの更新
         if (siteSettings.company_tagline) {
             const taglineElements = document.querySelectorAll('[data-site-setting="company_tagline"]');
@@ -742,17 +821,17 @@ container.innerHTML = testimonialsHtml;
                 el.textContent = siteSettings.company_tagline;
             });
         }
-        
+
         if (representativeName) {
             const repEls = document.querySelectorAll('[data-site-setting="representative_name"]');
             repEls.forEach(el => { el.textContent = representativeName; });
         }
-        
+
         if (registrationNumber) {
             const regEls = document.querySelectorAll('[data-site-setting="registration_number"]');
             regEls.forEach(el => { el.textContent = registrationNumber; });
         }
-        
+
         // ヒーローセクションの更新
         if (siteSettings.hero_title) {
             const heroTitleElements = document.querySelectorAll('[data-site-setting="hero_title"]');
@@ -760,7 +839,7 @@ container.innerHTML = testimonialsHtml;
                 el.textContent = siteSettings.hero_title;
             });
         }
-        
+
         if (siteSettings.hero_subtitle) {
             const heroSubtitleElements = document.querySelectorAll('[data-site-setting="hero_subtitle"]');
             heroSubtitleElements.forEach(el => {
@@ -778,7 +857,7 @@ container.innerHTML = testimonialsHtml;
 
         const businessItems = companyInfo.business_details || [];
         const licenses = companyInfo.licenses || [];
-        
+
         const businessHtml = businessItems.map(item => `<li>${this.escapeHtml(item)}</li>`).join('');
         const licensesHtml = licenses.map(license => `<li>${this.escapeHtml(license)}</li>`).join('');
 
@@ -838,7 +917,7 @@ container.innerHTML = testimonialsHtml;
         if (!container || !companyInfo) return;
 
         const philosophyItems = companyInfo.philosophy_items || [];
-        
+
         const itemsHtml = philosophyItems.map((item, index) => `
             <div class="bg-accent p-8 rounded-sm" data-aos="fade-up" data-aos-delay="${(index + 1) * 100}">
                 <div class="text-secondary text-4xl font-bold mb-4">${this.escapeHtml(item.number)}</div>
@@ -905,7 +984,7 @@ container.innerHTML = testimonialsHtml;
             const yearShort = String(item.year).slice(-2);
             const monthText = item.month ? `${item.month}月` : '';
             const detailsHtml = item.details ? item.details.map(detail => `<p>${this.escapeHtml(detail)}</p>`).join('') : '';
-            
+
             return `
                 <div class="relative z-10 flex" data-aos="fade-up" data-aos-delay="${(index + 1) * 100}">
                     <div class="h-12 w-12 rounded-full bg-primary text-white flex items-center justify-center text-lg font-bold">${yearShort}</div>
@@ -948,7 +1027,7 @@ container.innerHTML = testimonialsHtml;
             '施工事例': 'bg-yellow-50 text-yellow-700',
             'コラム': 'bg-purple-50 text-purple-700'
         };
-        
+
         return categoryClasses[category] || 'bg-gray-50 text-gray-700';
     }
 
@@ -997,23 +1076,23 @@ container.innerHTML = testimonialsHtml;
 const supabaseIntegration = new SupabaseIntegration();
 
 // ページ読み込み時の初期化
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // ホームページの初期化
     if (document.querySelector('.news-list')) {
         initializeHomePage();
     }
-    
+
     // ニュースページの初期化
     if (document.querySelector('#news-container')) {
         initializeNewsPage();
     }
-    
+
     // 施工実績ページの初期化
     if (document.querySelector('#works-grid')) {
         initializeWorksPage();
     }
-// サービスページの初期化
-if (document.querySelector('#services-container')) {
+    // サービスページの初期化
+    if (document.querySelector('#services-container')) {
         initializeServicesPage();
     }
 
@@ -1068,15 +1147,15 @@ async function initializeHomePage() {
             supabaseIntegration.renderStats(stats, '.stats-container');
         }
 
-// ホーム: 施工実績スライダーに最新を反映
-const homeWorksSlider = document.querySelector('.works-slider');
+        // ホーム: 施工実績スライダーに最新を反映
+        const homeWorksSlider = document.querySelector('.works-slider');
         if (homeWorksSlider) {
             const works = await supabaseIntegration.getWorks(6);
             renderHomeWorksSlider(works);
         }
 
-} catch (error) {
-console.error('Homepage initialization error:', error);
+    } catch (error) {
+        console.error('Homepage initialization error:', error);
     }
 }
 
@@ -1137,7 +1216,7 @@ function renderNewsPage(news) {
     news.forEach((item, index) => {
         const categoryClass = getCategoryClass(item.category);
         const formattedDate = new Date(item.published_date).toLocaleDateString('ja-JP');
-        
+
         html += `
             <article class="bg-white shadow-md rounded-sm overflow-hidden mb-8 news-item" 
                      data-category="${item.category}" data-aos="fade-up" data-aos-delay="${index * 100}">
@@ -1167,7 +1246,7 @@ function renderNewsPage(news) {
             </article>
         `;
     });
-    
+
     container.innerHTML = html;
 }
 
@@ -1212,11 +1291,11 @@ async function initializeWorksPage() {
             supabaseIntegration.showLoading('#works-grid');
             const works = await supabaseIntegration.getWorks(20);
             supabaseIntegration.renderWorksList(works, '#works-grid');
-if (typeof setupCategoryFilter === 'function') {
+            if (typeof setupCategoryFilter === 'function') {
                 setupCategoryFilter();
             }
-}
-} catch (error) {
+        }
+    } catch (error) {
         console.error('Works page initialization error:', error);
         supabaseIntegration.showError(error.message, '#works-grid');
     }
@@ -1284,7 +1363,7 @@ async function initializePartners() {
             if (Array.isArray(partners) && partners.length > 0) {
                 supabaseIntegration.renderPartners(partners, '#partners-container');
             } else {
-                const fallback = [1,2,3,4,5].map(i => ({
+                const fallback = [1, 2, 3, 4, 5].map(i => ({
                     company_name: '',
                     logo_image: `assets/img/partner${i}.svg`,
                     website_url: ''
@@ -1348,10 +1427,10 @@ function openWorkDetail(workId) {
 async function initializeContactForm() {
     const form = document.getElementById('contact-form');
     if (!form) return;
-    
-    form.addEventListener('submit', async function(event) {
+
+    form.addEventListener('submit', async function (event) {
         event.preventDefault();
-        
+
         // フォームデータの収集
         const formData = new FormData(form);
         const data = {
@@ -1362,34 +1441,34 @@ async function initializeContactForm() {
             inquiry_type: formData.get('inquiry_type'),
             message: formData.get('message')
         };
-        
+
         // 送信前の検証
         if (!data.name || !data.email || !data.inquiry_type || !data.message) {
             alert('必須項目をすべて入力してください。');
             return;
         }
-        
+
         // メールアドレスの検証
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(data.email)) {
             alert('有効なメールアドレスを入力してください。');
             return;
         }
-        
+
         // プライバシーポリシーの同意確認
         const privacyCheckbox = form.querySelector('input[type="checkbox"]');
         if (!privacyCheckbox.checked) {
             alert('プライバシーポリシーに同意してください。');
             return;
         }
-        
+
         try {
             // 送信ボタンを無効化
             const submitButton = form.querySelector('button[type="submit"]');
             const originalText = submitButton.textContent;
             submitButton.disabled = true;
             submitButton.textContent = '送信中...';
-            
+
             // Supabaseに送信
             const response = await fetch('api/supabase-inquiries.php', {
                 method: 'POST',
@@ -1398,9 +1477,9 @@ async function initializeContactForm() {
                 },
                 body: JSON.stringify(data)
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 // 成功時の処理
                 alert('お問い合わせありがとうございます。内容を確認の上、担当者より連絡いたします。');
@@ -1409,7 +1488,7 @@ async function initializeContactForm() {
                 // エラー時の処理
                 alert(result.error || '送信に失敗しました。しばらく経ってからもう一度お試しください。');
             }
-            
+
         } catch (error) {
             console.error('送信エラー:', error);
             alert('送信に失敗しました。しばらく経ってからもう一度お試しください。');

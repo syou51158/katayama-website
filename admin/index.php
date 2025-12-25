@@ -8,8 +8,13 @@ require_once __DIR__ . '/includes/header.php';
         <h2 class="page-title mb-1">Dashboard</h2>
         <p class="text-muted mb-0">ようこそ、管理者画面へ</p>
     </div>
-    <div class="text-muted small">
-        <i class="bi bi-calendar-event me-2"></i><?php echo date('Y年m月d日'); ?>
+    <div class="d-flex align-items-center gap-3">
+        <a href="../index.html" target="_blank" class="btn btn-primary d-flex align-items-center shadow-sm">
+            <i class="bi bi-box-arrow-up-right me-2"></i>公開サイトを見る
+        </a>
+        <div class="text-muted small">
+            <i class="bi bi-calendar-event me-2"></i><?php echo date('Y年m月d日'); ?>
+        </div>
     </div>
 </div>
 
@@ -67,6 +72,19 @@ require_once __DIR__ . '/includes/header.php';
     .card-file .icon-box { background: rgba(13, 202, 240, 0.1); color: #0dcaf0; }
     .card-file:hover .icon-box { background: #0dcaf0; color: white; }
 
+    /* New Content Management Cards */
+    .card-news .icon-box { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+    .card-news:hover .icon-box { background: #dc3545; color: white; }
+
+    .card-works .icon-box { background: rgba(102, 16, 242, 0.1); color: #6610f2; }
+    .card-works:hover .icon-box { background: #6610f2; color: white; }
+
+    .card-services .icon-box { background: rgba(253, 126, 20, 0.1); color: #fd7e14; }
+    .card-services:hover .icon-box { background: #fd7e14; color: white; }
+
+    .card-company .icon-box { background: rgba(32, 201, 151, 0.1); color: #20c997; }
+    .card-company:hover .icon-box { background: #20c997; color: white; }
+
     .card-title {
         font-size: 1.1rem;
         font-weight: 700;
@@ -91,6 +109,74 @@ require_once __DIR__ . '/includes/header.php';
     }
 </style>
 
+<h5 class="text-muted mb-3 mt-2 small text-uppercase fw-bold ls-1">ウェブサイト管理</h5>
+<div class="row g-4 mb-5">
+    <!-- News Card -->
+    <div class="col-md-6 col-lg-3">
+        <a href="/admin/news/" class="dashboard-card card-news">
+            <div class="dashboard-card-body">
+                <div class="icon-box">
+                    <i class="bi bi-newspaper"></i>
+                </div>
+                <h5 class="card-title">お知らせ</h5>
+                <p class="card-text">ニュースやイベント情報の更新を行います。</p>
+                <div class="card-link-text text-danger">
+                    編集する <i class="bi bi-arrow-right"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Works Card -->
+    <div class="col-md-6 col-lg-3">
+        <a href="/admin/works/" class="dashboard-card card-works">
+            <div class="dashboard-card-body">
+                <div class="icon-box">
+                    <i class="bi bi-images"></i>
+                </div>
+                <h5 class="card-title">施工実績</h5>
+                <p class="card-text">施工事例の写真や詳細を追加・編集します。</p>
+                <div class="card-link-text text-primary">
+                    編集する <i class="bi bi-arrow-right"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Services Card -->
+    <div class="col-md-6 col-lg-3">
+        <a href="/admin/services/" class="dashboard-card card-services">
+            <div class="dashboard-card-body">
+                <div class="icon-box">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <h5 class="card-title">事業内容</h5>
+                <p class="card-text">提供サービスの内容や説明を編集します。</p>
+                <div class="card-link-text text-warning">
+                    編集する <i class="bi bi-arrow-right"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Company Card -->
+    <div class="col-md-6 col-lg-3">
+        <a href="/admin/company/" class="dashboard-card card-company">
+            <div class="dashboard-card-body">
+                <div class="icon-box">
+                    <i class="bi bi-building"></i>
+                </div>
+                <h5 class="card-title">会社情報</h5>
+                <p class="card-text">会社概要、沿革、代表者情報の管理を行います。</p>
+                <div class="card-link-text text-success">
+                    編集する <i class="bi bi-arrow-right"></i>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<h5 class="text-muted mb-3 small text-uppercase fw-bold ls-1">業務管理</h5>
 <div class="row g-4">
     <!-- Inquiries Card -->
     <div class="col-md-6 col-lg-3">

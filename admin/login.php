@@ -323,5 +323,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ログイン画面では管理者フラグを削除
+        if (window.localStorage) {
+            localStorage.removeItem('isAdmin');
+            localStorage.removeItem('adminLoginTime');
+        }
+    </script>
 </body>
 </html>
