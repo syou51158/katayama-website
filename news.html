@@ -280,7 +280,10 @@
 
     // SupabaseIntegrationの初期化（二重宣言を防ぐ）
     if (typeof supabaseIntegration === 'undefined') {
-      var supabaseIntegration = new SupabaseIntegration();
+      window.supabaseIntegration = new SupabaseIntegration();
+    } else {
+        // 既存のインスタンスを使用
+        console.log('Using existing SupabaseIntegration instance');
     }
 
     // ニュースページの初期化関数
