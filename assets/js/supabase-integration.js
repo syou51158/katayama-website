@@ -402,6 +402,13 @@ class SupabaseIntegration {
 
         container.innerHTML = `<div class="bg-white rounded-sm shadow-sm overflow-hidden border border-gray-100">${newsHtml}</div>`;
         console.log(`✅ ニュースリストをレンダリングしました: ${news.length}件`);
+
+        // 新しく追加された要素のためにAOSを更新
+        if (typeof AOS !== 'undefined') {
+            setTimeout(() => {
+                AOS.refresh();
+            }, 100);
+        }
     }
 
     getCategoryClass(category) {
