@@ -784,7 +784,21 @@ ${item.category}
 
         if (companyFax) {
             const els = document.querySelectorAll('[data-site-setting="company_fax"]');
-            els.forEach(el => { el.textContent = companyFax; });
+            els.forEach(el => { 
+                // 親要素がPタグかつ、中身が会社情報として置換される場合、
+                // 親が<p>FAX: <span>...</span></p>の形式ならtextContentのみ更新されるのでOK
+                // しかし、もし親が<p data-site-setting="company_fax">...</p>の形式だった場合、
+                // "FAX: "が消えてしまうのを防ぐため、以下のロジックを追加
+                if (el.tagName === 'P' && el.innerHTML.includes('FAX:')) {
+                   // 既にFAX: がある場合は、中身を書き換える際にFAX: を残す（簡易対応）
+                   // ただし、基本はHTML側でspanタグにdata属性をつける修正を行っているため
+                   // ここでは単純にtextContent書き換えで、HTML修正漏れがないことを前提とする
+                   // あるいは、念のため "FAX: " が含まれていない場合で、かつPタグなら付与する？
+                   // 今回はHTML側修正で対応済みのため、そのままtextContent更新でOK
+                   // el.textContent = 'FAX: ' + companyFax; 
+                }
+                el.textContent = companyFax; 
+            });
         }
 
         if (companyEmail) {
