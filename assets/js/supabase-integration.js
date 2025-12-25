@@ -385,10 +385,9 @@ class SupabaseIntegration {
             const title = this.escapeHtml(item.title || '無題');
             const id = item.id || '#';
 
-            // テンプレート文字列内のHTML要素に style="opacity: 1;" を追加して、AOSによる初期非表示を回避
-            // また、data-aos="fade-up" を残しつつ即座に表示させる
+            // AOSへの依存を削除し、確実に表示させる
             return `
-                <div class="news-item border-b border-gray-100 last:border-0" data-category="${category}" data-aos="fade-up" style="opacity: 1 !important; visibility: visible !important;">
+                <div class="news-item border-b border-gray-100 last:border-0" data-category="${category}">
                     <a href="news.html?id=${id}" class="block p-6 hover:bg-accent transition-colors">
                         <div class="flex flex-col md:flex-row md:items-center">
                             <div class="flex items-center mb-2 md:mb-0 shrink-0">
@@ -404,20 +403,6 @@ class SupabaseIntegration {
 
         container.innerHTML = `<div class="bg-white rounded-sm shadow-sm overflow-hidden border border-gray-100">${newsHtml}</div>`;
         console.log(`✅ ニュースリストをレンダリングしました: ${news.length}件`);
-
-        // 新しく追加された要素のためにAOSを更新
-        // 念のため、複数のタイミングでリフレッシュを試みる
-        if (typeof AOS !== 'undefined') {
-            // 強制的にAOSをリフレッシュ
-            try {
-                AOS.refresh();
-                AOS.init(); // 再初期化も試みる
-            } catch (e) { console.error('AOS refresh failed', e); }
-
-            setTimeout(() => {
-                try { AOS.refresh(); } catch (e) { }
-            }, 500);
-        }
     }
 
     getCategoryClass(category) {
@@ -637,7 +622,7 @@ ${item.category}
             }).join('');
 
             return `
-            <div class="card elegant-shadow p-6" data-aos="fade-up" data-aos-delay="${index * 100}">
+            <div class="card elegant-shadow p-6">
                 <div class="flex items-start mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-secondary mr-3 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M7.17 6A5.17 5.17 0 002 11.17V20h7v-8H6.83A3.83 3.83 0 0110.66 8V6H7.17zm9 0A5.17 5.17 0 0011 11.17V20h7v-8h-2.17A3.83 3.83 0 0119.66 8V6h-3.49z"/></svg>
                     <p class="text-gray-700">${content}</p>
