@@ -47,7 +47,7 @@
 
   <!-- Supabase統合 -->
   <script src="assets/js/mock-api.js"></script>
-  <script src="assets/js/supabase-integration.js"></script>
+  <script src="assets/js/supabase-integration.js?v=2"></script>
 </head>
 
 <body class="bg-white text-text_dark">
@@ -174,11 +174,11 @@
           <!-- 右カラム: ニュース記事一覧 -->
           <div class="md:col-span-3">
             <div id="news-container">
-                <!-- Supabaseからの動的データがここに読み込まれます -->
-                <div class="text-center py-16">
-                  <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                  <p class="mt-4 text-gray-500">ニュースを読み込み中...</p>
-                </div>
+              <!-- Supabaseからの動的データがここに読み込まれます -->
+              <div class="text-center py-16">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <p class="mt-4 text-gray-500">ニュースを読み込み中...</p>
+              </div>
             </div>
           </div>
         </div>
@@ -259,39 +259,39 @@
   <script src="assets/js/main.js"></script>
   <script>
     // デバッグ用: DOMが完全に読み込まれてから強制的にスタイルを適用
-    window.addEventListener('load', function() {
-        console.log('Window loaded. Checking news visibility...');
-        const newsContainer = document.getElementById('news-container');
-        if (newsContainer) {
-            console.log('news-container found. Content length:', newsContainer.innerHTML.length);
-            // 強制的に再描画を促す
-            newsContainer.style.display = 'none';
-            newsContainer.offsetHeight; // リフローを強制
-            newsContainer.style.display = 'block';
-            
-            // 子要素の表示も確認
-            const items = newsContainer.querySelectorAll('.news-item');
-            console.log('Found news items:', items.length);
-            items.forEach(item => {
-                item.style.display = 'block';
-                item.style.visibility = 'visible';
-                item.style.opacity = '1';
-            });
-        } else {
-            console.error('news-container not found on window load');
-        }
+    window.addEventListener('load', function () {
+      console.log('Window loaded. Checking news visibility...');
+      const newsContainer = document.getElementById('news-container');
+      if (newsContainer) {
+        console.log('news-container found. Content length:', newsContainer.innerHTML.length);
+        // 強制的に再描画を促す
+        newsContainer.style.display = 'none';
+        newsContainer.offsetHeight; // リフローを強制
+        newsContainer.style.display = 'block';
+
+        // 子要素の表示も確認
+        const items = newsContainer.querySelectorAll('.news-item');
+        console.log('Found news items:', items.length);
+        items.forEach(item => {
+          item.style.display = 'block';
+          item.style.visibility = 'visible';
+          item.style.opacity = '1';
+        });
+      } else {
+        console.error('news-container not found on window load');
+      }
     });
 
     // SupabaseIntegrationの初期化（二重宣言を防ぐ）
     if (typeof supabaseIntegration === 'undefined') {
-        var supabaseIntegration = new SupabaseIntegration();
+      var supabaseIntegration = new SupabaseIntegration();
     }
 
     // ニュースページの初期化関数
     async function initializeNewsPage() {
       try {
         console.log('📰 ニュースページの初期化を開始します...');
-        
+
         // URLパラメータからページ番号を取得（将来的なページネーション用）
         const urlParams = new URLSearchParams(window.location.search);
         const page = parseInt(urlParams.get('page') || '1');
@@ -304,8 +304,8 @@
 
         const container = document.getElementById('news-container');
         if (!container) {
-            console.error('❌ エラー: news-container要素が見つかりません');
-            return;
+          console.error('❌ エラー: news-container要素が見つかりません');
+          return;
         }
 
         if (news && news.length > 0) {
@@ -317,7 +317,7 @@
         console.error('❌ Error initializing news page:', error);
         const container = document.getElementById('news-container');
         if (container) {
-            container.innerHTML = `
+          container.innerHTML = `
                 <div class="text-center py-16 text-red-500">
                     <p class="mb-2">データの読み込みに失敗しました。</p>
                     <p class="text-sm text-gray-400">${error.message}</p>
