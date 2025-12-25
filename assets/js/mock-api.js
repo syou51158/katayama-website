@@ -43,18 +43,18 @@ const mockPartnersData = {
     data: [
         {
             id: "1",
-            company_name: "パートナー企業1",
-            logo_image: "assets/img/partner1.svg",
-            website_url: "https://example1.com",
+            company_name: "Trend Company",
+            logo_image: "assets/img/trendcompany.svg",
+            website_url: "https://trendcompany.jp",
             description: "信頼できるパートナー企業様",
             sort_order: 1,
             status: "active"
         },
         {
             id: "2", 
-            company_name: "パートナー企業2",
-            logo_image: "assets/img/partner2.svg",
-            website_url: "https://example2.com",
+            company_name: "CHOWAplanning",
+            logo_image: "assets/img/chowa_planning_logo.png",
+            website_url: "",
             description: "技術力の高いパートナー企業様",
             sort_order: 2,
             status: "active"
@@ -62,8 +62,8 @@ const mockPartnersData = {
         {
             id: "3",
             company_name: "パートナー企業3", 
-            logo_image: "assets/img/partner3.svg",
-            website_url: "https://example3.com",
+            logo_image: "assets/img/partner4.svg",
+            website_url: "",
             description: "長年の協力関係にあるパートナー企業様",
             sort_order: 3,
             status: "active"
@@ -71,23 +71,14 @@ const mockPartnersData = {
         {
             id: "4",
             company_name: "パートナー企業4",
-            logo_image: "assets/img/partner4.svg", 
-            website_url: "https://example4.com",
+            logo_image: "assets/img/partner5.svg", 
+            website_url: "",
             description: "専門分野でのパートナー企業様",
             sort_order: 4,
             status: "active"
-        },
-        {
-            id: "5",
-            company_name: "パートナー企業5",
-            logo_image: "assets/img/partner5.svg",
-            website_url: "https://example5.com", 
-            description: "地域密着型のパートナー企業様",
-            sort_order: 5,
-            status: "active"
         }
     ],
-    count: 5
+    count: 4
 };
 
 // お客様の声のモックデータ

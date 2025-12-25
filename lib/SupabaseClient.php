@@ -364,7 +364,7 @@ class SupabaseClient {
      */
     public static function getActivePartners(): array {
         $result = self::select('partners', ['status' => 'active'], [
-            'order' => 'created_at.asc'
+            'order' => 'sort_order.asc,created_at.asc'
         ]);
         
         return $result ?: [];
