@@ -269,7 +269,62 @@ require_once __DIR__ . '/../../lib/SupabaseClient.php';
             }
             .main-content {
                 margin-left: 0;
+                padding-top: 80px; /* Space for mobile menu button */
             }
+            
+            #mobile-menu-btn {
+                display: flex !important;
+            }
+            
+            #mobile-sidebar-overlay {
+                display: block !important;
+            }
+            
+            #mobile-sidebar-overlay.show {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+            }
+        }
+        
+        /* Mobile Menu Button */
+        #mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            background: var(--brand-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 45px;
+            height: 45px;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        #mobile-menu-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Mobile Sidebar Overlay */
+        #mobile-sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 900;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(3px);
         }
         
         /* Utility */

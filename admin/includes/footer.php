@@ -33,6 +33,48 @@
         const contentWrapper = document.querySelector('.main-content'); // コンテンツの差し替え対象
         const sidebarLinks = document.querySelectorAll('.sidebar .nav-link'); // サイドバーのリンク
         
+        // Mobile Menu Toggle
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.querySelector('.sidebar');
+        const mobileOverlay = document.getElementById('mobile-sidebar-overlay');
+        
+        if (mobileBtn && sidebar && mobileOverlay) {
+            function toggleMenu() {
+                sidebar.classList.toggle('show');
+                mobileOverlay.classList.toggle('show');
+                
+                // Icon toggle
+                const icon = mobileBtn.querySelector('i');
+                if (icon) {
+                    if (sidebar.classList.contains('show')) {
+                        icon.classList.remove('bi-list');
+                        icon.classList.add('bi-x-lg');
+                    } else {
+                        icon.classList.remove('bi-x-lg');
+                        icon.classList.add('bi-list');
+                    }
+                }
+            }
+            
+            mobileBtn.addEventListener('click', toggleMenu);
+            mobileOverlay.addEventListener('click', toggleMenu);
+            
+            // Close menu when clicking a link
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('show');
+                        mobileOverlay.classList.remove('show');
+                        const icon = mobileBtn.querySelector('i');
+                        if (icon) {
+                            icon.classList.remove('bi-x-lg');
+                            icon.classList.add('bi-list');
+                        }
+                    }
+                });
+            });
+        }
+        
         // 履歴管理（ブラウザの戻る・進む対応）
         window.addEventListener('popstate', function(e) {
             if (e.state && e.state.path) {
