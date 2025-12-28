@@ -121,7 +121,15 @@ try {
 
                 // 受信者設定
                 $mailAdmin->setFrom($mailFrom, $mailFromName);
-                $mailAdmin->addAddress($mailTo);
+                
+                // 複数の送信先に対応（カンマ区切り）
+                $mailAddresses = array_map('trim', explode(',', $mailTo));
+                foreach ($mailAddresses as $address) {
+                    if (!empty($address)) {
+                        $mailAdmin->addAddress($address);
+                    }
+                }
+                
                 $mailAdmin->addReplyTo($inquiryData['email'], $inquiryData['name']);
 
                 // コンテンツ
@@ -178,6 +186,11 @@ EOT;
             // 3. お客様への自動返信メール (PHPMailer)
             $mailCustomer = new PHPMailer(true);
             try {
+                // 自動返信メールの設定取得
+                $autoReplySubject = SupabaseClient::getSystemSetting('mail_autoreply_subject', '【片山建設工業】お問い合わせありがとうございます');
+                $autoReplyHeader = SupabaseClient::getSystemSetting('mail_autoreply_header', "この度は、片山建設工業へお問い合わせいただき、誠にありがとうございます。\n以下の内容でお問い合わせを受け付けいたしました。");
+                $autoReplyFooter = SupabaseClient::getSystemSetting('mail_autoreply_footer', "内容を確認の上、担当者より改めてご連絡させていただきます。\n今しばらくお待ちいただけますようお願い申し上げます。\n\n※このメールは自動送信されています。\nお心当たりのない場合は、お手数ですが本メールを破棄してください。\n\n--------------------------------------------------\n片山建設工業\n〒520-2279 滋賀県大津市大石東6丁目6-28\nTEL: 090-5650-1106\nURL: https://katayama-kensetsukougyou.jp\n--------------------------------------------------");
+
                 // サーバー設定
                 $mailCustomer->isSMTP();
                 $mailCustomer->Host       = $smtpHost;
@@ -195,12 +208,11 @@ EOT;
 
                 // コンテンツ
                 $mailCustomer->isHTML(false);
-                $mailCustomer->Subject = '【片山建設工業】お問い合わせありがとうございます';
+                $mailCustomer->Subject = $autoReplySubject;
                 $mailCustomer->Body    = <<<EOT
 {$inquiryData['name']} 様
 
-この度は、片山建設工業へお問い合わせいただき、誠にありがとうございます。
-以下の内容でお問い合わせを受け付けいたしました。
+{$autoReplyHeader}
 
 --------------------------------------------------
 お名前: {$inquiryData['name']}
@@ -209,18 +221,7 @@ EOT;
 {$inquiryData['message']}
 --------------------------------------------------
 
-内容を確認の上、担当者より改めてご連絡させていただきます。
-今しばらくお待ちいただけますようお願い申し上げます。
-
-※このメールは自動送信されています。
-お心当たりのない場合は、お手数ですが本メールを破棄してください。
-
---------------------------------------------------
-株式会社 片山建設工業
-〒000-0000 住所が入ります
-TEL: 00-0000-0000
-URL: https://katayama-construction.co.jp
---------------------------------------------------
+{$autoReplyFooter}
 EOT;
 
                 $mailCustomer->send();

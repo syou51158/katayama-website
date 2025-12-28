@@ -344,6 +344,11 @@ require_once __DIR__ . '/../../lib/SupabaseClient.php';
                         <i class="bi bi-folder-fill"></i> ファイル管理
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link <?php echo strpos($_SERVER['REQUEST_URI'], '/admin/settings/mail.php') !== false ? 'active' : ''; ?>" href="/admin/settings/mail.php">
+                        <i class="bi bi-gear-fill"></i> メール設定
+                    </a>
+                </li>
             </ul>
 
             <ul class="sidebar-menu">

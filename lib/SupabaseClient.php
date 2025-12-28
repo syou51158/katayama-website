@@ -62,6 +62,22 @@ class SupabaseClient {
     }
     
     /**
+     * システム設定を取得
+     * 
+     * @param string $key 設定キー
+     * @param string|null $default デフォルト値（DBにない場合）
+     * @return string
+     */
+    public static function getSystemSetting(string $key, ?string $default = null): string {
+        // キャッシュ機構を入れたいところだが、まずは都度取得で実装
+        $result = self::select('system_settings', ['key' => $key], ['limit' => 1]);
+        if ($result && is_array($result) && count($result) > 0) {
+            return $result[0]['value'] ?? $default ?? '';
+        }
+        return $default ?? '';
+    }
+    
+    /**
      * POSTリクエストを実行（INSERT）
      * 
      * @param string $table テーブル名
@@ -71,6 +87,21 @@ class SupabaseClient {
     public static function insert(string $table, array $data) {
         $url = SupabaseConfig::getApiUrl() . $table;
         return self::makeRequest('POST', $url, $data, true);
+    }
+
+    /**
+     * UPSERTを実行（INSERT or UPDATE）
+     * 
+     * @param string $table テーブル名
+     * @param array $data 挿入・更新するデータ
+     * @param string $onConflict 競合を判定するカラム名
+     * @return array|false
+     */
+    public static function upsert(string $table, array $data, string $onConflict = 'id') {
+        $url = SupabaseConfig::getApiUrl() . $table . '?on_conflict=' . $onConflict;
+        // merge-duplicates を指定することで、既存データがあれば更新する
+        $headers = ['Prefer: resolution=merge-duplicates,return=representation'];
+        return self::makeRequest('POST', $url, $data, true, $headers);
     }
     
     /**
@@ -135,9 +166,10 @@ class SupabaseClient {
      * @param string $url リクエストURL
      * @param array|null $data 送信データ
      * @param bool $useServiceKey サービスロールキーを使用するか
+     * @param array $customHeaders 追加のヘッダー
      * @return array|false
      */
-    private static function makeRequest(string $method, string $url, ?array $data = null, bool $useServiceKey = false) {
+    private static function makeRequest(string $method, string $url, ?array $data = null, bool $useServiceKey = false, array $customHeaders = []) {
         $apiKey = $useServiceKey ? SupabaseConfig::getServiceRoleKey() : SupabaseConfig::getAnonKey();
         $headers = [
             'apikey: ' . $apiKey,
@@ -146,8 +178,33 @@ class SupabaseClient {
             'Accept: application/json',
             'User-Agent: KatayamaWebsite/1.0' // WAF対策
         ];
-        if (in_array($method, ['POST','PUT','PATCH','DELETE'])) {
-            $headers[] = 'Prefer: return=representation';
+        
+        // デフォルトのPreferヘッダー（カスタムヘッダーで上書きされない場合のみ）
+        $defaultPrefer = 'return=representation';
+        
+        // カスタムヘッダーのマージ
+        if (!empty($customHeaders)) {
+            foreach ($customHeaders as $h) {
+                // Preferヘッダーなどは上書きする
+                if (strpos($h, ':') !== false) {
+                    $key = explode(':', $h)[0];
+                    // 既存のヘッダーから同じキーのものを削除
+                    $headers = array_filter($headers, function($existing) use ($key) {
+                        return stripos($existing, $key . ':') === false;
+                    });
+                    
+                    // Preferヘッダーがカスタムで指定されているかチェック
+                    if (stripos($key, 'Prefer') !== false) {
+                        $defaultPrefer = null;
+                    }
+                }
+                $headers[] = $h;
+            }
+        }
+        
+        // デフォルトのPreferヘッダーを追加（まだ追加されていない場合）
+        if ($defaultPrefer && in_array($method, ['POST','PUT','PATCH','DELETE'])) {
+            $headers[] = 'Prefer: ' . $defaultPrefer;
         }
 
         if (function_exists('curl_init')) {

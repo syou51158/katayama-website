@@ -15,8 +15,117 @@
 </div>
 <?php endif; ?>
 
+<!-- Page Transition Loading Overlay -->
+<div id="page-transition-overlay" class="position-fixed top-0 start-0 w-100 h-100 d-none justify-content-center align-items-center" style="background: rgba(0,0,0,0.4); z-index: 1050;">
+    <div class="text-center bg-white p-4 rounded shadow">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="mt-3 fw-bold text-dark">読み込み中...</div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // ページ遷移ローディング制御 (Ajax SPA風遷移)
+    document.addEventListener('DOMContentLoaded', function() {
+        const overlay = document.getElementById('page-transition-overlay');
+        const contentWrapper = document.querySelector('.main-content'); // コンテンツの差し替え対象
+        const sidebarLinks = document.querySelectorAll('.sidebar .nav-link'); // サイドバーのリンク
+        
+        // 履歴管理（ブラウザの戻る・進む対応）
+        window.addEventListener('popstate', function(e) {
+            if (e.state && e.state.path) {
+                loadPage(e.state.path, false);
+            } else {
+                location.reload(); // 履歴がない場合は通常リロード
+            }
+        });
+
+        // ページ読み込み関数
+        function loadPage(url, pushState = true) {
+            // ローディング表示
+            if (overlay) {
+                overlay.classList.remove('d-none');
+                overlay.classList.add('d-flex');
+            }
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.text();
+                })
+                .then(html => {
+                    // HTMLからメインコンテンツ部分を抽出
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newContent = doc.querySelector('.main-content');
+                    
+                    if (newContent && contentWrapper) {
+                        // コンテンツを差し替え
+                        contentWrapper.innerHTML = newContent.innerHTML;
+                        
+                        // URLを更新
+                        if (pushState) {
+                            history.pushState({ path: url }, '', url);
+                        }
+                        
+                        // アクティブなメニューを更新
+                        sidebarLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === url) {
+                                link.classList.add('active');
+                            }
+                        });
+                        
+                        // ページ内のスクリプトを再実行（必要に応じて）
+                        // ※単純なinnerHTML置換ではscriptタグは実行されないため、
+                        // admin/settings/mail.php のような固有のスクリプトがある場合は
+                        // 手動で再設定するか、イベントリスナーをdocument全体に委譲する必要があります。
+                        // 今回は特にメール設定ページのフォーム制御を再バインドします。
+                        if (url.includes('/admin/settings/mail.php')) {
+                            const scriptContent = doc.querySelector('script:not([src])');
+                            if (scriptContent) {
+                                const script = document.createElement('script');
+                                script.textContent = scriptContent.textContent;
+                                document.body.appendChild(script);
+                            }
+                        }
+                        
+                        // 画面トップへ
+                        window.scrollTo(0, 0);
+                    } else {
+                        // 構造が違う場合は通常遷移にフォールバック
+                        window.location.href = url;
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    window.location.href = url; // エラー時は通常遷移
+                })
+                .finally(() => {
+                    // ローディング非表示
+                    if (overlay) {
+                        overlay.classList.remove('d-flex');
+                        overlay.classList.add('d-none');
+                    }
+                });
+        }
+
+        // リンククリックイベントの乗っ取り
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                
+                // 内部リンクかつ通常遷移すべきでないもの
+                if (href && !href.startsWith('#') && !href.startsWith('javascript:') && !this.hasAttribute('target') && !this.classList.contains('logout')) {
+                    e.preventDefault(); // 通常遷移をキャンセル
+                    loadPage(href);
+                }
+            });
+        });
+    });
+
     // 管理者としてログイン中であることを記録
     if (window.localStorage) {
         localStorage.setItem('isAdmin', 'true');
