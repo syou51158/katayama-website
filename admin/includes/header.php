@@ -343,6 +343,13 @@ require_once __DIR__ . '/../../lib/SupabaseClient.php';
 <iframe id="site-background-frame" src="/"></iframe>
 <div id="admin-backdrop"></div>
 
+<?php if (SupabaseAuth::isLoggedIn()): ?>
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-btn" aria-label="メニューを開く">
+        <i class="bi bi-list fs-4"></i>
+    </button>
+<?php endif; ?>
+
 <div id="admin-wrapper">
 <?php if (SupabaseAuth::isLoggedIn()): ?>
     <!-- Sidebar -->
