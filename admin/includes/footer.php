@@ -43,6 +43,13 @@
                 sidebar.classList.toggle('show');
                 mobileOverlay.classList.toggle('show');
                 
+                // Toggle body class for scroll prevention
+                if (sidebar.classList.contains('show')) {
+                    document.body.classList.add('menu-open');
+                } else {
+                    document.body.classList.remove('menu-open');
+                }
+                
                 // Icon toggle
                 const icon = mobileBtn.querySelector('i');
                 if (icon) {
@@ -65,6 +72,7 @@
                     if (window.innerWidth <= 768) {
                         sidebar.classList.remove('show');
                         mobileOverlay.classList.remove('show');
+                        document.body.classList.remove('menu-open'); // Remove scroll prevention
                         const icon = mobileBtn.querySelector('i');
                         if (icon) {
                             icon.classList.remove('bi-x-lg');

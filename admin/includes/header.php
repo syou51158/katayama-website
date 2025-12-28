@@ -285,6 +285,19 @@ require_once __DIR__ . '/../../lib/SupabaseClient.php';
                 visibility: visible;
                 pointer-events: auto;
             }
+
+            /* Prevent body scroll when menu is open */
+            body.menu-open {
+                overflow: hidden !important;
+                touch-action: none; /* Disable default touch actions on body */
+            }
+            
+            /* Allow scroll in sidebar */
+            .sidebar.show {
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+                touch-action: pan-y; /* Allow vertical scroll in sidebar */
+            }
         }
         
         /* Mobile Menu Button */
@@ -352,6 +365,9 @@ require_once __DIR__ . '/../../lib/SupabaseClient.php';
 
 <div id="admin-wrapper">
 <?php if (SupabaseAuth::isLoggedIn()): ?>
+    <!-- Mobile Sidebar Overlay -->
+    <div id="mobile-sidebar-overlay"></div>
+
     <!-- Sidebar -->
     <nav class="sidebar">
         <div class="sidebar-brand">
