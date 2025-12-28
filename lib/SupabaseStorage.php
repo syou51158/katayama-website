@@ -1,6 +1,5 @@
 <?php
-$__cfg = __DIR__ . '/../config/supabase.secrets.php';
-if (file_exists($__cfg)) { require_once $__cfg; } else { require_once __DIR__ . '/../config/supabase.secrets.dist.php'; }
+require_once __DIR__ . '/../config/supabase.secrets.php';
 
 class SupabaseStorage {
     private static function curlCliRequest(string $method, string $url, array $headers, ?string $body = null, ?string $binaryFilePath = null): array {

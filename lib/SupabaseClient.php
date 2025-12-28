@@ -1,6 +1,5 @@
 <?php
-$__cfg = __DIR__ . '/../config/supabase.secrets.php';
-if (file_exists($__cfg)) { require_once $__cfg; } else { require_once __DIR__ . '/../config/supabase.secrets.dist.php'; }
+require_once __DIR__ . '/../config/supabase.secrets.php';
 
 /**
  * Supabaseクライアントクラス
