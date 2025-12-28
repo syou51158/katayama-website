@@ -1532,8 +1532,12 @@ function openWorkDetail(workId) {
 
 /**
  * お問い合わせフォームの初期化
+ * 注: 現在は contact.html と main.js 側で処理しているため、ここは無効化しています。
+ * 競合を防ぐため、イベントリスナーを登録しません。
  */
 async function initializeContactForm() {
+    // 競合防止のため無効化
+    /*
     const form = document.getElementById('contact-form');
     if (!form) return;
 
@@ -1571,9 +1575,11 @@ async function initializeContactForm() {
             return;
         }
 
+        let submitButton = null;
+
         try {
             // 送信ボタンを無効化
-            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton = form.querySelector('button[type="submit"]');
             const originalText = submitButton.textContent;
             submitButton.disabled = true;
             submitButton.textContent = '送信中...';
@@ -1603,10 +1609,13 @@ async function initializeContactForm() {
             alert('送信に失敗しました。しばらく経ってからもう一度お試しください。');
         } finally {
             // ボタンを再有効化
-            submitButton.disabled = false;
-            submitButton.textContent = originalText;
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.textContent = '送信する'; // originalText変数がスコープ外の可能性があるため固定文言
+            }
         }
     });
+    */
 }
 
 /**

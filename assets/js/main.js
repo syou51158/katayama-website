@@ -165,12 +165,66 @@ document.addEventListener('DOMContentLoaded', function () {
           firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       } else {
-        // フォーム送信アニメーション（確認画面がない場合）
+        // バリデーションOKならAPIへ送信
+        e.preventDefault();
+        
+        // 送信ボタンの制御
         const submitBtn = contactForm.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn ? submitBtn.innerHTML : '送信する';
+        
         if (submitBtn) {
-          submitBtn.innerHTML = '<span class="spinner"></span> 送信中...';
+          submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 送信中...';
           submitBtn.disabled = true;
         }
+
+        // フォームデータの取得
+        const formData = new FormData(contactForm);
+        const data = Object.fromEntries(formData.entries());
+
+        // API送信
+        fetch('api/contact.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data)
+        })
+        .then(response => {
+          // レスポンスがJSONかどうか確認
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.indexOf("application/json") !== -1) {
+            return response.json();
+          } else {
+            // JSONでない場合はテキストとして取得してエラー扱い
+            return response.text().then(text => {
+              console.error('Invalid JSON response:', text);
+              throw new Error('サーバーからの応答が不正です。');
+            });
+          }
+        })
+        .then(data => {
+          if (data.success) {
+            // 成功メッセージ
+            alert('お問い合わせありがとうございます。内容を確認の上、担当者より連絡いたします。');
+            contactForm.reset();
+            // トップページへスクロール
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          } else {
+            // エラーメッセージ
+            alert('エラーが発生しました: ' + (data.message || '不明なエラー'));
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('通信エラーが発生しました。しばらく時間をおいてから再度お試しください。');
+        })
+        .finally(() => {
+          // ボタンを元に戻す
+          if (submitBtn) {
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+          }
+        });
       }
     });
 

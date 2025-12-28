@@ -33,7 +33,14 @@ if ($inquiries === false) {
             <?php if ($inquiries && is_array($inquiries)): ?>
                 <?php foreach ($inquiries as $row): ?>
                 <tr>
-                    <td><?php echo htmlspecialchars(date('Y/m/d H:i', strtotime($row['created_at']))); ?></td>
+                    <td>
+                        <?php 
+                        // UTCからJSTへ変換
+                        $date = new DateTime($row['created_at']);
+                        $date->setTimezone(new DateTimeZone('Asia/Tokyo'));
+                        echo htmlspecialchars($date->format('Y/m/d H:i')); 
+                        ?>
+                    </td>
                     <td><?php echo htmlspecialchars($row['name']); ?></td>
                     <td>
                         <span class="badge bg-<?php echo ($row['status'] ?? '') === 'completed' ? 'success' : (($row['status'] ?? '') === 'pending' ? 'warning' : 'secondary'); ?>">
@@ -56,7 +63,13 @@ if ($inquiries === false) {
                                     </div>
                                     <div class="modal-body">
                                         <p><strong>ID:</strong> <?php echo $row['id']; ?></p>
-                                        <p><strong>日時:</strong> <?php echo htmlspecialchars($row['created_at']); ?></p>
+                                        <p><strong>日時:</strong> 
+                                            <?php 
+                                            $detailDate = new DateTime($row['created_at']);
+                                            $detailDate->setTimezone(new DateTimeZone('Asia/Tokyo'));
+                                            echo htmlspecialchars($detailDate->format('Y/m/d H:i:s')); 
+                                            ?>
+                                        </p>
                                         <p><strong>名前:</strong> <?php echo htmlspecialchars($row['name']); ?></p>
                                         <p><strong>電話:</strong> <?php echo htmlspecialchars($row['tel'] ?? '-'); ?></p>
                                         <p><strong>Email:</strong> <?php echo htmlspecialchars($row['email'] ?? '-'); ?></p>
