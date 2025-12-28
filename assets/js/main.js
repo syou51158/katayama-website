@@ -368,19 +368,36 @@ document.addEventListener('DOMContentLoaded', function () {
           <span class="text-xs text-gray-300">ログイン中</span>
         </div>
         <div class="flex space-x-3">
-          <a href="/admin/" class="text-sm bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded transition-colors text-white no-underline flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            管理画面へ
-          </a>
+          <!-- 管理画面へ戻るボタンは削除 -->
         </div>
       `;
       document.body.appendChild(adminBar);
 
       // フッターが隠れないようにpaddingを追加
       document.body.style.paddingBottom = '60px';
+
+      // 親ウィンドウ（管理画面）からのメッセージ受信
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'adminModeChange') {
+          // isViewSiteModeがtrueなら「公開サイト閲覧モード」なのでバーを表示
+          // falseなら「管理画面モード（背景）」なのでバーを非表示
+          if (event.data.isViewSiteMode) {
+            adminBar.style.display = 'flex';
+          } else {
+            adminBar.style.display = 'none';
+          }
+        }
+      });
+
+      // 初期状態のチェック（iframe内でロードされた場合）
+      if (window.self !== window.top) {
+        // デフォルトでは非表示（親からのメッセージ待ち、または背景モードと仮定）
+        // ただし、ちらつき防止のため最初は表示しておき、親から即座に非表示命令が来るのを待つ戦略もあるが
+        // ここでは「背景としてロードされた」可能性が高いので、親に問い合わせるか、
+        // 親がonloadで即座にメッセージを送ってくるのを期待する
+        // adminBar.style.display = 'none'; 
+      }
+
     } else {
       // 期限切れの場合はフラグ削除
       localStorage.removeItem('isAdmin');

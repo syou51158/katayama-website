@@ -24,38 +24,80 @@ require_once __DIR__ . '/../../lib/SupabaseClient.php';
             --brand-accent: #C5A059; /* Gold/Bronze */
             --text-dark: #333333;
             --text-muted: #6c757d;
-            --bg-light: #f4f6f9;
             --sidebar-width: 260px;
+            
+            /* Glassmorphism Variables */
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-sidebar: rgba(10, 25, 47, 0.95);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
         }
 
         body { 
-            background-color: var(--bg-light);
+            background-color: transparent; /* iframeが見えるように透明に */
             font-family: 'Noto Sans JP', sans-serif;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Sidebar Styling */
+        /* Site Background iframe */
+        #site-background-frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            z-index: 1; /* z-indexを正の値に */
+            pointer-events: none; /* デフォルトでは操作不可 */
+        }
+        
+        /* Overlay to darken the background site slightly when admin is active */
+        #admin-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(3px);
+            z-index: 2; /* iframeより上に */
+            transition: opacity 0.3s ease;
+            pointer-events: none; /* 操作を透過させる */
+        }
+
+        /* Admin UI Wrapper */
+        #admin-wrapper {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            position: relative;
+            z-index: 100;
+        }
+
+        /* Sidebar Styling with Glass */
         .sidebar {
             width: var(--sidebar-width);
-            background: var(--brand-primary);
+            background: var(--glass-sidebar);
+            backdrop-filter: blur(10px);
             color: #fff;
             position: fixed;
             top: 0;
             bottom: 0;
             left: 0;
-            z-index: 100;
+            z-index: 1000;
             padding: 0;
             box-shadow: 4px 0 10px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
+            border-right: 1px solid rgba(255,255,255,0.1);
         }
 
         .sidebar-brand {
             padding: 1.5rem 1.5rem;
-            background: rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.05);
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .sidebar-brand-text {
@@ -91,8 +133,9 @@ require_once __DIR__ . '/../../lib/SupabaseClient.php';
 
         .nav-link:hover, .nav-link.active {
             color: white;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.1);
             border-left-color: var(--brand-accent);
+            backdrop-filter: blur(5px);
         }
 
         .nav-link i {
@@ -112,28 +155,108 @@ require_once __DIR__ . '/../../lib/SupabaseClient.php';
             border-left-color: #ff5c6a;
         }
 
-        /* Main Content */
+        /* Main Content with Glass */
         .main-content {
             margin-left: var(--sidebar-width);
             padding: 2rem;
+            min-height: 100vh;
             transition: all 0.3s ease;
+            background: rgba(244, 246, 249, 0.5); /* Semi-transparent */
         }
-
-        /* Top Header (Optional integration) */
-        .top-header {
+        
+        /* Dashboard Cards Glass Effect */
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+        
+        /* Floating Toggle Button Container */
+        .view-toggle-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e0e0e0;
+            justify-content: flex-end;
+            gap: 12px;
         }
 
-        .page-title {
+        /* Tooltip Style */
+        .view-toggle-tooltip {
+            background: rgba(10, 25, 47, 0.9);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateX(10px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .view-toggle-container:hover .view-toggle-tooltip {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Floating Toggle Button */
+        #view-toggle-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--brand-accent);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--brand-primary);
-            margin: 0;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        #view-toggle-btn:hover {
+            transform: scale(1.1);
+            background: #d4b06a;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+        
+        #view-toggle-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Hidden state for Admin UI */
+        body.view-site-mode #admin-wrapper {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.98);
+        }
+        
+        body.view-site-mode #admin-backdrop {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        body.view-site-mode .sidebar {
+            transform: translateX(-100%);
+        }
+
+        /* 
+           重要: 閲覧モード時のiframe操作許可
+           admin-wrapperが消えている時だけ、iframeの操作を許可する
+        */
+        body.view-site-mode #site-background-frame {
+            pointer-events: auto;
+            z-index: 9998; /* トグルボタン(9999)の下、他全ての上 */
         }
 
         /* Mobile Responsive */
@@ -152,15 +275,20 @@ require_once __DIR__ . '/../../lib/SupabaseClient.php';
         /* Utility */
         .text-accent { color: var(--brand-accent); }
         .bg-white-card {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-            border: 1px solid rgba(0,0,0,0.02);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
     </style>
 </head>
 <body>
+<!-- Background Site Iframe -->
+<iframe id="site-background-frame" src="/"></iframe>
+<div id="admin-backdrop"></div>
 
+<div id="admin-wrapper">
 <?php if (SupabaseAuth::isLoggedIn()): ?>
     <!-- Sidebar -->
     <nav class="sidebar">

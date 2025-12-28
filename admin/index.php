@@ -9,9 +9,9 @@ require_once __DIR__ . '/includes/header.php';
         <p class="text-muted mb-0">ようこそ、管理者画面へ</p>
     </div>
     <div class="d-flex align-items-center gap-3">
-        <a href="../index.html" target="_blank" class="btn btn-primary d-flex align-items-center shadow-sm">
-            <i class="bi bi-box-arrow-up-right me-2"></i>公開サイトを見る
-        </a>
+        <button id="dashboard-view-site-btn" class="btn btn-primary d-flex align-items-center shadow-sm">
+            <i class="bi bi-eye me-2"></i>公開サイトを見る
+        </button>
         <div class="text-muted small">
             <i class="bi bi-calendar-event me-2"></i><?php echo date('Y年m月d日'); ?>
         </div>
