@@ -128,19 +128,19 @@
                             }
                         });
                         
-                        // ページ内のスクリプトを再実行（必要に応じて）
-                        // ※単純なinnerHTML置換ではscriptタグは実行されないため、
-                        // admin/settings/mail.php のような固有のスクリプトがある場合は
-                        // 手動で再設定するか、イベントリスナーをdocument全体に委譲する必要があります。
-                        // 今回は特にメール設定ページのフォーム制御を再バインドします。
-                        if (url.includes('/admin/settings/mail.php')) {
-                            const scriptContent = doc.querySelector('script:not([src])');
-                            if (scriptContent) {
-                                const script = document.createElement('script');
-                                script.textContent = scriptContent.textContent;
-                                document.body.appendChild(script);
-                            }
-                        }
+                        // ページ内のスクリプトを再実行
+                        // ※単純なinnerHTML置換ではscriptタグは実行されないため、明示的に再構築して実行します。
+                        const scripts = doc.querySelectorAll('script:not([src])');
+                        scripts.forEach(oldScript => {
+                            const newScript = document.createElement('script');
+                            newScript.textContent = oldScript.textContent;
+                            document.body.appendChild(newScript);
+                            // 実行後は削除（お掃除）する必要があるかもしれませんが、
+                            // イベントリスナー登録などの用途が多いため、そのままにしておきます。
+                        });
+
+                        // 外部スクリプト(srcあり)の場合の処理も必要であれば追加しますが、
+                        // 基本的には管理画面内で共通のライブラリを使っている前提とします。
                         
                         // 画面トップへ
                         window.scrollTo(0, 0);
@@ -273,4 +273,3 @@
 </script>
 </body>
 </html>
-
