@@ -321,11 +321,19 @@ class SupabaseIntegration {
                 status: "published"
             },
             {
-                id: "3",
-                title: "市民ホール改修",
-                description: "市民ホールの耐震補強及び内装リニューアル",
-                category: "Public",
-                featured_image: "assets/img/works_03.jpg",
+                id: "6",
+                title: "木造住宅解体工事",
+                description: "老朽化した木造住宅の解体工事、整地まで実施",
+                category: "Demolition",
+                featured_image: "assets/img/service_kenzokaitai.png",
+                status: "published"
+            },
+            {
+                id: "7",
+                title: "店舗内装解体",
+                description: "商業施設テナントの原状回復に伴う内装解体",
+                category: "Demolition",
+                featured_image: "assets/img/service_naisoukaitai.png",
                 status: "published"
             },
             {
@@ -684,13 +692,6 @@ class SupabaseIntegration {
                 features: ['カーポート', '塀', '舗装'],
                 service_image: 'assets/img/service_exterior.png',
                 icon: 'fence'
-            },
-            {
-                title: '公共工事',
-                description: '自治体向け工事',
-                features: ['道路', '公園'],
-                service_image: 'assets/img/service_public.jpg',
-                icon: 'government'
             },
             {
                 title: '設備工事',
