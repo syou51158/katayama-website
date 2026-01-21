@@ -51,7 +51,7 @@ const mockPartnersData = {
             status: "active"
         },
         {
-            id: "2", 
+            id: "2",
             company_name: "CHOWAplanning",
             logo_image: "assets/img/chowa_planning_logo.png",
             website_url: "",
@@ -61,7 +61,7 @@ const mockPartnersData = {
         },
         {
             id: "3",
-            company_name: "パートナー企業3", 
+            company_name: "パートナー企業3",
             logo_image: "assets/img/partner4.svg",
             website_url: "",
             description: "長年の協力関係にあるパートナー企業様",
@@ -71,7 +71,7 @@ const mockPartnersData = {
         {
             id: "4",
             company_name: "パートナー企業4",
-            logo_image: "assets/img/partner5.svg", 
+            logo_image: "assets/img/partner5.svg",
             website_url: "",
             description: "専門分野でのパートナー企業様",
             sort_order: 4,
@@ -121,34 +121,34 @@ const mockStatsData = {
     data: [
         {
             id: "1",
-            stat_name: "事業実績年数",
-            stat_value: "15",
-            stat_unit: "+",
+            stat_name: "創業年数",
+            stat_value: "1",
+            stat_unit: "年",
             description: "片山建設工業として事業を開始してからの年数",
             sort_order: 1,
             status: "active"
         },
         {
             id: "2",
-            stat_name: "施工実績件数",
-            stat_value: "320",
-            stat_unit: "+",
+            stat_name: "施工件数",
+            stat_value: "14",
+            stat_unit: "件",
             description: "これまでに手がけた施工プロジェクトの総数",
             sort_order: 2,
             status: "active"
         },
         {
             id: "3",
-            stat_name: "専門スタッフ",
-            stat_value: "25",
-            stat_unit: "+",
+            stat_name: "有資格者数",
+            stat_value: "35",
+            stat_unit: "名",
             description: "経験豊富な専門技術者の人数",
             sort_order: 3,
             status: "active"
         },
         {
             id: "4",
-            stat_name: "顧客満足度",
+            stat_name: "品質検査合格率",
             stat_value: "98",
             stat_unit: "%",
             description: "お客様アンケートによる満足度評価",
@@ -239,7 +239,7 @@ const mockSiteSettingsData = {
         hero_subtitle: "確かな技術と信頼で、皆様の理想を形にします",
         hero_background_image: "assets/img/hero.jpg",
         company_logo: "assets/img/logo.svg",
-        established_year: "2008"
+        established_year: "2023"
     }
 };
 
@@ -247,7 +247,7 @@ const mockSiteSettingsData = {
 function getMockApiResponse(endpoint) {
     return new Promise((resolve) => {
         setTimeout(() => {
-            switch(endpoint) {
+            switch (endpoint) {
                 case 'supabase-news.php':
                     resolve(mockNewsData);
                     break;

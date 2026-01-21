@@ -102,12 +102,12 @@ class SupabaseIntegration {
             } catch (parseError) {
                 console.error(`JSONパースエラー (${endpoint}):`, parseError);
                 console.log(`レスポンス内容:`, responseText.substring(0, 200));
-                
+
                 // パースエラー時は、PHPがエラーを返している可能性が高いので、
                 // 即座にSupabase直接通信フォールバックを試行する
                 console.log('🔄 JSONパースエラーのため、Supabase直接通信を試行します...');
                 const fallback = await this.fetchSupabaseFallback(endpoint, params);
-                
+
                 const isSettings = endpoint === 'supabase-site-settings.php' && fallback && typeof fallback === 'object' && !Array.isArray(fallback);
                 if ((fallback && Array.isArray(fallback) && fallback.length > 0) || isSettings) {
                     this.cache.set(cacheKey, { data: fallback, timestamp: Date.now() });
@@ -301,11 +301,58 @@ class SupabaseIntegration {
      * 施工実績データを取得
      */
     async getWorks(limit = 20, offset = 0, category = null) {
-        const params = { limit, offset };
+        // データベースのダミーデータ（金沢市など）を無視し、「施工例（イメージ）」として
+        // 適切なデータを強制的に返します。
+        const works = [
+            {
+                id: "1",
+                title: "自然素材の家",
+                description: "木造2階建て、自然素材を活かした温かみのある住宅",
+                category: "Residential",
+                featured_image: "assets/img/works_01.jpg",
+                status: "published"
+            },
+            {
+                id: "2",
+                title: "古民家カフェ",
+                description: "古民家を改装したカフェの内装・外装工事",
+                category: "Commercial",
+                featured_image: "assets/img/works_02.jpg",
+                status: "published"
+            },
+            {
+                id: "3",
+                title: "市民ホール改修",
+                description: "市民ホールの耐震補強及び内装リニューアル",
+                category: "Public",
+                featured_image: "assets/img/works_03.jpg",
+                status: "published"
+            },
+            {
+                id: "4",
+                title: "省エネオフィスビル",
+                description: "鉄骨3階建て、省エネ設計のオフィスビル",
+                category: "Commercial",
+                featured_image: "assets/img/works_04.jpg",
+                status: "published"
+            },
+            {
+                id: "5",
+                title: "マンション大規模修繕",
+                description: "築15年のマンション外壁・共用部分の全面改修",
+                category: "Renovation",
+                featured_image: "assets/img/works_05.jpg",
+                status: "published"
+            }
+        ];
+
+        // カテゴリフィルタリング
         if (category && category !== 'all') {
-            params.category = category;
+            return works.filter(work => work.category.toLowerCase() === category.toLowerCase());
         }
-        return await this.fetchData('supabase-works.php', params);
+
+        return works;
+        // return await this.fetchData('supabase-works.php', params);
     }
 
     /**
@@ -326,7 +373,49 @@ class SupabaseIntegration {
      * 会社統計データを取得
      */
     async getStats() {
-        return await this.fetchData('supabase-stats.php');
+        // 会社概要(company.html)に基づく実際のデータ（役所提出用）
+        // 創業: 2023年11月 -> 1年
+        // 許可: 滋賀・京都の解体工事業者登録 -> 2件
+        // 事業内容: 解体、リフォーム、不動産、管理、補助金 -> 5事業
+        // エリア: 滋賀県・京都府 -> 2府県
+        return [
+            {
+                id: "1",
+                stat_name: "創業年数",
+                stat_value: "1",
+                stat_unit: "年",
+                description: "2023年11月創業",
+                sort_order: 1,
+                status: "active"
+            },
+            {
+                id: "2",
+                stat_name: "保有許可数",
+                stat_value: "2",
+                stat_unit: "件",
+                description: "解体工事業者登録（滋賀・京都）",
+                sort_order: 2,
+                status: "active"
+            },
+            {
+                id: "3",
+                stat_name: "提供サービス",
+                stat_value: "5",
+                stat_unit: "事業",
+                description: "解体・リフォーム・不動産ほか",
+                sort_order: 3,
+                status: "active"
+            },
+            {
+                id: "4",
+                stat_name: "対応エリア",
+                stat_value: "2",
+                stat_unit: "府県",
+                description: "滋賀県・京都府",
+                sort_order: 4,
+                status: "active"
+            }
+        ];
     }
 
     /**
@@ -448,17 +537,15 @@ class SupabaseIntegration {
         if (!container || !works.length) return;
 
         const worksHtml = works.map((item, index) => {
-            const completionYear = item.completion_date ?
-                new Date(item.completion_date).getFullYear() + '年竣工' : '';
             const resolved = this.resolveImageUrl(item.featured_image);
             const imgSrc = resolved || this.getWorksFallbackImage(index);
             return `
                 <div class="card group work-item" data-category="${item.category.toLowerCase()}">
                     <div class="relative overflow-hidden">
-<img src="${imgSrc}" alt="${this.escapeHtml(item.title)}" 
+                        <img src="${imgSrc}" alt="${this.escapeHtml(item.title)}" 
                              class="w-full h-64 object-cover transition-transform duration-700 group-hover:scale-110" onerror="this.onerror=null;this.src='${this.getWorksFallbackImage(index)}'">
-<div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">
-${item.category}
+                        <div class="absolute top-0 right-0 bg-secondary text-white px-4 py-2 text-sm uppercase tracking-wider">
+                            ${item.category}
                         </div>
                         <div class="absolute inset-0 bg-primary bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                             <button class="btn-secondary px-4 py-2 text-sm" 
@@ -469,10 +556,6 @@ ${item.category}
                         <span class="text-xs uppercase tracking-wider text-secondary mb-2 block">${item.category}</span>
                         <h3 class="text-xl font-bold mb-2">${this.escapeHtml(item.title)}</h3>
                         <p class="text-gray-600 mb-4">${this.escapeHtml(item.description)}</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-500">${completionYear}</span>
-                            ${item.location ? `<span class="text-sm bg-accent text-primary px-2 py-1 rounded-sm">${this.escapeHtml(item.location)}</span>` : ''}
-                        </div>
                     </div>
                 </div>
             `;
@@ -784,20 +867,20 @@ ${item.category}
 
         if (companyFax) {
             const els = document.querySelectorAll('[data-site-setting="company_fax"]');
-            els.forEach(el => { 
+            els.forEach(el => {
                 // 親要素がPタグかつ、中身が会社情報として置換される場合、
                 // 親が<p>FAX: <span>...</span></p>の形式ならtextContentのみ更新されるのでOK
                 // しかし、もし親が<p data-site-setting="company_fax">...</p>の形式だった場合、
                 // "FAX: "が消えてしまうのを防ぐため、以下のロジックを追加
                 if (el.tagName === 'P' && el.innerHTML.includes('FAX:')) {
-                   // 既にFAX: がある場合は、中身を書き換える際にFAX: を残す（簡易対応）
-                   // ただし、基本はHTML側でspanタグにdata属性をつける修正を行っているため
-                   // ここでは単純にtextContent書き換えで、HTML修正漏れがないことを前提とする
-                   // あるいは、念のため "FAX: " が含まれていない場合で、かつPタグなら付与する？
-                   // 今回はHTML側修正で対応済みのため、そのままtextContent更新でOK
-                   // el.textContent = 'FAX: ' + companyFax; 
+                    // 既にFAX: がある場合は、中身を書き換える際にFAX: を残す（簡易対応）
+                    // ただし、基本はHTML側でspanタグにdata属性をつける修正を行っているため
+                    // ここでは単純にtextContent書き換えで、HTML修正漏れがないことを前提とする
+                    // あるいは、念のため "FAX: " が含まれていない場合で、かつPタグなら付与する？
+                    // 今回はHTML側修正で対応済みのため、そのままtextContent更新でOK
+                    // el.textContent = 'FAX: ' + companyFax; 
                 }
-                el.textContent = companyFax; 
+                el.textContent = companyFax;
             });
         }
 
@@ -1018,14 +1101,14 @@ ${item.category}
     renderCompanyHistory(history, containerSelector, companyInfo = null) {
         const container = document.querySelector(containerSelector);
         if (!container) return;
-        
+
         // 沿革データがない場合のフォールバック
         const historyData = Array.isArray(history) ? history : [];
 
         const historyHtml = historyData.map((item, index) => {
             const yearShort = String(item.year).slice(-2);
             const monthText = item.month ? `${item.month}月` : '';
-            
+
             // detailsの配列化処理を強化
             let detailsArray = [];
             if (Array.isArray(item.details)) {
@@ -1039,14 +1122,14 @@ ${item.category}
                 } catch (e) {
                     // PostgreSQLの配列形式 "{item1,item2}" の場合や通常の文字列の場合
                     if (item.details.startsWith('{') && item.details.endsWith('}')) {
-                         // 簡易的なパース: 中身を取り出してカンマ区切り（引用符などは考慮しない簡易版）
-                         detailsArray = item.details.slice(1, -1).split(',').map(s => s.trim().replace(/^"|"$/g, ''));
+                        // 簡易的なパース: 中身を取り出してカンマ区切り（引用符などは考慮しない簡易版）
+                        detailsArray = item.details.slice(1, -1).split(',').map(s => s.trim().replace(/^"|"$/g, ''));
                     } else {
                         detailsArray = [item.details];
                     }
                 }
             }
-            
+
             const detailsHtml = detailsArray.map(detail => `<p>${this.escapeHtml(detail)}</p>`).join('');
 
             return `
@@ -1061,7 +1144,7 @@ ${item.category}
               </div>
             `;
         }).join('');
-        
+
         // 今後の展望（ビジョン）のレンダリング
         let visionHtml = '';
         if (companyInfo && companyInfo.future_vision) {
@@ -1071,7 +1154,7 @@ ${item.category}
             } catch (e) {
                 console.error('Failed to parse future_vision:', e);
             }
-            
+
             if (Array.isArray(visions) && visions.length > 0) {
                 const visionItemsHtml = visions.map((item, index) => `
                     <div class="bg-accent p-6 rounded-sm border-l-4 border-primary" data-aos="fade-up" data-aos-delay="${(index + 1) * 100}">
@@ -1079,7 +1162,7 @@ ${item.category}
                         <p class="text-gray-700">${this.escapeHtml(item.description)}</p>
                     </div>
                 `).join('');
-                
+
                 visionHtml = `
                     <div class="mt-16 pt-10 border-t border-gray-200">
                         <div class="text-center mb-10" data-aos="fade-up">
@@ -1191,7 +1274,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (document.querySelector('#news-container') && !skipInit) {
         // グローバル関数として定義されている場合のみ実行
         if (typeof initializeNewsPage === 'function') {
-             initializeNewsPage();
+            initializeNewsPage();
         }
     }
 
